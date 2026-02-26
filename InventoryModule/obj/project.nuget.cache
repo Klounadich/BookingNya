@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "eZqb2MdDEKc=",
+  "success": true,
+  "projectFilePath": "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj",
+  "expectedPackageFiles": [
+    "/home/klounadich/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

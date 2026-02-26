@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "nxBPjg9B9jI=",
+  "success": true,
+  "projectFilePath": "/home/klounadich/dev/BookingNya/BookingModule/BookingModule.csproj",
+  "expectedPackageFiles": [
+    "/home/klounadich/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
