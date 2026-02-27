@@ -944,6 +944,66 @@
           "bin/placeholder/BookingModule.dll": {}
         }
       },
+      "InventoryModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Npgsql": "10.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Scalar.AspNetCore": "2.12.47",
+          "Shared": "1.0.0",
+          "Swashbuckle.AspNetCore.Swagger": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.4"
+        },
+        "compile": {
+          "bin/placeholder/InventoryModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/InventoryModule.dll": {}
+        }
+      },
+      "NotificationModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Npgsql": "10.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Scalar.AspNetCore": "2.12.47",
+          "Shared": "1.0.0",
+          "Swashbuckle.AspNetCore.Swagger": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.4"
+        },
+        "compile": {
+          "bin/placeholder/NotificationModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/NotificationModule.dll": {}
+        }
+      },
+      "PaymentModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Npgsql": "10.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Scalar.AspNetCore": "2.12.47",
+          "Shared": "1.0.0",
+          "Swashbuckle.AspNetCore.Swagger": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.4"
+        },
+        "compile": {
+          "bin/placeholder/PaymentModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PaymentModule.dll": {}
+        }
+      },
       "Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -2905,6 +2965,21 @@
       "path": "../BookingModule/BookingModule.csproj",
       "msbuildProject": "../BookingModule/BookingModule.csproj"
     },
+    "InventoryModule/1.0.0": {
+      "type": "project",
+      "path": "../InventoryModule/InventoryModule.csproj",
+      "msbuildProject": "../InventoryModule/InventoryModule.csproj"
+    },
+    "NotificationModule/1.0.0": {
+      "type": "project",
+      "path": "../NotificationModule/NotificationModule.csproj",
+      "msbuildProject": "../NotificationModule/NotificationModule.csproj"
+    },
+    "PaymentModule/1.0.0": {
+      "type": "project",
+      "path": "../PaymentModule/PaymentModule.csproj",
+      "msbuildProject": "../PaymentModule/PaymentModule.csproj"
+    },
     "Shared/1.0.0": {
       "type": "project",
       "path": "../Shared/Shared.csproj",
@@ -2914,11 +2989,14 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "BookingModule >= 1.0.0",
+      "InventoryModule >= 1.0.0",
       "Microsoft.AspNetCore.OpenApi >= 10.0.3",
       "Microsoft.EntityFrameworkCore >= 10.0.3",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.3",
+      "NotificationModule >= 1.0.0",
       "Npgsql >= 10.0.1",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.0",
+      "PaymentModule >= 1.0.0",
       "Scalar.AspNetCore >= 2.12.47",
       "Shared >= 1.0.0",
       "Swashbuckle.AspNetCore.Swagger >= 10.1.4",
@@ -2953,6 +3031,15 @@
           "projectReferences": {
             "/home/klounadich/dev/BookingNya/BookingModule/BookingModule.csproj": {
               "projectPath": "/home/klounadich/dev/BookingNya/BookingModule/BookingModule.csproj"
+            },
+            "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj": {
+              "projectPath": "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj"
+            },
+            "/home/klounadich/dev/BookingNya/NotificationModule/NotificationModule.csproj": {
+              "projectPath": "/home/klounadich/dev/BookingNya/NotificationModule/NotificationModule.csproj"
+            },
+            "/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj": {
+              "projectPath": "/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj"
             },
             "/home/klounadich/dev/BookingNya/Shared/Shared.csproj": {
               "projectPath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj"

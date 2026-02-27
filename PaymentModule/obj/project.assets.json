@@ -901,6 +901,25 @@
         "build": {
           "buildTransitive/net8.0/_._": {}
         }
+      },
+      "Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Npgsql": "10.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Scalar.AspNetCore": "2.12.47",
+          "Swashbuckle.AspNetCore.Swagger": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.4"
+        },
+        "compile": {
+          "bin/placeholder/Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Shared.dll": {}
+        }
       }
     }
   },
@@ -2820,6 +2839,11 @@
         "system.composition.typedparts.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "Shared/1.0.0": {
+      "type": "project",
+      "path": "../Shared/Shared.csproj",
+      "msbuildProject": "../Shared/Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2829,6 +2853,7 @@
       "Npgsql >= 10.0.1",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.0",
       "Scalar.AspNetCore >= 2.12.47",
+      "Shared >= 1.0.0",
       "Swashbuckle.AspNetCore.Swagger >= 10.1.4",
       "Swashbuckle.AspNetCore.SwaggerGen >= 10.1.4",
       "Swashbuckle.AspNetCore.SwaggerUI >= 10.1.4"
@@ -2858,7 +2883,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/home/klounadich/dev/BookingNya/Shared/Shared.csproj": {
+              "projectPath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
