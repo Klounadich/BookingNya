@@ -9,7 +9,7 @@ public class BookingModel
     [Required , Key]
     public Guid id { get; set; } = Guid.NewGuid();
     [Required ] 
-    public Guid saga_id { get; set; }
+    public Guid saga_id { get; set; } 
     [Required, MaxLength(50)]
     public string room_id { get; set; }
     [Required, MaxLength(200)]
@@ -18,7 +18,7 @@ public class BookingModel
     public string guest_email { get; set; }
     [Required, MaxLength(50)]
     public string guest_phone { get; set; }
-    [Required] // проверка из csv 
+    [Required] 
     public DateTime check_in { get; set; }
     [Required]
     public DateTime check_out { get; set; } // проверка из csv

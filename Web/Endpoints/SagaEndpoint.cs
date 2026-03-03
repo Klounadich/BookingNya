@@ -1,4 +1,9 @@
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks.Dataflow;
+using BookingModule.Commands;
+using BookingModule.Models;
+using BookingModule.Services;
+using Shared.Enums;
 
 namespace BookingNya.Endpoints;
 
@@ -13,9 +18,10 @@ public static class SagaEndpoint
         group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
 
-    public static Task<IResult> BookSaga()
+    public async static Task<IResult> BookSaga(BookingRequestCommand data , IBookingService service)
     {
-        return Task.FromResult<IResult>(Results.Ok());
+      var result =  await service.StartBooking(data);
+        return Results.Ok(result);
     }
 
     public static Task<IResult> SagaStatus(int sagaId)

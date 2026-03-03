@@ -7,12 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\" />
       <Folder Include="Events\" />
       <Folder Include="Handlers\" />
-      <Folder Include="Repositories\" />
       <Folder Include="Saga\" />
-      <Folder Include="Services\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="/home/klounadich/dev/BookingNya/Shared/Shared.csproj"/>

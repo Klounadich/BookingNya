@@ -1,4 +1,6 @@
 using BookingModule.Infrastructure;
+using BookingModule.Repositories;
+using BookingModule.Services;
 using BookingNya.Endpoints;
 using InventoryModule.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -29,12 +31,18 @@ builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("BookingDBConnection"),
         b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
+builder.Services.AddScoped<IBookingService,BookingService>();
+
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
+    
 {
+    Console.WriteLine(DateTime.UtcNow);
     app.MapOpenApi();
     app.MapScalarApiReference("/api-docs");
 }

@@ -10,7 +10,7 @@ public class SagaStatesModel
     [Required , Key]
     public Guid id { get; set; } = Guid.NewGuid();
     [Required]
-    public Guid saga_id { get; set; }
+    public Guid saga_id { get; set; } =Guid.NewGuid();
     [Required] 
     public string saga_type { get; set; } = "booking";
     [Required]
