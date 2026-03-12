@@ -3,6 +3,7 @@ using System.Threading.Tasks.Dataflow;
 using BookingModule.Commands;
 using BookingModule.Models;
 using BookingModule.Services;
+using MediatR;
 using Shared.Enums;
 
 namespace BookingNya.Endpoints;
@@ -18,9 +19,9 @@ public static class SagaEndpoint
         group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
 
-    public async static Task<IResult> BookSaga(BookingRequestCommand data , IBookingService service)
+    public async static Task<IResult> BookSaga(BookingRequestCommand data , IBookingService service , IMediator mediator)
     {
-      var result =  await service.StartBooking(data);
+      var result =  await mediator.Send(data);
         return Results.Ok(result);
     }
 

@@ -26,6 +26,9 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
+              "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj": {
+                "projectPath": "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj"
+              },
               "/home/klounadich/dev/BookingNya/Shared/Shared.csproj": {
                 "projectPath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj"
               }
@@ -48,6 +51,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -63,6 +90,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },
@@ -427,6 +458,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -442,6 +497,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },
@@ -806,6 +865,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -821,6 +904,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },
@@ -1185,6 +1272,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -1200,6 +1311,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },
@@ -1560,6 +1675,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -1575,6 +1714,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },
@@ -1951,6 +2094,30 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "DotNetCore.CAP": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.InMemoryStorage": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.PostgreSql": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "DotNetCore.CAP.RabbitMQ": {
+              "target": "Package",
+              "version": "[10.0.2-preview-287480508, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -1970,6 +2137,10 @@
               "version": "[10.0.1, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Savorboard.CAP.InMemoryMessageQueue": {
               "target": "Package",
               "version": "[10.0.0, )"
             },

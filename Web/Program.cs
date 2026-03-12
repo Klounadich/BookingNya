@@ -1,12 +1,19 @@
+using BookingModule.Handlers;
 using BookingModule.Infrastructure;
 using BookingModule.Repositories;
 using BookingModule.Services;
+using BookingModule.Subscribers;
 using BookingNya.Endpoints;
 using InventoryModule.Infrastructure;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NotificationModule.Infrastructure;
 using PaymentModule.Infrastructure;
 using Scalar.AspNetCore;
+using DotNetCore.CAP;
+using InventoryModule.Handlers;
+using Savorboard.CAP.InMemoryMessageQueue;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -34,7 +41,20 @@ builder.Services.AddDbContext<PaymentDbContext>(options =>
 builder.Services.AddScoped<IBookingService,BookingService>();
 
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(BookingRequestHandler).Assembly);
+});
 
+builder.Services.AddCap(x =>
+{
+   
+    x.UseInMemoryMessageQueue();
+    x.UseInMemoryStorage();
+
+});
+builder.Services.AddTransient<ReserveRoomSubscriber>();
+builder.Services.AddTransient<SagaStatusSubscriber>();
 var app = builder.Build();
 
 
@@ -42,7 +62,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     
 {
-    Console.WriteLine(DateTime.UtcNow);
+    
     app.MapOpenApi();
     app.MapScalarApiReference("/api-docs");
 }

@@ -1,3 +1,5 @@
+using MediatR;
+
 namespace BookingModule.Commands;
 
 public record BookingRequestCommand(
@@ -12,4 +14,4 @@ string currency,
 string payment_method,
 string payment_reservation_id
     
-    );
+    ): IRequest<StartSagaResult>;
