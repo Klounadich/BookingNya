@@ -16,15 +16,24 @@ public class ReserveRoomSubscriber : ICapSubscribe
         _service = service;
     }
     [CapSubscribe("inventory.reserve.room.command")]
-    public async Task<RoomReserveResult> HandleReserveRoom(ReserveRoomCommand command)
+    public async Task HandleReserveRoom(ReserveRoomCommand command)
     {
         await _capPublisher.PublishAsync("booking.reserve.room.started.event", new ReserveRoomStartedCommand(
             command.sagaId, 
             DateTime.UtcNow
             ));
-        return  await _service.ReserveRoomAsync(command);
         
-        //await _capPublisher.PublishAsync("inventory.room.reserved.event", new RoomReservedEvent(...));
+        
+        
+            
+            var reservationId = await _service.ReserveRoomAsync(command);
+
+           
+            await _capPublisher.PublishAsync("inventory.room.reserved.event", new RoomReservedEvent(
+                command.sagaId,
+                reservationId.reservaiton_id,
+                command.roomId
+            ));
         
 
 

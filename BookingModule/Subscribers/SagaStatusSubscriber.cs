@@ -7,11 +7,13 @@ namespace BookingModule.Subscribers;
 
 public class SagaStatusSubscriber : ICapSubscribe
 {
+    private readonly ICapPublisher _capPublisher;
     private readonly IBookingRepository  _bookingRepository;
 
-    public SagaStatusSubscriber(IBookingRepository bookingRepository)
+    public SagaStatusSubscriber(IBookingRepository bookingRepository , ICapPublisher capPublisher)
     {
         _bookingRepository = bookingRepository;
+        _capPublisher = capPublisher;
     }
     [CapSubscribe("booking.reserve.room.started.event")]
     public async Task Handle(ReserveRoomStartedCommand command)
@@ -24,6 +26,7 @@ public class SagaStatusSubscriber : ICapSubscribe
             sagaState.last_updated_at = DateTime.UtcNow;
 
             await _bookingRepository.UpdateSagaStateAsync(sagaState);
+           // await _capPublisher.PublishAsync("payment.process.payment.command", new ProcessPaymentCommand(...));
         }
     }
 }

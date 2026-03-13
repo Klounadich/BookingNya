@@ -57,6 +57,7 @@ builder.Services.AddCap(x =>
 });
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();
+builder.Services.AddTransient<RoomReservedSubscriber>();
 builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
 
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
