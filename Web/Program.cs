@@ -12,6 +12,8 @@ using PaymentModule.Infrastructure;
 using Scalar.AspNetCore;
 using DotNetCore.CAP;
 using InventoryModule.Handlers;
+using InventoryModule.Repositories;
+using InventoryModule.Services;
 using Savorboard.CAP.InMemoryMessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +57,9 @@ builder.Services.AddCap(x =>
 });
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();
+builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
+
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 var app = builder.Build();
 
 

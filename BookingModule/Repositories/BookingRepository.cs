@@ -13,14 +13,29 @@ public class BookingRepository : IBookingRepository
     {
         _db = db;
     }
-    public async Task<bool> StartSaga(SagaStatesModel data)
+    public async Task<bool> StartSaga(SagaStatesModel data , BookingModel booking)
     {
-        _db.SagaStates.Add(data);
-        if (await _db.SaveChangesAsync() > 0)
+        using (var transaction = await _db.Database.BeginTransactionAsync())
         {
-            return  true;
+            try
+            {
+                _db.SagaStates.Add(data);
+                _db.Bookings.Add(booking);
+                if (await _db.SaveChangesAsync()  > 0)
+                {
+                   await  transaction.CommitAsync();
+                    return true;
+                }
+                return false;
+                
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
         }
-        return false;
+        
     }
 
     public async Task<SagaStatesModel> GetSagaStateBySagaIdAsync(Guid saga_id)

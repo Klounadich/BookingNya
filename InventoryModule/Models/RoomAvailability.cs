@@ -5,7 +5,7 @@ namespace InventoryModule.Models;
 public class RoomAvailability
 {
     [Required]
-    public Guid id { get; set; } = new Guid();
+    public Guid id { get; set; } = Guid.NewGuid();
     [Required , MaxLength(50)]
     public string room_id { get; set; }
     [Required]

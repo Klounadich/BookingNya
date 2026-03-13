@@ -25,21 +25,56 @@ public class BookingService : IBookingService
     }
     public async Task<StartSagaResult> StartBooking(BookingRequestCommand data)
     {
+        var sagaId = Guid.NewGuid();    
+        var bookingId = Guid.NewGuid(); 
 
-        SagaStatesModel sagaState = new SagaStatesModel
+       
+        var booking = new BookingModel
         {
-            current_step = "ReserveRoom",
+            id = bookingId,             
+            saga_id = sagaId,            
+            room_id = data.room_id,
+            guest_name = data.guest_name,
+            guest_phone = data.guest_phone,
+            guest_email = data.guest_email,
+            check_in = data.check_in,
+            check_out = data.check_out,
+            total_price = data.total_price,
+            status = BookingStatus.Pending,
+            created_at = DateTime.UtcNow,
+            payment_method = data.payment_method,
+            currency = data.currency,
+            updated_at = DateTime.UtcNow,
+            payment_reservation_id = data.payment_reservation_id,
+            
+            
         };
-        await _bookingRepository.StartSaga(sagaState);
-        await _capPublisher.PublishAsync( "inventory.reserve.room.command",new ReserveRoomCommand(sagaState.saga_id , data.room_id, data.check_in, data.check_out));
-        return new StartSagaResult
-        (
-            sagaState.saga_id, 
-            sagaState.status, 
-            "Saga initiated successfully."
-        );
 
+       
+        var sagaState = new SagaStatesModel
+        {
+            saga_id = sagaId,            
+            status = SagaTypes.Started,
+            current_step = "ReserveRoom",
+            started_at = DateTime.UtcNow,
+            last_updated_at = DateTime.UtcNow
+        };
 
+        
+        await _bookingRepository.StartSaga(sagaState ,booking);
+
+       
+        await _capPublisher.PublishAsync("inventory.reserve.room.command", new ReserveRoomCommand(
+             sagaId,
+             bookingId,       
+             data.room_id,
+             data.check_in,
+             data.check_out,
+             data.guest_name
+        ));
+
+        
+        return new StartSagaResult(sagaId, SagaTypes.Started , "Saga Started");
+    }
     }
     
-}
