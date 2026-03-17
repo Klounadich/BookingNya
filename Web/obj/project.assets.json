@@ -1224,6 +1224,7 @@
           "Microsoft.EntityFrameworkCore": "10.0.3",
           "Npgsql": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "PaymentModule": "1.0.0",
           "Savorboard.CAP.InMemoryMessageQueue": "10.0.0",
           "Scalar.AspNetCore": "2.12.47",
           "Shared": "1.0.0",

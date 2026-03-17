@@ -45,6 +45,13 @@ public class BookingRepository : IBookingRepository
             .SingleOrDefaultAsync();
         return Result;
     }
+    public async Task<BookingModel> GetBookingBySagaIdAsync(Guid saga_id)
+    {
+        var Result = await _db.Bookings
+            .Where(x => x.saga_id == saga_id)
+            .SingleOrDefaultAsync();
+        return Result;
+    }
     
     public async Task<bool> UpdateSagaStateAsync(SagaStatesModel data)
     {

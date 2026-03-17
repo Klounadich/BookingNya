@@ -1,6 +1,7 @@
 using BookingModule.Repositories;
 using DotNetCore.CAP;
 using InventoryModule.Commands;
+using PaymentModule.Commands;
 using Shared.Enums;
 
 namespace BookingModule.Subscribers;
@@ -26,7 +27,7 @@ public class SagaStatusSubscriber : ICapSubscribe
             sagaState.last_updated_at = DateTime.UtcNow;
 
             await _bookingRepository.UpdateSagaStateAsync(sagaState);
-           // await _capPublisher.PublishAsync("payment.process.payment.command", new ProcessPaymentCommand(...));
+         
         }
     }
 }

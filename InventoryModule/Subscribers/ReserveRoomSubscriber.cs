@@ -33,6 +33,7 @@ public class ReserveRoomSubscriber : ICapSubscribe
                 command.sagaId,
                 reservationId.reservaiton_id,
                 command.roomId
+                
             ));
         
 

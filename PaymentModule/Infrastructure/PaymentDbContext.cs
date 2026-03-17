@@ -9,9 +9,9 @@ public class PaymentDbContext: DbContext
     {
         
     }
-    DbSet<PaymentsModel> Payments { get; set; }
-    DbSet<PaymentsMethodsModel> PaymentsMethods { get; set; }
-    DbSet<PaymentTransactionsModel> PaymentTransactions { get; set; }
+    public  DbSet<PaymentsModel> Payments { get; set; }
+     public DbSet<PaymentsMethodsModel> PaymentsMethods { get; set; }
+     public DbSet<PaymentTransactionsModel> PaymentTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

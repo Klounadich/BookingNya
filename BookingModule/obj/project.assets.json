@@ -1215,6 +1215,33 @@
           "bin/placeholder/InventoryModule.dll": {}
         }
       },
+      "PaymentModule/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "DotNetCore.CAP": "10.0.2-preview-287480508",
+          "DotNetCore.CAP.InMemoryStorage": "10.0.2-preview-287480508",
+          "DotNetCore.CAP.PostgreSql": "10.0.2-preview-287480508",
+          "DotNetCore.CAP.RabbitMQ": "10.0.2-preview-287480508",
+          "MediatR": "14.0.0",
+          "MediatR.Extensions.Microsoft.DependencyInjection": "11.1.0",
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Npgsql": "10.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Savorboard.CAP.InMemoryMessageQueue": "10.0.0",
+          "Scalar.AspNetCore": "2.12.47",
+          "Shared": "1.0.0",
+          "Swashbuckle.AspNetCore.Swagger": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.4",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.4"
+        },
+        "compile": {
+          "bin/placeholder/PaymentModule.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PaymentModule.dll": {}
+        }
+      },
       "Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -3532,6 +3559,11 @@
       "path": "../InventoryModule/InventoryModule.csproj",
       "msbuildProject": "../InventoryModule/InventoryModule.csproj"
     },
+    "PaymentModule/1.0.0": {
+      "type": "project",
+      "path": "../PaymentModule/PaymentModule.csproj",
+      "msbuildProject": "../PaymentModule/PaymentModule.csproj"
+    },
     "Shared/1.0.0": {
       "type": "project",
       "path": "../Shared/Shared.csproj",
@@ -3551,6 +3583,7 @@
       "Microsoft.EntityFrameworkCore.Design >= 10.0.3",
       "Npgsql >= 10.0.1",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.0",
+      "PaymentModule >= 1.0.0",
       "Savorboard.CAP.InMemoryMessageQueue >= 10.0.0",
       "Scalar.AspNetCore >= 2.12.47",
       "Shared >= 1.0.0",
@@ -3586,6 +3619,9 @@
           "projectReferences": {
             "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj": {
               "projectPath": "/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj"
+            },
+            "/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj": {
+              "projectPath": "/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj"
             },
             "/home/klounadich/dev/BookingNya/Shared/Shared.csproj": {
               "projectPath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj"

@@ -13,6 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj"/>
         <ProjectReference Include="/home/klounadich/dev/BookingNya/Shared/Shared.csproj"/>
+        <ProjectReference Include ="/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
