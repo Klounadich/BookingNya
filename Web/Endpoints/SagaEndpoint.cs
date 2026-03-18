@@ -21,8 +21,36 @@ public static class SagaEndpoint
 
     public async static Task<IResult> BookSaga(BookingRequestCommand data , IBookingService service , IMediator mediator)
     {
-      var result =  await mediator.Send(data);
-        return Results.Ok(result);
+        try
+        {
+            
+            var start = await mediator.Send(data);
+
+            if (start.Status == SagaTypes.Started || start.Status == SagaTypes.Running)
+            {
+                
+                return Results.Ok( new
+                {
+                    Message = "Booking saga initiated.",
+                    SagaId = start.SagaId,
+                    
+                });
+            }
+            else
+            {
+                
+                return Results.BadRequest(new
+                {
+                    Error = "Failed to initiate booking saga.",
+                    Details = start.Message 
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
     }
 
     public static Task<IResult> SagaStatus(int sagaId)

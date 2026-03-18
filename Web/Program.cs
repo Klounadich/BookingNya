@@ -4,6 +4,7 @@ using BookingModule.Repositories;
 using BookingModule.Services;
 using BookingModule.Subscribers;
 using BookingNya.Endpoints;
+
 using InventoryModule.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -57,12 +58,24 @@ builder.Services.AddCap(x =>
     x.UseInMemoryMessageQueue();
     x.UseInMemoryStorage();
 
+});// CORS Settings --------------------------------------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        // Разрешаем только с нашего же сервера - безопасно
+        policy.WithOrigins("http://localhost:5255") // Или https://localhost:5001, если используешь HTTPS
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // <-- Теп
+    });
 });
+//  --------------------------------------------------------------------------------
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();
 builder.Services.AddTransient<RoomReservedSubscriber>();
 builder.Services.AddTransient<PaymentProcessSubscriber>();
-
+builder.Services.AddSignalR();
 builder.Services.AddTransient<PaymentProcessedSubscriber>();
 builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
@@ -70,8 +83,9 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<Mock>();
 var app = builder.Build();
-
-
+app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
+app.UseCors();
+app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
     
