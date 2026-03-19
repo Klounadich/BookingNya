@@ -434,25 +434,35 @@
         }
 
         // --- SignalR Functions ---
-        async function initializeSignalR() {
-            if (connection) return;
-            connection = new signalR.HubConnectionBuilder()
-                .withUrl(SIGNALR_HUB_URL)
-                .build();
-
-            connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
-                if (sagaId === currentTrackingGroupId) {
-                    addStatusMessage(`[${step}] ${status.toUpperCase()}: ${message}`, status.toLowerCase() === 'failed' ? 'error' : 'success');
-                }
-            });
-
-            connection.onclose(async (e) => {
-                isConnected = false;
-                updateConnectionStatus(false, `SignalR Disconnected${e ? ': ' + e.message : ''}`);
-                addStatusMessage(`Connection closed by server: ${e?.message || 'Unknown reason'}`, 'error');
-                updateTrackingButtons(false, true);
-            });
-        }
+       async function initializeSignalR() {
+           if (connection) return;
+           connection = new signalR.HubConnectionBuilder()
+               .withUrl(SIGNALR_HUB_URL)
+               .build();
+       
+           // ✅ Обработчик для обычного прогресса
+           connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
+               if (sagaId === currentTrackingGroupId) {
+                   addStatusMessage(`[${step}] ${status.toUpperCase()}: ${message}`, status.toLowerCase() === 'failed' ? 'error' : 'success');
+               }
+           });
+       
+           // ✅ НОВЫЙ ОБРАБОТЧИК: для ошибок
+           connection.on("ReceiveSagaError", (sagaId, step, errorCode, errorMessage) => {
+               if (sagaId === currentTrackingGroupId) {
+                   addStatusMessage(`[ERROR in ${step}] ${errorCode}: ${errorMessage}`, 'error');
+                   // ❌ Опционально: остановить отслеживание, если это фатальная ошибка
+                   // leaveCurrentGroup(); // <-- Это остановит отслеживание для данной саги
+               }
+           });
+       
+           connection.onclose(async (e) => {
+               isConnected = false;
+               updateConnectionStatus(false, `SignalR Disconnected${e ? ': ' + e.message : ''}`);
+               addStatusMessage(`Connection closed by server: ${e?.message || 'Unknown reason'}`, 'error');
+               updateTrackingButtons(false, true);
+           });
+       }
 
         async function connectToSignalR() {
             if (isConnected) return;
@@ -529,7 +539,7 @@
                     payment_reservation_id: "STATIC_RESERVATION_ID_12345"
                 };
 
-                if (!formData.room_id || !formData.guest_name || !formData.guest_email || !formData.check_in || !formData.check_out || isNaN(formData.total_price) || formData.total_price <= 0) {
+                if (!formData.room_id || !formData.guest_name || !formData.guest_email || !formData.check_in || !formData.check_out || isNaN(formData.total_price) ) {
                     showRequestStatus('Error: Please fill in all required fields correctly.', true);
                     return;
                 }

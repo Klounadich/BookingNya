@@ -2,8 +2,10 @@ using BookingModule.Repositories;
 using BookingModule.Services;
 using DotNetCore.CAP;
 using InventoryModule.Commands;
+using Microsoft.AspNetCore.SignalR;
 using Shared.Enums;
 using PaymentModule.Commands;
+using Shared.SignalR;
 
 namespace BookingModule.Subscribers;
 
@@ -11,26 +13,40 @@ public class RoomReservedSubscriber : ICapSubscribe
 {
     private readonly IBookingRepository  _bookingRepository;
     private readonly ICapPublisher _capPublisher;
+    private readonly IHubContext<SagaProcessHub> _hubContext;
 
-    public RoomReservedSubscriber(IBookingRepository bookingrepository , ICapPublisher capPublisher)
+    public RoomReservedSubscriber(IBookingRepository bookingrepository , ICapPublisher capPublisher ,  IHubContext<SagaProcessHub> hubContext)
     {
         _bookingRepository = bookingrepository;
         _capPublisher = capPublisher;
+        _hubContext = hubContext;
     }
     [CapSubscribe("inventory.room.reserved.event")]
     public async Task HandleAsync(RoomReservedEvent command)
     {
+        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
+            command.SagaId, 
+            "ReserveRoom",  
+            "Completed",    
+            $"Room has been successfully reserved  {command.ReservationId}." 
+        );
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
         if (sagaState != null)
         {
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
             if (booking != null)
             {
+                
                 sagaState.status = SagaTypes.Completed;
                 sagaState.current_step = "ProcessPayment";
                 sagaState.last_updated_at = DateTime.UtcNow;
                 await _bookingRepository.UpdateSagaStateAsync(sagaState);
-                Console.WriteLine(sagaState.last_updated_at);
+                await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
+                    command.SagaId, 
+                    "ProcessPayment",  
+                    "Started",    
+                    "Starting Payment." 
+                );
                 await _capPublisher.PublishAsync("payment.process.payment.command", new ProcessPaymentCommand(
                     command.SagaId,
                     booking.id,
@@ -41,6 +57,7 @@ public class RoomReservedSubscriber : ICapSubscribe
                     " ",
                     booking.guest_email,
                     booking.guest_phone,
+                    "",
                     "",
                     sagaState.metadata
                      

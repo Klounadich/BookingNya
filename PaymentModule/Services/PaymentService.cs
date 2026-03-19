@@ -28,7 +28,7 @@ public class PaymentService : IPaymentService
         _paymentRepository = paymentRepository;
         _mock = mock;
     }
-    public async Task<bool> ProcessPaymentAsync(ProcessPaymentCommand data)
+    public async Task<PaymentResult> ProcessPaymentAsync(ProcessPaymentCommand data)
     {
         var checkvalue = await _mock.PaymentCheck(data.Amount, data.Currency);
         if (checkvalue.Status == "Success")
@@ -52,9 +52,9 @@ public class PaymentService : IPaymentService
                 
             if (await _paymentRepository.SavePaymentTransaction(booking))
             {
-                return true;
+                return new PaymentResult(true, "");
             }
         }
-        return false;
+        return new PaymentResult(false, checkvalue.Status);
     }
 }

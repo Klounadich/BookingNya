@@ -11,5 +11,6 @@ public record ProcessPaymentCommand(
     string? CustomerEmail,
     string? CustomerPhone ,
     string? CardToken,
+    string? Error,
     Dictionary<string, object>? Metadata
     );

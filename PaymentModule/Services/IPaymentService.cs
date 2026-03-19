@@ -4,5 +4,5 @@ namespace PaymentModule.Services;
 
 public interface IPaymentService
 {
-    public Task<bool> ProcessPaymentAsync(ProcessPaymentCommand data);
+    public Task<PaymentResult> ProcessPaymentAsync(ProcessPaymentCommand data);
 }

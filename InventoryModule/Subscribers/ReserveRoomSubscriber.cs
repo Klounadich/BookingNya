@@ -30,15 +30,10 @@ public class ReserveRoomSubscriber : ICapSubscribe
             ));
         
         
-        
             
             var reservationId = await _service.ReserveRoomAsync(command);
-            await _hubContext.Clients.Group(command.sagaId.ToString()).SendAsync("ReceiveSagaProgress",
-                command.sagaId, 
-                "ReserveRoom",  
-                "Completed",    
-                "Room has been successfully reserved." 
-            );
+            
+         
            
             await _capPublisher.PublishAsync("inventory.room.reserved.event", new RoomReservedEvent(
                 command.sagaId,

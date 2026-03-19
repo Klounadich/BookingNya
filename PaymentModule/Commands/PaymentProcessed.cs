@@ -1,4 +1,5 @@
 namespace PaymentModule.Commands;
 
 public record PaymentProcessed(
-    Guid SagaId);
+    Guid SagaId,
+    string Error);
