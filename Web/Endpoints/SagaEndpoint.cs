@@ -1,8 +1,5 @@
-using System.Runtime.InteropServices.JavaScript;
-using System.Threading.Tasks.Dataflow;
+
 using BookingModule.Commands;
-using BookingModule.Models;
-using BookingModule.Services;
 using MediatR;
 using Shared.Enums;
 
@@ -19,11 +16,10 @@ public static class SagaEndpoint
         group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
 
-    public async static Task<IResult> BookSaga(BookingRequestCommand data , IBookingService service , IMediator mediator)
+    public async static Task<IResult> BookSaga(BookingRequestCommand data , IMediator mediator)
     {
         try
         {
-            
             var start = await mediator.Send(data);
 
             if (start.Status == SagaTypes.Started || start.Status == SagaTypes.Running)
@@ -36,15 +32,12 @@ public static class SagaEndpoint
                     
                 });
             }
-            else
-            {
-                
                 return Results.BadRequest(new
                 {
                     Error = "Failed to initiate booking saga.",
                     Details = start.Message 
                 });
-            }
+            
         }
         catch (Exception ex)
         {

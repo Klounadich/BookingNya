@@ -1,7 +1,6 @@
 using BookingModule.Repositories;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using PaymentModule.Commands;
 using Shared.Enums;
 using Shared.SignalR;
@@ -22,7 +21,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
  public async Task HandleAsync(PaymentProcessed command)
  {
   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-  if (sagaState != null)
+  if (!sagaState.Equals(null))
   {
    await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
     command.SagaId, 
@@ -55,7 +54,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
  public async Task FailedHandleAsync(PaymentProcessed command)
  {
   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-  if (sagaState != null)
+  if (!sagaState.Equals(null))
   {
    await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
     command.SagaId,
@@ -68,11 +67,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
    sagaState.last_updated_at = DateTime.UtcNow;
    sagaState.error_message = command.Error;
 
-   if (await _bookingRepository.UpdateSagaStateAsync(sagaState))
-   {
-    
-    // await _capPublisher.PublishAsync("notification.send.confirmation.command", new SendConfirmationCommand(...
-   }
+   await _bookingRepository.UpdateSagaStateAsync(sagaState);
 
   }
  }

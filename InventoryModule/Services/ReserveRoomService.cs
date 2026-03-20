@@ -26,8 +26,8 @@ public class ReserveRoomService: IReserveRoomService
                 guest_name = command.guest_name,
                 check_in = command.check_in,
                 check_out = command.check_out,
-                reservation_reference = "" ,//фикс
-                cancellation_reason = "" //фикс
+                reservation_reference = "" ,//fix
+                cancellation_reason = "" //fix
             };
             if (await _inventoryRepository.ReserveRoomAsync(request))
             {

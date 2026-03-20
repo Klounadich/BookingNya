@@ -8,7 +8,7 @@ namespace PaymentModule.Services;
 public class Mock
 {
     public record CheckResult(Guid? Id, decimal Amount , string Currency, string Status);
-    public async Task<CheckResult> PaymentCheck(decimal amount, string currency)
+    public CheckResult PaymentCheck(decimal amount, string currency)
     {
         if (amount <= 0)
         {
@@ -30,7 +30,7 @@ public class PaymentService : IPaymentService
     }
     public async Task<PaymentResult> ProcessPaymentAsync(ProcessPaymentCommand data)
     {
-        var checkvalue = await _mock.PaymentCheck(data.Amount, data.Currency);
+        var checkvalue =  _mock.PaymentCheck(data.Amount, data.Currency); //mock of external api for payment
         if (checkvalue.Status == "Success")
         {
             PaymentsModel booking = new PaymentsModel

@@ -22,10 +22,9 @@ using Savorboard.CAP.InMemoryMessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
+builder.Services.AddOpenApi();
+// DB CONTEXT--------------------------------------------------------------
 builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("BookingDBConnection"),
@@ -44,57 +43,59 @@ builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("BookingDBConnection"),
         b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
-builder.Services.AddScoped<IBookingService,BookingService>();
+//--------------------------------------------------------------
 
+//SERVICES ------------------------------------------------------------------
+//scopeds:
+builder.Services.AddScoped<IBookingService,BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<Mock>();
+//trasients:
+builder.Services.AddTransient<ReserveRoomSubscriber>();
+builder.Services.AddTransient<SagaStatusSubscriber>();
+builder.Services.AddTransient<RoomReservedSubscriber>();
+builder.Services.AddTransient<PaymentProcessSubscriber>();
+builder.Services.AddTransient<PaymentProcessedSubscriber>();
+//Others:
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(BookingRequestHandler).Assembly);
 });
-
 builder.Services.AddCap(x =>
 {
    
     x.UseInMemoryMessageQueue();
     x.UseInMemoryStorage();
 
-});// CORS Settings --------------------------------------------------------------------------------
+});
+builder.Services.AddSignalR();
+// ------------------------------------------------------------------------------------
+// CORS Settings --------------------------------------------------------------------------------
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        // Разрешаем только с нашего же сервера - безопасно
-        policy.WithOrigins("http://localhost:5255") // Или https://localhost:5001, если используешь HTTPS
+        
+        policy.WithOrigins("http://localhost:5255") 
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); // <-- Теп
+            .AllowCredentials(); 
     });
 });
 //  --------------------------------------------------------------------------------
-builder.Services.AddTransient<ReserveRoomSubscriber>();
-builder.Services.AddTransient<SagaStatusSubscriber>();
-builder.Services.AddTransient<RoomReservedSubscriber>();
-builder.Services.AddTransient<PaymentProcessSubscriber>();
-builder.Services.AddSignalR();
-builder.Services.AddTransient<PaymentProcessedSubscriber>();
-builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-builder.Services.AddScoped<Mock>();
 var app = builder.Build();
 app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
 app.UseCors();
 app.UseStaticFiles();
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-    
 {
-    
     app.MapOpenApi();
     app.MapScalarApiReference("/api-docs");
 }
-
 app.UseHttpsRedirection();
 app.MapSagaEndpont();
 

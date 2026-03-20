@@ -1,27 +1,26 @@
 using BookingModule.Infrastructure;
 using BookingModule.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingModule.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
-    public readonly BookingDbContext _db;
+    public readonly BookingDbContext _context;
 
-    public BookingRepository(BookingDbContext db)
+    public BookingRepository(BookingDbContext context)
     {
-        _db = db;
+        _context = context;
     }
     public async Task<bool> StartSaga(SagaStatesModel data , BookingModel booking)
     {
-        using (var transaction = await _db.Database.BeginTransactionAsync())
+        using (var transaction = await _context.Database.BeginTransactionAsync())
         {
             try
             {
-                _db.SagaStates.Add(data);
-                _db.Bookings.Add(booking);
-                if (await _db.SaveChangesAsync()  > 0)
+                _context.SagaStates.Add(data);
+                _context.Bookings.Add(booking);
+                if (await _context.SaveChangesAsync()  > 0)
                 {
                    await  transaction.CommitAsync();
                     return true;
@@ -29,7 +28,7 @@ public class BookingRepository : IBookingRepository
                 return false;
                 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 return false;
@@ -40,23 +39,23 @@ public class BookingRepository : IBookingRepository
 
     public async Task<SagaStatesModel> GetSagaStateBySagaIdAsync(Guid saga_id)
     {
-        var Result = await _db.SagaStates
+        return await _context.SagaStates
             .Where(x => x.saga_id == saga_id)
-            .SingleOrDefaultAsync();
-        return Result;
+            .SingleAsync();
+        
     }
     public async Task<BookingModel> GetBookingBySagaIdAsync(Guid saga_id)
     {
-        var Result = await _db.Bookings
+        return await _context.Bookings
             .Where(x => x.saga_id == saga_id)
-            .SingleOrDefaultAsync();
-        return Result;
+            .SingleAsync();
+        
     }
     
     public async Task<bool> UpdateSagaStateAsync(SagaStatesModel data)
     {
-        _db.SagaStates.Update(data);
-        if (await _db.SaveChangesAsync() > 0)
+        _context.SagaStates.Update(data);
+        if (await _context.SaveChangesAsync() > 0)
         {
             return  true;
         }

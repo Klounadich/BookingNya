@@ -1,11 +1,8 @@
 using BookingModule.Commands;
-using BookingModule.Infrastructure;
 using BookingModule.Models;
 using BookingModule.Repositories;
 using InventoryModule.Commands;
-using Microsoft.AspNetCore.Http;
 using Shared.Enums;
-using MediatR;
 using DotNetCore.CAP;
 
 namespace BookingModule.Services;
@@ -14,13 +11,12 @@ public class BookingService : IBookingService
 {
     private readonly ICapPublisher _capPublisher;   
     private readonly IBookingRepository _bookingRepository;
-    private readonly IMediator _mediator;
+   
     
 
-    public BookingService(IBookingRepository bookingRepository , IMediator mediator , ICapPublisher capPublisher)
+    public BookingService(IBookingRepository bookingRepository , ICapPublisher capPublisher)
     {
         _bookingRepository = bookingRepository;
-        _mediator = mediator;
         _capPublisher = capPublisher;
     }
     public async Task<StartSagaResult> StartBooking(BookingRequestCommand data)
@@ -60,24 +56,20 @@ public class BookingService : IBookingService
             last_updated_at = DateTime.UtcNow
         };
 
-        
-        await _bookingRepository.StartSaga(sagaState ,booking);
 
-       
-        await _capPublisher.PublishAsync("inventory.reserve.room.command", new ReserveRoomCommand(
-             sagaId,
-             bookingId,       
-             data.room_id,
-             data.check_in,
-             data.check_out,
-             data.guest_name
-        ));
-
-        
-        return new StartSagaResult(sagaId, SagaTypes.Started , "Saga Started");
+        if (await _bookingRepository.StartSaga(sagaState, booking))
+        {
+            await _capPublisher.PublishAsync("inventory.reserve.room.command", new ReserveRoomCommand(
+                sagaId,
+                bookingId,
+                data.room_id,
+                data.check_in,
+                data.check_out,
+                data.guest_name
+            ));
+            return new StartSagaResult(sagaId, SagaTypes.Started , "Saga Started");
+        }
+        return new StartSagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
     }
-
-    
-    
     }
     

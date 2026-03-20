@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.ComTypes;
+
 using DotNetCore.CAP;
 using PaymentModule.Commands;
 using PaymentModule.Services;
@@ -25,7 +25,7 @@ public class PaymentProcessSubscriber : ICapSubscribe
         }
         else
         {
-           Console.WriteLine(result.Error);
+           
             await _capPublisher.PublishAsync("payment.failed.event", new PaymentProcessed(command.SagaId ,result.Error));
         }
     }

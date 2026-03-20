@@ -1,5 +1,4 @@
 using BookingModule.Repositories;
-using BookingModule.Services;
 using DotNetCore.CAP;
 using InventoryModule.Commands;
 using Microsoft.AspNetCore.SignalR;
@@ -31,16 +30,17 @@ public class RoomReservedSubscriber : ICapSubscribe
             $"Room has been successfully reserved  {command.ReservationId}." 
         );
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-        if (sagaState != null)
+        if (!sagaState.Equals(null))
         {
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
-            if (booking != null)
+            if (!booking.Equals(null))
             {
-                
                 sagaState.status = SagaTypes.Completed;
                 sagaState.current_step = "ProcessPayment";
                 sagaState.last_updated_at = DateTime.UtcNow;
+                
                 await _bookingRepository.UpdateSagaStateAsync(sagaState);
+                
                 await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
                     command.SagaId, 
                     "ProcessPayment",  
@@ -65,6 +65,28 @@ public class RoomReservedSubscriber : ICapSubscribe
             }
 
          
+        }
+    }
+
+    [CapSubscribe("inventory.room.reserved.event.failed")]
+    public async Task HandleAsyncFailed(RoomReservedEvent command)
+    {
+        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
+            command.SagaId,
+            "ReserveRoom",
+            "Failed",
+            "Reservation is Failed."
+        );
+        
+        var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+        if (!sagaState.Equals(null))
+        {
+
+            sagaState.status = SagaTypes.Failed;
+            sagaState.current_step = "ReserveRoom";
+            sagaState.last_updated_at = DateTime.UtcNow;
+
+            await _bookingRepository.UpdateSagaStateAsync(sagaState);
         }
     }
 }
