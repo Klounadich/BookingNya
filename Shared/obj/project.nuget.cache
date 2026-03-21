@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "2pt8CTDamjw=",
+  "dgSpecHash": "yKtmq5XY8TE=",
   "success": true,
   "projectFilePath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj",
   "expectedPackageFiles": [
@@ -12,6 +12,8 @@
     "/home/klounadich/.nuget/packages/mediatr/14.0.0/mediatr.14.0.0.nupkg.sha512",
     "/home/klounadich/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
     "/home/klounadich/.nuget/packages/mediatr.extensions.microsoft.dependencyinjection/11.1.0/mediatr.extensions.microsoft.dependencyinjection.11.1.0.nupkg.sha512",
+    "/home/klounadich/.nuget/packages/microsoft.aspnetcore.connections.abstractions/10.0.1/microsoft.aspnetcore.connections.abstractions.10.0.1.nupkg.sha512",
+    "/home/klounadich/.nuget/packages/microsoft.aspnetcore.signalr.common/10.0.1/microsoft.aspnetcore.signalr.common.10.0.1.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.codeanalysis.analyzers/3.11.0/microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.codeanalysis.common/5.0.0/microsoft.codeanalysis.common.5.0.0.nupkg.sha512",
@@ -31,6 +33,7 @@
     "/home/klounadich/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.3/microsoft.extensions.dependencyinjection.abstractions.10.0.3.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.extensions.dependencymodel/10.0.3/microsoft.extensions.dependencymodel.10.0.3.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.extensions.diagnostics.abstractions/10.0.0/microsoft.extensions.diagnostics.abstractions.10.0.0.nupkg.sha512",
+    "/home/klounadich/.nuget/packages/microsoft.extensions.features/10.0.1/microsoft.extensions.features.10.0.1.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.extensions.fileproviders.abstractions/10.0.0/microsoft.extensions.fileproviders.abstractions.10.0.0.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.extensions.hosting.abstractions/10.0.0/microsoft.extensions.hosting.abstractions.10.0.0.nupkg.sha512",
     "/home/klounadich/.nuget/packages/microsoft.extensions.logging/10.0.3/microsoft.extensions.logging.10.0.3.nupkg.sha512",

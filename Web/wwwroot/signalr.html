@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary-color: #FF9800;
+            --accent-color: #2196F3;
+            --background-color: #f5f7fa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --warning-color: #FF9800;
+            --info-color: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--surface-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 25px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .panel:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--background-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-track {
+            background-color: var(--info-color);
+        }
+
+        .btn-track:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-stop {
+            background-color: var(--error-color);
+        }
+
+        .btn-stop:hover {
+            background-color: #D32F2F;
+        }
+
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .status-connected {
+            background-color: #E8F5E9;
+            color: var(--success-color);
+        }
+
+        .status-disconnected {
+            background-color: #FFEBEE;
+            color: var(--error-color);
+        }
+
+        .status-request-success {
+            background-color: #E3F2FD;
+            color: var(--info-color);
+        }
+
+        .status-request-error {
+            background-color: #FFEBEE;
+            color: var(--error-color);
+        }
+
+        .status-feed {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #fafafa;
+        }
+
+        .status-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-success {
+            color: var(--success-color);
+        }
+
+        .status-error {
+            color: var(--error-color);
+        }
+
+        .status-info {
+            color: var(--info-color);
+        }
+
+        .status-warning {
+            color: var(--warning-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">HotelBookPro</a>
+            <nav>
+                <!-- Optional navigation links -->
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <!-- Left Panel: Booking Form -->
+            <section class="panel">
+                <h2 class="panel-title">Book Your Stay</h2>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="room_id">Room ID *</label>
+                        <input type="text" id="room_id" name="room_id" placeholder="e.g., DELUXE-101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guest_name">Full Name *</label>
+                        <input type="text" id="guest_name" name="guest_name" placeholder="e.g., Alex Johnson" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guest_email">Email Address *</label>
+                        <input type="email" id="guest_email" name="guest_email" placeholder="e.g., alex.j@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guest_phone">Phone Number *</label>
+                        <input type="tel" id="guest_phone" name="guest_phone" placeholder="e.g., +1 234 567 8900" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="check_in">Check-in Date & Time *</label>
+                        <input type="datetime-local" id="check_in" name="check_in" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="check_out">Check-out Date & Time *</label>
+                        <input type="datetime-local" id="check_out" name="check_out" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="total_price">Total Price ($)*</label>
+                        <input type="number" id="total_price" name="total_price" step="0.01" placeholder="e.g., 250.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency *</label>
+                        <select id="currency" name="currency" required>
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="GBP">GBP (£)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_method">Payment Method *</label>
+                        <select id="payment_method" name="payment_method" required>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="debit_card">Debit Card</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="submitBtn">
+                        <span id="submitBtnText">Confirm Booking</span>
+                        <span id="submitBtnSpinner" class="loading hidden"></span>
+                    </button>
+                </form>
+                <div id="requestStatus" class="status-container status-request-success hidden" style="margin-top: 15px;">
+                    <span id="requestStatusText">Request status message</span>
+                </div>
+            </section>
+
+            <!-- Right Panel: Saga Tracking -->
+            <section class="panel">
+                <h2 class="panel-title">Booking Status</h2>
+                <div class="form-group">
+                    <label for="manual_saga_id">Or Enter Saga ID to Track Manually</label>
+                    <input type="text" id="manual_saga_id" placeholder="e.g., abc123-def456...">
+                    <button id="manualTrackBtn" class="btn-track">Track Saga</button>
+                </div>
+
+                <div id="connectionStatus" class="status-container status-disconnected">
+                    <span>Status: SignalR Disconnected</span>
+                </div>
+
+                <div class="status-feed" id="statusFeed">
+                    <div class="status-item status-info">Welcome! Initiate a booking or enter a Saga ID to start tracking.</div>
+                </div>
+                <button id="stopTrackingBtn" class="btn-stop" style="margin-top: 15px;" disabled>Stop Tracking</button>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 HotelBookPro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Подключаем клиентскую библиотеку SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        // --- Configuration ---
+        const API_BASE_URL = 'http://localhost:5255';
+        const SIGNALR_HUB_URL = `${API_BASE_URL}/saga-process-hub`;
+
+        // --- State Variables ---
+        let connection = null;
+        let isConnected = false;
+        let currentTrackingGroupId = null;
+        let isTrackingStartedViaForm = false;
+
+        // --- DOM Elements ---
+        const form = document.getElementById('bookingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+        const submitBtnSpinner = document.getElementById('submitBtnSpinner');
+        const requestStatusDiv = document.getElementById('requestStatus');
+        const requestStatusText = document.getElementById('requestStatusText');
+        const connectionStatusDiv = document.getElementById('connectionStatus');
+        const statusFeed = document.getElementById('statusFeed');
+        const manualSagaIdInput = document.getElementById('manual_saga_id');
+        const manualTrackBtn = document.getElementById('manualTrackBtn');
+        const stopTrackingBtn = document.getElementById('stopTrackingBtn');
+
+        if (!form) {
+            console.error("CRITICAL ERROR: Element with id 'bookingForm' not found in the HTML. The script cannot run.");
+            throw new Error("Form element missing.");
+        }
+
+        // --- Utility Functions ---
+        function showRequestStatus(message, isError = false) {
+            requestStatusDiv.className = `status-container ${isError ? 'status-request-error' : 'status-request-success'}`;
+            requestStatusText.textContent = message;
+            requestStatusDiv.classList.remove('hidden');
+            setTimeout(() => {
+                requestStatusDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function updateConnectionStatus(isConnectedStatus, message) {
+            connectionStatusDiv.className = `status-container ${isConnectedStatus ? 'status-connected' : 'status-disconnected'}`;
+            connectionStatusDiv.innerHTML = `<span>Status: ${message}</span>`;
+        }
+
+        function addStatusMessage(message, type = 'info') {
+            const item = document.createElement('div');
+            item.className = `status-item status-${type}`;
+            item.textContent = `${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${message}`;
+            statusFeed.appendChild(item);
+            statusFeed.scrollTop = statusFeed.scrollHeight;
+        }
+
+        function disableSubmitButton(disabled) {
+            submitBtn.disabled = disabled;
+            if (disabled) {
+                submitBtnText.classList.add('hidden');
+                submitBtnSpinner.classList.remove('hidden');
+            } else {
+                submitBtnText.classList.remove('hidden');
+                submitBtnSpinner.classList.add('hidden');
+            }
+        }
+
+        function updateTrackingButtons(connectDisabled, stopDisabled) {
+            manualTrackBtn.disabled = connectDisabled;
+            stopTrackingBtn.disabled = stopDisabled;
+        }
+
+        // --- SignalR Functions ---
+       async function initializeSignalR() {
+           if (connection) return;
+           connection = new signalR.HubConnectionBuilder()
+               .withUrl(SIGNALR_HUB_URL)
+               .build();
+       
+           // ✅ Обработчик для обычного прогресса
+           connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
+               if (sagaId === currentTrackingGroupId) {
+                   addStatusMessage(`[${step}] ${status.toUpperCase()}: ${message}`, status.toLowerCase() === 'failed' ? 'error' : 'success');
+               }
+           });
+       
+           // ✅ НОВЫЙ ОБРАБОТЧИК: для ошибок
+           connection.on("ReceiveSagaError", (sagaId, step, errorCode, errorMessage) => {
+               if (sagaId === currentTrackingGroupId) {
+                   addStatusMessage(`[ERROR in ${step}] ${errorCode}: ${errorMessage}`, 'error');
+                   // ❌ Опционально: остановить отслеживание, если это фатальная ошибка
+                   // leaveCurrentGroup(); // <-- Это остановит отслеживание для данной саги
+               }
+           });
+       
+           connection.onclose(async (e) => {
+               isConnected = false;
+               updateConnectionStatus(false, `SignalR Disconnected${e ? ': ' + e.message : ''}`);
+               addStatusMessage(`Connection closed by server: ${e?.message || 'Unknown reason'}`, 'error');
+               updateTrackingButtons(false, true);
+           });
+       }
+
+        async function connectToSignalR() {
+            if (isConnected) return;
+            try {
+                await initializeSignalR();
+                await connection.start();
+                isConnected = true;
+                updateConnectionStatus(true, 'Connected to SignalR Hub');
+                addStatusMessage('Successfully connected to real-time updates.', 'info');
+            } catch (err) {
+                console.error("SignalR Connection Error: ", err);
+                updateConnectionStatus(false, `Connection Failed: ${err.message}`);
+                addStatusMessage(`Failed to connect to SignalR: ${err.message}`, 'error');
+                throw err;
+            }
+        }
+
+        async function joinSagaGroup(sagaId) {
+            if (!isConnected) {
+                await connectToSignalR();
+            }
+            try {
+                await connection.invoke("JoinSagaGroup", sagaId);
+                currentTrackingGroupId = sagaId;
+                addStatusMessage(`Now tracking saga: ${sagaId}`, 'info');
+                updateTrackingButtons(true, false);
+            } catch (err) {
+                console.error("Error joining SignalR group: ", err);
+                addStatusMessage(`Error joining tracking group: ${err.message}`, 'error');
+                throw err;
+            }
+        }
+
+        async function leaveCurrentGroup() {
+            if (currentTrackingGroupId && connection && isConnected) {
+                try {
+                    await connection.invoke("LeaveSagaGroup", currentTrackingGroupId);
+                    addStatusMessage(`Stopped tracking saga: ${currentTrackingGroupId}`, 'info');
+                    currentTrackingGroupId = null;
+                } catch (err) {
+                    console.error("Error leaving SignalR group: ", err);
+                    addStatusMessage(`Error leaving tracking group: ${err.message}`, 'warning');
+                }
+            }
+            updateTrackingButtons(false, true);
+        }
+
+        // --- Event Handlers ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            disableSubmitButton(true);
+            isTrackingStartedViaForm = false;
+
+            try {
+                const checkInValue = document.getElementById('check_in').value;
+                const checkOutValue = document.getElementById('check_out').value;
+
+                if (!checkInValue || !checkOutValue) {
+                    showRequestStatus('Error: Check-in and Check-out dates are required.', true);
+                    return;
+                }
+
+                const formData = {
+                    room_id: document.getElementById('room_id').value.trim(),
+                    guest_name: document.getElementById('guest_name').value.trim(),
+                    guest_email: document.getElementById('guest_email').value.trim(),
+                    guest_phone: document.getElementById('guest_phone').value.trim(),
+                    check_in: new Date(checkInValue).toISOString(),
+                    check_out: new Date(checkOutValue).toISOString(),
+                    total_price: parseFloat(document.getElementById('total_price').value),
+                    currency: document.getElementById('currency').value,
+                    payment_method: document.getElementById('payment_method').value,
+                    // ✅ ЕБАНУЯ ЗАТЫЧКА: отправляем payment_reservation_id
+                    payment_reservation_id: "STATIC_RESERVATION_ID_12345"
+                };
+
+                if (!formData.room_id || !formData.guest_name || !formData.guest_email || !formData.check_in || !formData.check_out || isNaN(formData.total_price) ) {
+                    showRequestStatus('Error: Please fill in all required fields correctly.', true);
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/booking`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showRequestStatus(`Booking Initiated! Saga ID: ${result.sagaId}`);
+                    isTrackingStartedViaForm = true;
+                    statusFeed.innerHTML = '';
+                    addStatusMessage('Connecting to real-time status updates...', 'info');
+                    await joinSagaGroup(result.sagaId);
+                } else {
+                    const errorResult = await response.json();
+                    console.error('API Error Response:', errorResult);
+                    showRequestStatus(`API Error: ${errorResult.error || errorResult.detail || response.statusText}`, true);
+                }
+            } catch (err) {
+                console.error('Fetch Error: ', err);
+                showRequestStatus(`Network Error: ${err.message}`, true);
+            } finally {
+                disableSubmitButton(false);
+            }
+        });
+
+        manualTrackBtn.addEventListener('click', async () => {
+            const sagaId = manualSagaIdInput.value.trim();
+            if (!sagaId) {
+                alert('Please enter a Saga ID.');
+                return;
+            }
+            if (currentTrackingGroupId === sagaId) {
+                addStatusMessage(`Already tracking saga: ${sagaId}`, 'warning');
+                return;
+            }
+            try {
+                if (isTrackingStartedViaForm) {
+                    await leaveCurrentGroup();
+                    isTrackingStartedViaForm = false;
+                } else if (currentTrackingGroupId) {
+                     await leaveCurrentGroup();
+                }
+                statusFeed.innerHTML = '';
+                addStatusMessage('Connecting to real-time status updates...', 'info');
+                await joinSagaGroup(sagaId);
+            } catch (err) {
+                // Errors are handled within joinSagaGroup
+            }
+        });
+
+        stopTrackingBtn.addEventListener('click', async () => {
+            await leaveCurrentGroup();
+            addStatusMessage('Tracking stopped.', 'info');
+        });
+
+        // --- Initialization ---
+        updateConnectionStatus(false, 'SignalR Disconnected');
+        updateTrackingButtons(false, true);
+
+    </script>
+
+</body>
+</html>
