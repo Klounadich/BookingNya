@@ -57,7 +57,7 @@ public class BookingService : IBookingService
         };
 
 
-        if (await _bookingRepository.StartSaga(sagaState, booking))
+        if (await _bookingRepository.StartSaga(sagaState, booking) == true)
         {
             await _capPublisher.PublishAsync("inventory.reserve.room.command", new ReserveRoomCommand(
                 sagaId,

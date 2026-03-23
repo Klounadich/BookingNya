@@ -42,7 +42,7 @@ public static class SagaEndpoint
         catch (Exception ex)
         {
             
-            return Results.Problem(detail: ex.Message, statusCode: 500);
+            return Results.Problem( statusCode: 500);
         }
     }
 

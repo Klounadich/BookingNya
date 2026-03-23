@@ -1,0 +1,386 @@
+Starting CodeRabbit review in plain text mode...
+
+Connecting to review service
+Setting up
+Analyzing
+Reviewing
+
+============================================================================
+File: BookingModule/Subscribers/SagaStatusSubscriber.cs
+Line: 25
+Type: potential_issue
+
+Comment:
+Critical: !sagaState.Equals(null) will throw NullReferenceException when sagaState is null.
+
+When GetSagaStateBySagaIdAsync returns null, calling .Equals(null) on it will throw. The original sagaState != null check was correct.
+
+
+
+🐛 Proposed fix
+
+-        if (!sagaState.Equals(null))
++        if (sagaState != null)
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/SagaStatusSubscriber.cs at line 25, Replace the unsafe null check that calls sagaState.Equals(null) with a direct null comparison to avoid NullReferenceException; in the SagaStatusSubscriber class (the code that calls GetSagaStateBySagaIdAsync and currently uses if (!sagaState.Equals(null))) change that condition to use sagaState != null so the code safely handles a null return from GetSagaStateBySagaIdAsync.
+
+
+
+============================================================================
+File: BookingModule/Subscribers/RoomReservedSubscriber.cs
+Line: 82
+Type: potential_issue
+
+Comment:
+Same null check issue in failure handler.
+
+
+
+🐛 Proposed fix
+
+-        if (!sagaState.Equals(null))
++        if (sagaState != null)
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/RoomReservedSubscriber.cs at line 82, The null check in the failure handler uses sagaState.Equals(null) which throws if sagaState is null; change the check to a safe null comparison (e.g., use "sagaState != null" or "sagaState is not null") in the failure handler where sagaState is inspected (the same place that currently has if (!sagaState.Equals(null))). Ensure any subsequent usage of sagaState inside that block remains guarded by the new null check.
+
+
+
+============================================================================
+File: BookingModule/Subscribers/RoomReservedSubscriber.cs
+Line: 33 to 36
+Type: potential_issue
+
+Comment:
+Critical: !.Equals(null) will throw NullReferenceException when the variable is null.
+
+Both sagaState.Equals(null) (line 33) and booking.Equals(null) (line 36) will throw if the respective variables are null. Use standard null checks instead.
+
+
+
+🐛 Proposed fix
+
+-        if (!sagaState.Equals(null))
++        if (sagaState != null)
+         {
+             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
+-            if (!booking.Equals(null))
++            if (booking != null)
+             {
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/RoomReservedSubscriber.cs around lines 33 - 36, Replace the unsafe equality checks that call .Equals on potentially null objects: change the conditions that use sagaState.Equals(null) and booking.Equals(null) to proper null checks (e.g., sagaState == null / sagaState != null and booking == null / booking != null) in the RoomReservedSubscriber flow that calls _bookingRepository.GetBookingBySagaIdAsync; ensure the logic around the GetBookingBySagaIdAsync result (booking) uses booking != null before accessing its members so no NullReferenceException is thrown.
+
+
+
+============================================================================
+File: BookingModule/Subscribers/SagaStatusSubscriber.cs
+Line: 42 to 56
+Type: potential_issue
+
+Comment:
+Critical: Null dereference in else block.
+
+The else branch executes when sagaState is null (or would be, once the condition is fixed). Lines 51-55 then attempt to access sagaState.status, sagaState.current_step, etc., causing a NullReferenceException.
+
+If the saga state doesn't exist, you likely cannot update it. Consider logging an error and returning early, or creating the saga state if that's the intended behavior.
+
+
+
+🐛 Proposed fix to remove the null dereference
+
+         else
+         {
+             await _hubContext.Clients.Group(command.saga_id.ToString()).SendAsync("ReceiveSagaError",
+                 command.saga_id,
+                 "ReserveRoom",
+                 "Failed",
+-                "Reservation is Failed."
++                "Saga state not found."
+             );
+-            
+-            sagaState.status = SagaTypes.Failed;
+-            sagaState.current_step = "ReserveRoom";
+-            sagaState.last_updated_at = DateTime.UtcNow;
+-           
+-            await _bookingRepository.UpdateSagaStateAsync(sagaState);
++            // Cannot update saga state that doesn't exist - log or handle accordingly
+         }
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/SagaStatusSubscriber.cs around lines 42 - 56, The else branch assumes sagaState is non-null and then dereferences it causing a potential NullReferenceException; update the else block in SagaStatusSubscriber.cs to first check sagaState for null and handle that case (either log an error and return early or create/initialize a new sagaState) before calling sagaState.status, sagaState.current_step, sagaState.last_updated_at and before calling _bookingRepository.UpdateSagaStateAsync; ensure the SendAsync call via _hubContext.Clients.Group(...).SendAsync remains, but guard any subsequent sagaState updates (SagaTypes.Failed assignment and UpdateSagaStateAsync) behind the null check or replace them with an appropriate error handling path.
+
+
+
+============================================================================
+File: Web/wwwroot/signalr.html
+Line: 538 to 540
+Type: potential_issue
+
+Comment:
+Remove hardcoded placeholder and inappropriate comment.
+
+The hardcoded payment_reservation_id with the comment "ЕБАНУЯ ЗАТЫЧКА" (profanity) should be addressed. Either implement proper reservation ID generation or clearly document this as a TODO with professional language.
+
+
+
+🛠️ Suggested fix
+
+-                    // ✅ ЕБАНУЯ ЗАТЫЧКА: отправляем payment_reservation_id
+-                    payment_reservation_id: "STATIC_RESERVATION_ID_12345"
++                    // TODO: Generate or retrieve proper payment_reservation_id
++                    payment_reservation_id: crypto.randomUUID()
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @Web/wwwroot/signalr.html around lines 538 - 540, Remove the hardcoded payment_reservation_id value and the profane comment: locate the object containing payment_reservation_id (the block that currently sets payment_reservation_id: "STATIC_RESERVATION_ID_12345") and either replace it with a dynamic value (e.g., pass in the real reservation id from the server or generate it via the existing reservation function) or replace the line with a clear professional TODO comment indicating where the real reservation id should be injected; ensure the profane text is deleted and logs/comments use professional language.
+
+
+
+============================================================================
+File: Web/wwwroot/signalr.html
+Line: 370 to 371
+Type: potential_issue
+
+Comment:
+Hardcoded localhost URL will not work in production.
+
+The API_BASE_URL is hardcoded to http://localhost:5255. This should be configured dynamically based on the deployment environment, or use relative URLs.
+
+
+
+🛠️ Suggested approach
+
+         // --- Configuration ---
+-        const API_BASE_URL = 'http://localhost:5255';
++        const API_BASE_URL = window.location.origin; // Or inject from server-side
+         const SIGNALR_HUB_URL = ${API_BASE_URL}/saga-process-hub;
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @Web/wwwroot/signalr.html around lines 370 - 371, The code hardcodes API_BASE_URL to 'http://localhost:5255' which breaks production; change the logic that sets API_BASE_URL (and SIGNALR_HUB_URL which derives from it) to compute the base dynamically (e.g., use a relative URL via window.location.origin or read from a runtime-config/global variable/ENV injected into the page) and fall back to localhost only for local dev; update the assignments for API_BASE_URL and SIGNALR_HUB_URL so they derive from this dynamic source (keep the SIGNALR_HUB_URL template usage) and ensure any callers that use SIGNALR_HUB_URL continue to work with the new value.
+
+
+
+============================================================================
+File: BookingModule/Subscribers/RoomReservedSubscriber.cs
+Line: 26 to 31
+Type: potential_issue
+
+Comment:
+SignalR notification is sent before verifying saga state exists.
+
+The progress notification is sent at lines 26-31 before checking if sagaState exists (line 33). If the saga doesn't exist, clients receive a "Completed" message for a saga that then fails to process. Consider moving this notification inside the success path.
+
+
+
+🛠️ Suggested reordering
+
+-        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
+-            command.SagaId, 
+-            "ReserveRoom",  
+-            "Completed",    
+-            $"Room has been successfully reserved  {command.ReservationId}." 
+-        );
+         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+-        if (!sagaState.Equals(null))
++        if (sagaState != null)
+         {
++            await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
++                command.SagaId, 
++                "ReserveRoom",  
++                "Completed",    
++                $"Room has been successfully reserved {command.ReservationId}." 
++            );
+             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/RoomReservedSubscriber.cs around lines 26 - 31, The SignalR notification currently sent via _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress", command.SagaId, "ReserveRoom", "Completed", $"Room has been successfully reserved  {command.ReservationId}.") is emitted before verifying the sagaState; move this SendAsync call into the success path after you check that sagaState is not null (the existing sagaState check located after these lines) so clients only receive "Completed" when the sagaState exists and the reservation succeeded; ensure you do not duplicate the notification on error paths and keep the message content and parameters unchanged.
+
+
+
+============================================================================
+File: BookingModule/Repositories/BookingRepository.cs
+Line: 40 to 46
+Type: potential_issue
+
+Comment:
+Critical: SingleAsync() throws when no match is found.
+
+Changed from SingleOrDefaultAsync() to SingleAsync(). This throws InvalidOperationException if no saga exists instead of returning null. Callers like PaymentProcessedSubscriber.HandleAsync expect a null return and perform null checks, but they'll now get unhandled exceptions.
+
+Either revert to SingleOrDefaultAsync() or update all callers to handle exceptions.
+
+
+
+
+🐛 Proposed fix (revert to SingleOrDefaultAsync)
+
+     public async Task GetSagaStateBySagaIdAsync(Guid saga_id)
+     {
+         return await _context.SagaStates
+             .Where(x => x.saga_id == saga_id)
+-            .SingleAsync();
++            .SingleOrDefaultAsync();
+         
+     }
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Repositories/BookingRepository.cs around lines 40 - 46, The method GetSagaStateBySagaIdAsync currently uses SingleAsync(), which throws when no record exists and breaks callers like PaymentProcessedSubscriber.HandleAsync that expect null; change the LINQ terminal operator back to SingleOrDefaultAsync() on _context.SagaStates.Where(x => x.saga_id == saga_id) so the method returns null when no saga is found (or alternatively update all callers to handle exceptions if you prefer that approach).
+
+
+
+============================================================================
+File: BookingModule/Subscribers/PaymentProcessedSubscriber.cs
+Line: 56 to 57
+Type: potential_issue
+
+Comment:
+Same issue: Broken null check.
+
+Apply the same fix here.
+
+
+
+
+🐛 Proposed fix
+
+   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+-  if (!sagaState.Equals(null))
++  if (sagaState != null)
+   {
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/PaymentProcessedSubscriber.cs around lines 56 - 57, The null-check using sagaState.Equals(null) is incorrect and will throw if sagaState is null; change the check to a proper null comparison (e.g., if (sagaState != null) or if (sagaState is not null)) after awaiting _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId) in the PaymentProcessedSubscriber (variable sagaState) so the code safely handles a null return from GetSagaStateBySagaIdAsync.
+
+
+
+============================================================================
+File: BookingModule/Repositories/BookingRepository.cs
+Line: 47 to 53
+Type: potential_issue
+
+Comment:
+Same issue: SingleAsync() throws when no match is found.
+
+Apply the same fix here.
+
+
+
+
+🐛 Proposed fix
+
+     public async Task GetBookingBySagaIdAsync(Guid saga_id)
+     {
+         return await _context.Bookings
+             .Where(x => x.saga_id == saga_id)
+-            .SingleAsync();
++            .SingleOrDefaultAsync();
+         
+     }
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Repositories/BookingRepository.cs around lines 47 - 53, GetBookingBySagaIdAsync currently uses SingleAsync which throws if no match exists; change the query in BookingRepository.GetBookingBySagaIdAsync to use SingleOrDefaultAsync instead, then check the returned value and handle the null case (e.g. throw a BookingNotFoundException or KeyNotFoundException with a clear message) so callers get a controlled error instead of an unhandled InvalidOperationException.
+
+
+
+============================================================================
+File: BookingModule/Subscribers/PaymentProcessedSubscriber.cs
+Line: 23 to 24
+Type: potential_issue
+
+Comment:
+Critical: Broken null check will throw NullReferenceException.
+
+if (!sagaState.Equals(null)) throws NullReferenceException if sagaState is null. Use standard null check: if (sagaState != null).
+
+Additionally, with the repository's change to SingleAsync(), this code will throw InvalidOperationException before even reaching the null check if the saga doesn't exist.
+
+
+
+
+🐛 Proposed fix
+
+   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+-  if (!sagaState.Equals(null))
++  if (sagaState != null)
+   {
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @BookingModule/Subscribers/PaymentProcessedSubscriber.cs around lines 23 - 24, The null check using sagaState.Equals(null) in PaymentProcessedSubscriber is unsafe and will throw when sagaState is null; change the check to "if (sagaState != null)" and stop calling Equals. Also update the repository behavior referenced by _bookingRepository.GetSagaStateBySagaIdAsync to use SingleOrDefaultAsync (or otherwise return null when not found) instead of SingleAsync so the call doesn't throw InvalidOperationException when the saga is missing; alternatively catch InvalidOperationException around the repository call and treat it as a missing saga. Ensure these changes are applied to the PaymentProcessedSubscriber logic that relies on sagaState being null-or-not.
+
+
+
+============================================================================
+File: Web/Endpoints/SagaEndpoint.cs
+Line: 42 to 46
+Type: potential_issue
+
+Comment:
+Avoid exposing raw exception messages; add logging.
+
+Returning ex.Message directly to clients can leak sensitive internal details (paths, connection strings, etc.). Log the exception for debugging and return a generic error message.
+
+
+
+
+🔒 Proposed fix
+
+-        catch (Exception ex)
++        catch (Exception ex)
+         {
+-            
+-            return Results.Problem(detail: ex.Message, statusCode: 500);
++            // Consider injecting ILogger and logging: logger.LogError(ex, "Failed to initiate booking saga");
++            return Results.Problem(detail: "An internal error occurred while processing the booking request.", statusCode: 500);
+         }
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @Web/Endpoints/SagaEndpoint.cs around lines 42 - 46, In the catch block inside SagaEndpoint.cs (the catch(Exception ex) in the Saga endpoint handler), stop returning or exposing ex.Message to clients; instead log the full exception via the existing logging facility (e.g., ILogger or a logger instance used in this class) including ex and any contextual values, and return a generic 500 response (Results.Problem with a non-sensitive message or default body) so internal details are not leaked; ensure you call logger.LogError(ex, "...") or equivalent before returning the generic Results.Problem.
+
+
+
+============================================================================
+File: Web/wwwroot/signalr.html
+Line: 367
+Type: potential_issue
+
+Comment:
+Upgrade SignalR client to version 10.0.0.
+
+The server uses ASP.NET Core 10 with Microsoft.AspNetCore.SignalR.Common 10.0.1, but the client is version 8.0.0. SignalR 8.0.0 is designed for ASP.NET Core 8. For compatibility and consistency, upgrade the client to 10.0.0 to match the server major version.
+
+
+Current code:
+
+Prompt for AI Agent:
+Verify each finding against the current code and only fix it if needed.
+
+In @Web/wwwroot/signalr.html at line 367, Update the SignalR client script reference: replace the existing script tag that loads "microsoft-signalr/8.0.0/signalr.min.js" with the 10.0.0 client (i.e., change the CDN URL to use microsoft-signalr/10.0.0/signalr.min.js) so the browser client major version matches the server's ASP.NET Core 10 SignalR packages; ensure the script src string is the only change.
+
+
+
+Review completed: 13 findings ✔

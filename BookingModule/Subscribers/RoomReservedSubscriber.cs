@@ -30,10 +30,10 @@ public class RoomReservedSubscriber : ICapSubscribe
             $"Room has been successfully reserved  {command.ReservationId}." 
         );
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-        if (!sagaState.Equals(null))
+        if (sagaState!=null)
         {
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
-            if (!booking.Equals(null))
+            if (sagaState!=null)
             {
                 sagaState.status = SagaTypes.Completed;
                 sagaState.current_step = "ProcessPayment";
@@ -79,7 +79,7 @@ public class RoomReservedSubscriber : ICapSubscribe
         );
         
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-        if (!sagaState.Equals(null))
+        if (sagaState!=null)
         {
 
             sagaState.status = SagaTypes.Failed;
