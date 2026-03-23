@@ -6,13 +6,13 @@ namespace BookingModule.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
-    public readonly BookingDbContext _context;
+    private readonly BookingDbContext _context;
 
     public BookingRepository(BookingDbContext context)
     {
         _context = context;
     }
-    public async Task<bool> StartSaga(SagaStatesModel data , BookingModel booking)
+    public async Task<bool?> StartSaga(SagaStatesModel data , BookingModel booking)
     {
         using (var transaction = await _context.Database.BeginTransactionAsync())
         {
@@ -37,22 +37,22 @@ public class BookingRepository : IBookingRepository
         
     }
 
-    public async Task<SagaStatesModel> GetSagaStateBySagaIdAsync(Guid saga_id)
+    public async Task<SagaStatesModel?> GetSagaStateBySagaIdAsync(Guid saga_id)
     {
         return await _context.SagaStates
             .Where(x => x.saga_id == saga_id)
-            .SingleAsync();
+            .SingleOrDefaultAsync();
         
     }
-    public async Task<BookingModel> GetBookingBySagaIdAsync(Guid saga_id)
+    public async Task<BookingModel?> GetBookingBySagaIdAsync(Guid saga_id)
     {
         return await _context.Bookings
             .Where(x => x.saga_id == saga_id)
-            .SingleAsync();
+            .SingleOrDefaultAsync();
         
     }
     
-    public async Task<bool> UpdateSagaStateAsync(SagaStatesModel data)
+    public async Task<bool?> UpdateSagaStateAsync(SagaStatesModel data)
     {
         _context.SagaStates.Update(data);
         if (await _context.SaveChangesAsync() > 0)

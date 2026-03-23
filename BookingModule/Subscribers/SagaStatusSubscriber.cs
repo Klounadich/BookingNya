@@ -22,7 +22,7 @@ public class SagaStatusSubscriber : ICapSubscribe
     public async Task Handle(ReserveRoomStartedCommand command)
     {
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.saga_id);
-        if (!sagaState.Equals(null))
+        if (sagaState !=null)
         {
             await _hubContext.Clients.Group(command.saga_id.ToString()).SendAsync("ReceiveSagaProgress",
                 command.saga_id, 

@@ -21,7 +21,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
  public async Task HandleAsync(PaymentProcessed command)
  {
   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-  if (!sagaState.Equals(null))
+  if (sagaState !=null)
   {
    await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
     command.SagaId, 
@@ -34,7 +34,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
    sagaState.current_step = "SendConfirmation";
    sagaState.last_updated_at = DateTime.UtcNow;
 
-   if (await _bookingRepository.UpdateSagaStateAsync(sagaState))
+   if (await _bookingRepository.UpdateSagaStateAsync(sagaState) == true)
    {
     await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
      command.SagaId, 
@@ -54,7 +54,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
  public async Task FailedHandleAsync(PaymentProcessed command)
  {
   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-  if (!sagaState.Equals(null))
+  if (sagaState !=null)
   {
    await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
     command.SagaId,
