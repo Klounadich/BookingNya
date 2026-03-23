@@ -48,7 +48,7 @@ public class BookingRepository : IBookingRepository
     {
         return await _context.Bookings
             .Where(x => x.saga_id == saga_id)
-            .SingleAsync();
+            .SingleOrDefaultAsync();
         
     }
     
