@@ -61,4 +61,14 @@ public class BookingRepository : IBookingRepository
         }
         return false;
     }
+    
+    public async Task<bool?> UpdateBookingAsync(BookingModel data)
+    {
+        _context.Bookings.Update(data);
+        if (await _context.SaveChangesAsync() > 0)
+        {
+            return  true;
+        }
+        return false;
+    }
 }

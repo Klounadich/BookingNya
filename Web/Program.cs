@@ -15,6 +15,9 @@ using DotNetCore.CAP;
 using InventoryModule.Handlers;
 using InventoryModule.Repositories;
 using InventoryModule.Services;
+using NotificationModule.Repositories;
+using NotificationModule.Services;
+using NotificationModule.Subscribers;
 using PaymentModule.Repositories;
 using PaymentModule.Services;
 using PaymentModule.Subscribers;
@@ -54,12 +57,16 @@ builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<Mock>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 //trasients:
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();
 builder.Services.AddTransient<RoomReservedSubscriber>();
 builder.Services.AddTransient<PaymentProcessSubscriber>();
 builder.Services.AddTransient<PaymentProcessedSubscriber>();
+builder.Services.AddTransient<ConfirmationSubscriber>();
+builder.Services.AddTransient<NotificationSentSubscriber>();
 //Others:
 builder.Services.AddMediatR(cfg =>
 {

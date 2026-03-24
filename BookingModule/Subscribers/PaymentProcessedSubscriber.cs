@@ -3,19 +3,22 @@ using DotNetCore.CAP;
 using Microsoft.AspNetCore.SignalR;
 using PaymentModule.Commands;
 using Shared.Enums;
+using NotificationModule.Commands;
 using Shared.SignalR;
 
 namespace BookingModule.Subscribers;
 
 public class PaymentProcessedSubscriber : ICapSubscribe
 {
+ private readonly ICapPublisher _capPublisher;
  private readonly IHubContext<SagaProcessHub> _hubContext;
  private readonly IBookingRepository  _bookingRepository;
 
- public PaymentProcessedSubscriber(IBookingRepository bookingRepository , IHubContext<SagaProcessHub> hubContext)
+ public PaymentProcessedSubscriber(IBookingRepository bookingRepository , IHubContext<SagaProcessHub> hubContext ,  ICapPublisher capPublisher)
  {
   _bookingRepository = bookingRepository;
   _hubContext = hubContext;
+  _capPublisher = capPublisher;
  }
  [CapSubscribe("payment.processed.event")]
  public async Task HandleAsync(PaymentProcessed command)
@@ -30,7 +33,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
     "Payment completed." 
    ); 
 
-   sagaState.status = SagaTypes.Completed;
+   sagaState.status = SagaTypes.Started;
    sagaState.current_step = "SendConfirmation";
    sagaState.last_updated_at = DateTime.UtcNow;
 
@@ -41,8 +44,8 @@ public class PaymentProcessedSubscriber : ICapSubscribe
      "Notification",  
      "Starting",    
      "Send notification." 
-    ); 
-   // await _capPublisher.PublishAsync("notification.send.confirmation.command", new SendConfirmationCommand(...
+    );
+    await _capPublisher.PublishAsync("notification.send.confirmation.command", new SendConfirmationCommand(command.SagaId ,command.booking_id,command.email));
    }
 
    

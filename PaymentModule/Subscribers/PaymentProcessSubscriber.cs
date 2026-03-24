@@ -21,12 +21,12 @@ public class PaymentProcessSubscriber : ICapSubscribe
         var result = await _paymentService.ProcessPaymentAsync(command);
         if (result.Status)
         {
-            await _capPublisher.PublishAsync("payment.processed.event", new PaymentProcessed(command.SagaId ,result.Error));
+            await _capPublisher.PublishAsync("payment.processed.event", new PaymentProcessed(command.SagaId ,command.CustomerEmail,command.BookingId,result.Error));
         }
         else
         {
            
-            await _capPublisher.PublishAsync("payment.failed.event", new PaymentProcessed(command.SagaId ,result.Error));
+            await _capPublisher.PublishAsync("payment.failed.event", new PaymentProcessed(command.SagaId, command.CustomerEmail , command.BookingId,result.Error));
         }
     }
 }

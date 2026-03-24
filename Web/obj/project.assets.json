@@ -1269,6 +1269,7 @@
           "MediatR.Extensions.Microsoft.DependencyInjection": "11.1.0",
           "Microsoft.AspNetCore.SignalR.Common": "10.0.1",
           "Microsoft.EntityFrameworkCore": "10.0.3",
+          "NotificationModule": "1.0.0",
           "Npgsql": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
           "PaymentModule": "1.0.0",
