@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using NotificationModule.Commands;
 using NotificationModule.Infrastructure;
 using NotificationModule.Models;
 using NotificationModule.Services;
@@ -21,5 +23,22 @@ public class NotificationRepository : INotificationRepository
         }
         return false;
         
+    }
+
+    public async Task<bool?> CheckCodeAsync(ConfirmCodeCommand data)
+    {
+        var codeFromDb = await _notificationDbContext.Notifications.Where(x => x.saga_id == data.SagaId && x.attempts <=3)
+            .Select(x => x.content).SingleAsync();
+        if (codeFromDb == data.ConfirmationCode)
+        {
+            return true;
+        }
+
+        var model =await _notificationDbContext.Notifications.Where(x => x.saga_id == data.SagaId)
+            .SingleOrDefaultAsync();
+        model.attempts++;
+         _notificationDbContext.Update(model);
+        await _notificationDbContext.SaveChangesAsync();
+        return false;
     }
 }

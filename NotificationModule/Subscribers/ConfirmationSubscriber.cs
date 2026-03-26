@@ -26,4 +26,14 @@ public class ConfirmationSubscriber : ICapSubscribe
             await _capPublisher.PublishAsync("notification.sent.event.failure", new ConfirmationSentCommand(command.saga_id));
         }
     }
+
+    [CapSubscribe("notification.confirm.event")]
+    public async Task Confirm(ConfirmCodeCommand data)
+    {
+        if (await _notificationService.ConfirmCode(data)==true)
+        {
+            await _capPublisher.PublishAsync("notification.confirm.success", data);
+        }
+        await _capPublisher.PublishAsync("notification.confirm.failure", data);
+    }
 }

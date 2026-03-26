@@ -1,3 +1,4 @@
+using BookingModule.Commands;
 using BookingModule.Infrastructure;
 using BookingModule.Models;
 using Microsoft.EntityFrameworkCore;
@@ -71,4 +72,6 @@ public class BookingRepository : IBookingRepository
         }
         return false;
     }
+
+    
 }

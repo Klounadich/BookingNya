@@ -24,7 +24,7 @@ public class NotificationService : INotificationService
             type = "confirmation",
             channel = "email",
             recipient = command.email,
-            content = $"Send confirmation {rand_confirm_number}",
+            content = rand_confirm_number,
             status = NotificationStatus.Delivered,
             
         };
@@ -33,5 +33,10 @@ public class NotificationService : INotificationService
             return true;
         }
         return false;
+    }
+
+    public async Task<bool?> ConfirmCode(ConfirmCodeCommand data)
+    {
+        return await _notificationRepository.CheckCodeAsync(data);
     }
 }

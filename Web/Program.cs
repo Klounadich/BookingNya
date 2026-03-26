@@ -67,6 +67,8 @@ builder.Services.AddTransient<PaymentProcessSubscriber>();
 builder.Services.AddTransient<PaymentProcessedSubscriber>();
 builder.Services.AddTransient<ConfirmationSubscriber>();
 builder.Services.AddTransient<NotificationSentSubscriber>();
+builder.Services.AddTransient<ConfirmationSubscriber>();
+builder.Services.AddTransient<NotificationConfrimSubscriber>();
 //Others:
 builder.Services.AddMediatR(cfg =>
 {

@@ -11,4 +11,6 @@ public interface IBookingRepository
     Task<bool?> UpdateSagaStateAsync (SagaStatesModel data);
     Task<bool?> UpdateBookingAsync(BookingModel booking);
     Task<BookingModel?> GetBookingBySagaIdAsync(Guid saga_id);
+    
+    
 }

@@ -31,30 +31,41 @@ public class NotificationSentSubscriber : ICapSubscribe
                 "Notification sent."
             );
 
-            sagaState.status = SagaTypes.Completed;
-            sagaState.current_step = "SendConfirmation";
+            sagaState.status = SagaTypes.Running;
+            sagaState.current_step = "WaitingConfirm";
             sagaState.last_updated_at = DateTime.UtcNow;
 
-            if (await _bookingRepository.UpdateSagaStateAsync(sagaState) == true)
-            {
-                var booking = await _bookingRepository.GetBookingBySagaIdAsync(command.SagaId);
-                if (booking != null)
-                {
-                    booking.status = BookingStatus.Completed;
-                    booking.updated_at = DateTime.UtcNow;
+            await _bookingRepository.UpdateSagaStateAsync(sagaState);
 
-                    if (await _bookingRepository.UpdateBookingAsync(booking)!= false)
-                    {
-                        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
-                            command.SagaId,
-                            "Booking",
-                            "Completed",
-                            $"Room {booking.room_id} has been received on period (data) ."
-                        );
-                    }
-                }
-            }
         }
 
     }
-}
+    
+    [CapSubscribe("notification.sent.event.failure")]
+    public async Task HandleFailedAsync(ConfirmationSentCommand command)
+    {
+        
+        var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+        if (sagaState != null)
+        {
+            await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
+                command.SagaId,
+                "Notification",
+                "Failed",
+                "Send Notification failed."
+            );
+
+            sagaState.status = SagaTypes.Failed;
+            sagaState.current_step = "SendConfirmation";
+            sagaState.last_updated_at = DateTime.UtcNow;
+
+
+            await _bookingRepository.UpdateSagaStateAsync(sagaState) ;
+
+
+
+        }
+            }
+        }
+
+    
