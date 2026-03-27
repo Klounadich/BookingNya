@@ -7,7 +7,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/Shared/Shared.csproj"/>
+        <ProjectReference Include="..\Shared\Shared.csproj"/>
+
     </ItemGroup>
 
     <ItemGroup>

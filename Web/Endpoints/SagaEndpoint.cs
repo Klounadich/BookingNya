@@ -1,6 +1,7 @@
 
 using BookingModule.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Shared.Enums;
 
 namespace BookingNya.Endpoints;
@@ -12,6 +13,7 @@ public static class SagaEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Booking");
         group.MapPost("/booking" ,BookSaga);
         group.MapGet("/booking/{sagaId}", SagaStatus);
+        group.MapPost("/booking/{sagaId}/confirm", ConfirmCode);
         group.MapPost("/booking/{sagaId}/retry" , BookSagaRetry);
         group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
@@ -39,9 +41,23 @@ public static class SagaEndpoint
                 });
             
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             
+            return Results.Problem( statusCode: 500);
+        }
+    }
+
+
+    public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMediator mediator)
+    {
+        try
+        {
+            await mediator.Send(data);
+            return Results.Accepted();
+        }
+        catch (Exception)
+        {
             return Results.Problem( statusCode: 500);
         }
     }

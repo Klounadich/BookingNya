@@ -11,11 +11,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/BookingModule/BookingModule.csproj" />
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/Shared/Shared.csproj" />
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/InventoryModule/InventoryModule.csproj" />
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/NotificationModule/NotificationModule.csproj" />
-        <ProjectReference Include="/home/klounadich/dev/BookingNya/PaymentModule/PaymentModule.csproj" />
+        <ProjectReference Include="..\BookingModule\BookingModule.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj" />
+        <ProjectReference Include="..\InventoryModule\InventoryModule.csproj" />
+        <ProjectReference Include="..\NotificationModule\NotificationModule.csproj" />
+        <ProjectReference Include="..\PaymentModule\PaymentModule.csproj" />
     </ItemGroup>
 
 

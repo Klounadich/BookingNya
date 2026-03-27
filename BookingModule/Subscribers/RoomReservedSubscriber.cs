@@ -35,7 +35,7 @@ public class RoomReservedSubscriber : ICapSubscribe
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
             if (booking!=null)
             {
-                sagaState.status = SagaTypes.Completed;
+                sagaState.status = SagaTypes.Running;
                 sagaState.current_step = "ProcessPayment";
                 sagaState.last_updated_at = DateTime.UtcNow;
                 

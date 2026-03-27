@@ -4,6 +4,7 @@ using BookingModule.Repositories;
 using InventoryModule.Commands;
 using Shared.Enums;
 using DotNetCore.CAP;
+using NotificationModule.Commands;
 
 namespace BookingModule.Services;
 
@@ -71,5 +72,14 @@ public class BookingService : IBookingService
         }
         return new StartSagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
     }
+
+    public async Task ConfirmCode(ConfirmationCodeCommand data)
+    {
+        await _capPublisher.PublishAsync("notification.confirm.event", new ConfirmCodeCommand(
+                data.SagaId,
+                data.Code)
+        );
+    }
+    
     }
     
