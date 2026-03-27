@@ -24,12 +24,7 @@ public class SagaStatusSubscriber : ICapSubscribe
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.saga_id);
         if (sagaState !=null)
         {
-            await _hubContext.Clients.Group(command.saga_id.ToString()).SendAsync("ReceiveSagaProgress",
-                command.saga_id, 
-                "ReserveRoom",  
-                "Started",    
-                "Starting Reservation." 
-            ); 
+            
 
             
             sagaState.status = SagaTypes.Running;
@@ -37,6 +32,12 @@ public class SagaStatusSubscriber : ICapSubscribe
             sagaState.last_updated_at = DateTime.UtcNow;
            
             await _bookingRepository.UpdateSagaStateAsync(sagaState);
+            await _hubContext.Clients.Group(command.saga_id.ToString()).SendAsync("ReceiveSagaProgress",
+                command.saga_id, 
+                "ReserveRoom",  
+                "Started",    
+                "Starting Reservation." 
+            ); 
          
         }
         else
