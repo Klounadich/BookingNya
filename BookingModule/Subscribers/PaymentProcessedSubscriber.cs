@@ -33,7 +33,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
     "Payment completed." 
    ); 
 
-   sagaState.status = SagaTypes.Started;
+   sagaState.status = SagaTypes.Running;
    sagaState.current_step = "SendConfirmation";
    sagaState.last_updated_at = DateTime.UtcNow;
 

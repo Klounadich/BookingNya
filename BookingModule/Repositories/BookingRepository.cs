@@ -55,22 +55,38 @@ public class BookingRepository : IBookingRepository
     
     public async Task<bool?> UpdateSagaStateAsync(SagaStatesModel data)
     {
-        _context.SagaStates.Update(data);
-        if (await _context.SaveChangesAsync() > 0)
+        try
         {
-            return  true;
+            _context.SagaStates.Update(data);
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
-        return false;
+        catch (Exception ex)
+        {
+            return false;
+        }
     }
     
     public async Task<bool?> UpdateBookingAsync(BookingModel data)
     {
-        _context.Bookings.Update(data);
-        if (await _context.SaveChangesAsync() > 0)
+        try
         {
-            return  true;
+            _context.Bookings.Update(data);
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
-        return false;
+        catch (Exception ex)
+        {
+            return false;
+        }
     }
 
     

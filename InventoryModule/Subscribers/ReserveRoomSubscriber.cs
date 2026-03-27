@@ -25,12 +25,12 @@ public class ReserveRoomSubscriber : ICapSubscribe
             command.sagaId, 
             DateTime.UtcNow
             ));
-            var reservationId = await _service.ReserveRoomAsync(command);
-            if (reservationId.reservaiton_id != Guid.Empty)
+            var reservation_id = await _service.ReserveRoomAsync(command);
+            if (reservation_id.reservaiton_id != Guid.Empty)
             {
                 await _capPublisher.PublishAsync("inventory.room.reserved.event", new RoomReservedEvent(
                     command.sagaId,
-                    reservationId.reservaiton_id,
+                    reservation_id.reservaiton_id,
                     command.roomId
 
                 ));
@@ -39,7 +39,7 @@ public class ReserveRoomSubscriber : ICapSubscribe
             {
                 await _capPublisher.PublishAsync("inventory.room.reserved.event.failed", new RoomReservedEvent(
                     command.sagaId,
-                    reservationId.reservaiton_id,
+                    reservation_id.reservaiton_id,
                     command.roomId
 
                 ));

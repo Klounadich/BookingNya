@@ -7,19 +7,19 @@ using Shared.SignalR;
 
 namespace BookingModule.Subscribers;
 
-public class NotificationConfrimSubscriber : ICapSubscribe
+public class NotificationConfirmSubscriber : ICapSubscribe
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IHubContext<SagaProcessHub> _hubContext;
 
-    public NotificationConfrimSubscriber(IBookingRepository bookingRepository, IHubContext<SagaProcessHub> hubContext)
+    public NotificationConfirmSubscriber(IBookingRepository bookingRepository, IHubContext<SagaProcessHub> hubContext)
     {
         _bookingRepository = bookingRepository;
         _hubContext = hubContext;
     }
 
     [CapSubscribe("notification.confirm.success")]
-    public async Task ConfrimSuccess(ConfirmCodeCommand data)
+    public async Task ConfirmSuccess(ConfirmCodeCommand data)
     {
 
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(data.SagaId);
@@ -44,7 +44,7 @@ public class NotificationConfrimSubscriber : ICapSubscribe
                             data.SagaId,
                             "Booking",
                             "Completed",
-                            $"Room {booking.room_id} has been received on period (data) ."
+                            $"Room {booking.room_id} has been received on period from {booking.check_in} to {booking.check_out} ."
                         );
                     }
                 }
@@ -53,7 +53,7 @@ public class NotificationConfrimSubscriber : ICapSubscribe
     }
 
     [CapSubscribe("notification.confirm.failure")]
-    public async Task ConfrimFailure(ConfirmCodeCommand data)
+    public async Task ConfirmFailure(ConfirmCodeCommand data)
     {
         {
         

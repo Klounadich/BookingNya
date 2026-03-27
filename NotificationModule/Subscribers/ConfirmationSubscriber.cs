@@ -30,10 +30,13 @@ public class ConfirmationSubscriber : ICapSubscribe
     [CapSubscribe("notification.confirm.event")]
     public async Task Confirm(ConfirmCodeCommand data)
     {
-        if (await _notificationService.ConfirmCode(data)==true)
+        if (await _notificationService.ConfirmCode(data) == true)
         {
             await _capPublisher.PublishAsync("notification.confirm.success", data);
         }
-        await _capPublisher.PublishAsync("notification.confirm.failure", data);
+        else
+        {
+            await _capPublisher.PublishAsync("notification.confirm.failure", data);
+        }
     }
 }

@@ -47,12 +47,8 @@ public class SagaStatusSubscriber : ICapSubscribe
                 "Failed",
                 "Reservation is Failed."
             );
+
             
-            sagaState.status = SagaTypes.Failed;
-            sagaState.current_step = "ReserveRoom";
-            sagaState.last_updated_at = DateTime.UtcNow;
-           
-            await _bookingRepository.UpdateSagaStateAsync(sagaState);
         }
     }
 }

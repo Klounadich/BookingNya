@@ -41,7 +41,7 @@ public static class SagaEndpoint
                 });
             
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             
             return Results.Problem( statusCode: 500);

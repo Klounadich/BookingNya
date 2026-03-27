@@ -67,8 +67,7 @@ builder.Services.AddTransient<PaymentProcessSubscriber>();
 builder.Services.AddTransient<PaymentProcessedSubscriber>();
 builder.Services.AddTransient<ConfirmationSubscriber>();
 builder.Services.AddTransient<NotificationSentSubscriber>();
-builder.Services.AddTransient<ConfirmationSubscriber>();
-builder.Services.AddTransient<NotificationConfrimSubscriber>();
+builder.Services.AddTransient<NotificationConfirmSubscriber>();
 //Others:
 builder.Services.AddMediatR(cfg =>
 {
@@ -97,8 +96,8 @@ builder.Services.AddCors(options =>
 });
 //  --------------------------------------------------------------------------------
 var app = builder.Build();
-app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
 app.UseCors();
+app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
 app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {

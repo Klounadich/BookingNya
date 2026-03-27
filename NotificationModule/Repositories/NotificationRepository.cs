@@ -28,7 +28,7 @@ public class NotificationRepository : INotificationRepository
     public async Task<bool?> CheckCodeAsync(ConfirmCodeCommand data)
     {
         var codeFromDb = await _notificationDbContext.Notifications.Where(x => x.saga_id == data.SagaId && x.attempts <=3)
-            .Select(x => x.content).SingleAsync();
+            .Select(x => x.content).SingleOrDefaultAsync();
         if (codeFromDb == data.ConfirmationCode)
         {
             return true;
@@ -36,6 +36,10 @@ public class NotificationRepository : INotificationRepository
 
         var model =await _notificationDbContext.Notifications.Where(x => x.saga_id == data.SagaId)
             .SingleOrDefaultAsync();
+        if (model == null)
+        {
+            return null;
+        }
         model.attempts++;
          _notificationDbContext.Update(model);
         await _notificationDbContext.SaveChangesAsync();
