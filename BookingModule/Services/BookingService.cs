@@ -80,6 +80,11 @@ public class BookingService : IBookingService
                 data.Code)
         );
     }
+
+    public async Task GetFreeRooms(Guid requestId)
+    {
+        await _capPublisher.PublishAsync("inventory.check.rooms",  requestId);
+    }
     
     }
     

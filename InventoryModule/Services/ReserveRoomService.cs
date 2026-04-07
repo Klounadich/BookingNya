@@ -37,4 +37,9 @@ public class ReserveRoomService: IReserveRoomService
         return new RoomReserveResult(Guid.Empty , "Room reservation failed");
         
     }
+
+    public async Task<FreeRoomsResponse> CheckFreeRoomsAsync(Guid RequestId)
+    {
+       return await _inventoryRepository.FreeRoomsAsync(RequestId);
+    }
 }
