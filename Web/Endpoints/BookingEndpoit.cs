@@ -16,12 +16,16 @@ public static class BookingEndpoit
     public async static Task<IResult> FreeRooms(IRequestTracker requestTracker , IBookingService service)
     {
         var requestId = Guid.NewGuid();
-        service.GetFreeRooms(requestId);
-        var response = await requestTracker.WaitForResponseAsync(requestId, TimeSpan.FromSeconds(3));
-        if (response is null)
+        
+        try
         {
-            return Results.Problem("Request timed out" , statusCode: 408);
+            var response = await requestTracker.WaitForResponseAsync(requestId, TimeSpan.FromSeconds(3));
+            service.GetFreeRooms(requestId);
+            return Results.Ok(response);
         }
-        return Results.Ok(response);
+        catch (TimeoutException)
+        {
+            return Results.Problem("Request timed out", statusCode: 408);
+        }
     }
 }

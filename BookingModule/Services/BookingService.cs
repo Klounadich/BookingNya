@@ -83,7 +83,7 @@ public class BookingService : IBookingService
 
     public async Task GetFreeRooms(Guid requestId)
     {
-        await _capPublisher.PublishAsync("inventory.check.rooms", requestId);
+        await _capPublisher.PublishAsync("inventory.check.rooms",  requestId);
     }
     
     }
