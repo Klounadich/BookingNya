@@ -18,6 +18,7 @@ using InventoryModule.Services;
 using NotificationModule.Repositories;
 using NotificationModule.Services;
 using NotificationModule.Subscribers;
+using Npgsql;
 using PaymentModule.Repositories;
 using PaymentModule.Services;
 using PaymentModule.Subscribers;
@@ -28,24 +29,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 // DB CONTEXT--------------------------------------------------------------
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.Configuration.GetConnectionString("BookingDBConnection"));
+dataSourceBuilder.EnableDynamicJson();
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<BookingDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("BookingDBConnection"),
-        b => b.MigrationsAssembly(typeof(BookingDbContext).Assembly.FullName)));
+    options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(BookingDbContext).Assembly.FullName)));
+
 builder.Services.AddDbContext<InventoryDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("BookingDBConnection"),
-        b => b.MigrationsAssembly(typeof(InventoryDbContext).Assembly.FullName)));
+    options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(InventoryDbContext).Assembly.FullName)));
 
 builder.Services.AddDbContext<NotificationDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("BookingDBConnection"),
-        b => b.MigrationsAssembly(typeof(NotificationDbContext).Assembly.FullName)));
+    options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(NotificationDbContext).Assembly.FullName)));
 
 builder.Services.AddDbContext<PaymentDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("BookingDBConnection"),
-        b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
+    options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
 //--------------------------------------------------------------
 
 //SERVICES ------------------------------------------------------------------
@@ -68,6 +66,10 @@ builder.Services.AddTransient<PaymentProcessedSubscriber>();
 builder.Services.AddTransient<ConfirmationSubscriber>();
 builder.Services.AddTransient<NotificationSentSubscriber>();
 builder.Services.AddTransient<NotificationConfirmSubscriber>();
+builder.Services.AddTransient<FreeRoomsSubscriber>();
+builder.Services.AddTransient<CheckRoomSubscriber>();
+//Singletones:
+builder.Services.AddSingleton<IRequestTracker, RequestTracker>();
 //Others:
 builder.Services.AddMediatR(cfg =>
 {
@@ -106,6 +108,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.MapSagaEndpont();
+app.MapBookingEndpont();
 
 
 app.Run();

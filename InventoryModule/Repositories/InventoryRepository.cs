@@ -1,7 +1,9 @@
 
+using InventoryModule.Commands;
 using InventoryModule.Infrastructure;
 using InventoryModule.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace InventoryModule.Repositories;
 
@@ -15,8 +17,8 @@ public class InventoryRepository: IInventoryRepository
     }
     public async Task<bool> IsRoomAvailableAsync(string roomId)
     {
-        var checkroom = await _context.RoomAvailabilities.Where(x => x.room_id == roomId).Select(x => x.is_available)
-            .SingleOrDefaultAsync();
+        
+        var checkroom = await _context.Rooms.Where(x => x.id == roomId).Select((x=> x.status == RoomStatus.Available)).FirstOrDefaultAsync();
         return checkroom;
     }
 
@@ -28,5 +30,30 @@ public class InventoryRepository: IInventoryRepository
             return true;
         }
         return false;
+    }
+
+    public async Task<FreeRoomsResponse> FreeRoomsAsync(Guid RequestId)
+    {
+       
+       var availableRooms = await _context.Rooms
+           .Where(x => x.status == RoomStatus.Available)
+           .Select(room => new FreeRoomsCommand(
+               room.id,
+               room.type,
+               room.capacity,
+               room.price_per_night,
+               room.floor,
+               room.description,
+               room.amenities
+           ))
+           .AsNoTracking()
+           .ToListAsync();
+        return new FreeRoomsResponse(
+            availableRooms,
+            availableRooms.Count,
+            DateTime.UtcNow,
+            RequestId
+            );
+
     }
 }
