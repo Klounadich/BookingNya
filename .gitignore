@@ -226,6 +226,12 @@ PublishScripts/
 csx/
 *.build.csdef
 
+# Ignore coderabbit configuration
+coderabbit.yaml
+
+# Ignore JetBrains Rider/IntelliJ IDEA project files
+.idea/
+
 # Microsoft Azure Emulator
 ecf/
 rcf/
