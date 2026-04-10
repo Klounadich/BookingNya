@@ -2136,6 +2136,10 @@
               "target": "Package",
               "version": "[10.0.2-preview-287480508, )"
             },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[12.1.1, )"
+            },
             "MediatR": {
               "target": "Package",
               "version": "[14.0.0, )"

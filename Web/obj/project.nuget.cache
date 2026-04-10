@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "cZQ+6J1U7rs=",
+  "dgSpecHash": "dDQi9udLmuc=",
   "success": true,
   "projectFilePath": "/home/klounadich/dev/BookingNya/Web/Web.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "/home/klounadich/.nuget/packages/dotnetcore.cap.inmemorystorage/10.0.2-preview-287480508/dotnetcore.cap.inmemorystorage.10.0.2-preview-287480508.nupkg.sha512",
     "/home/klounadich/.nuget/packages/dotnetcore.cap.postgresql/10.0.2-preview-287480508/dotnetcore.cap.postgresql.10.0.2-preview-287480508.nupkg.sha512",
     "/home/klounadich/.nuget/packages/dotnetcore.cap.rabbitmq/10.0.2-preview-287480508/dotnetcore.cap.rabbitmq.10.0.2-preview-287480508.nupkg.sha512",
+    "/home/klounadich/.nuget/packages/fluentvalidation/12.1.1/fluentvalidation.12.1.1.nupkg.sha512",
     "/home/klounadich/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/klounadich/.nuget/packages/mediatr/14.0.0/mediatr.14.0.0.nupkg.sha512",
     "/home/klounadich/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",

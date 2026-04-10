@@ -1,10 +1,11 @@
+using BookingModule.Commands;
 using BookingModule.Handlers;
 using BookingModule.Infrastructure;
 using BookingModule.Repositories;
 using BookingModule.Services;
 using BookingModule.Subscribers;
 using BookingNya.Endpoints;
-
+using BookingNya.Validators;
 using InventoryModule.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using NotificationModule.Infrastructure;
 using PaymentModule.Infrastructure;
 using Scalar.AspNetCore;
 using DotNetCore.CAP;
+using FluentValidation;
 using InventoryModule.Handlers;
 using InventoryModule.Repositories;
 using InventoryModule.Services;
@@ -57,6 +59,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<Mock>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IValidator<BookingRequestCommand>, BookingRequestValidator>();
 //trasients:
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();

@@ -431,7 +431,6 @@
                         errDiv.innerText = `Verification failed: ${errorMessage}`;
                         errDiv.classList.remove('hidden');
                     }
-                    // Also ensure UI is re-enabled for retry
                     enableCodeRetry();
                 }
             }
@@ -585,6 +584,23 @@
         document.getElementById('bookingFormModal').classList.remove('hidden');
     }
 
+    // Новая функция для извлечения сообщения об ошибке из HTTP-ответа (поддержка plain text и JSON)
+    async function extractErrorMessage(response) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                const json = await response.json();
+                return json.error || json.detail || json.message || JSON.stringify(json);
+            } catch (e) {
+                return 'Invalid JSON error response';
+            }
+        } else {
+            // plain text или другой формат
+            const text = await response.text();
+            return text || `Request failed with status ${response.status}`;
+        }
+    }
+
     async function submitBooking() {
         const roomId = document.getElementById('selectedRoomId').value;
         const guestName = document.getElementById('guestName').value.trim();
@@ -627,8 +643,9 @@
                 body: JSON.stringify(payload)
             });
             if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || errData.detail || 'Booking request failed');
+                // Пытаемся извлечь сообщение об ошибке (валидатор возвращает plain text или JSON)
+                const errorMessage = await extractErrorMessage(response);
+                throw new Error(errorMessage);
             }
             const result = await response.json();
             const sagaId = result.sagaId;
@@ -649,7 +666,8 @@
         const errDiv = document.getElementById('formModalError');
         errDiv.innerText = msg;
         errDiv.classList.remove('hidden');
-        setTimeout(() => errDiv.classList.add('hidden'), 5000);
+        // Автоматически скрыть через 7 секунд (длинные сообщения валидации)
+        setTimeout(() => errDiv.classList.add('hidden'), 7000);
     }
 
     function openSagaProgressModal(sagaId) {
@@ -693,7 +711,6 @@
         section.classList.remove('hidden');
         const codeInput = document.getElementById('sagaCodeInput');
         const verifyBtn = document.getElementById('submitSagaCodeBtn');
-        // Ensure input is enabled and cleared
         codeInput.disabled = false;
         codeInput.value = '';
         verifyBtn.disabled = false;
@@ -702,7 +719,6 @@
         const errDiv = document.getElementById('sagaCodeError');
         errDiv.classList.add('hidden');
         errDiv.innerText = '';
-        // Clear error on typing
         codeInput.oninput = () => {
             errDiv.classList.add('hidden');
             errDiv.innerText = '';
@@ -731,7 +747,6 @@
         const sagaId = pendingCodeSagaId || currentTrackingSagaId;
         if (!sagaId) return;
 
-        // Disable controls during request
         codeInput.disabled = true;
         verifyBtn.disabled = true;
         verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
@@ -744,24 +759,23 @@
             });
             if (response.ok) {
                 addSagaStepToModal('Verification', 'completed', 'Code confirmed successfully! Booking finalized.');
-                // Success: disable button permanently, keep input disabled (or leave it, but no need to re-verify)
                 verifyBtn.disabled = true;
                 verifyBtn.innerHTML = 'Verified ✓';
                 codeInput.disabled = true;
-                // Optionally hide code section? We'll keep it but disabled
             } else {
                 let errorMsg = 'Invalid confirmation code. Please try again.';
-                try { const errJson = await response.json(); errorMsg = errJson.error || errJson.detail || errorMsg; } catch(e) {}
+                try {
+                    const errorText = await extractErrorMessage(response);
+                    errorMsg = errorText;
+                } catch(e) {}
                 const errDiv = document.getElementById('sagaCodeError');
                 errDiv.innerText = errorMsg;
                 errDiv.classList.remove('hidden');
                 addSagaStepToModal('Verification', 'failed', errorMsg, true);
-                // Re-enable for retry
                 codeInput.disabled = false;
                 verifyBtn.disabled = false;
                 verifyBtn.innerHTML = 'Verify code';
                 codeInput.focus();
-                // Clear error on next input
                 codeInput.oninput = () => {
                     errDiv.classList.add('hidden');
                     errDiv.innerText = '';

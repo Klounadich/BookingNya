@@ -19,8 +19,9 @@ public static class BookingEndpoit
         
         try
         {
+            await service.GetFreeRooms(requestId);
             var response = await requestTracker.WaitForResponseAsync(requestId, TimeSpan.FromSeconds(3));
-            service.GetFreeRooms(requestId);
+            
             return Results.Ok(response);
         }
         catch (TimeoutException)

@@ -1,7 +1,8 @@
 
 using BookingModule.Commands;
+using BookingNya.Validators;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
+using FluentValidation;
 using Shared.Enums;
 
 namespace BookingNya.Endpoints;
@@ -11,45 +12,57 @@ public static class SagaEndpoint
     public static void MapSagaEndpont(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("api/").WithTags("Booking");
-        group.MapPost("/booking" ,BookSaga);
+        group.MapPost("/booking", BookSaga);
         group.MapGet("/booking/{sagaId}", SagaStatus);
         group.MapPost("/booking/{sagaId}/confirm", ConfirmCode);
-        group.MapPost("/booking/{sagaId}/retry" , BookSagaRetry);
+        group.MapPost("/booking/{sagaId}/retry", BookSagaRetry);
         group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
 
-    public async static Task<IResult> BookSaga(BookingRequestCommand data , IMediator mediator)
+    public async static Task<IResult> BookSaga(BookingRequestCommand data, IMediator mediator,
+        IValidator<BookingRequestCommand> validator)
     {
-        try
+        var validationResult = await validator.ValidateAsync(data);
+        if (validationResult.IsValid)
         {
-            var start = await mediator.Send(data);
-
-            if (start.Status == SagaTypes.Started || start.Status == SagaTypes.Running)
+            try
             {
-                
-                return Results.Ok( new
+                var start = await mediator.Send(data);
+
+                if (start.Status == SagaTypes.Started || start.Status == SagaTypes.Running)
                 {
-                    Message = "Booking saga initiated.",
-                    SagaId = start.SagaId,
-                    
-                });
-            }
+
+                    return Results.Ok(new
+                    {
+                        Message = "Booking saga initiated.",
+                        SagaId = start.SagaId,
+
+                    });
+                }
+
                 return Results.BadRequest(new
                 {
                     Error = "Failed to initiate booking saga.",
-                    Details = start.Message 
+                    Details = start.Message
                 });
-            
+
+            }
+            catch (Exception)
+            {
+
+                return Results.Problem(statusCode: 500);
+            }
         }
-        catch (Exception )
-        {
-            
-            return Results.Problem( statusCode: 500);
-        }
+
+        
+
+            var firsterror = validationResult.Errors.First().ErrorMessage;
+            return Results.BadRequest(firsterror);
+        
     }
 
 
-    public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMediator mediator)
+public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMediator mediator)
     {
         try
         {

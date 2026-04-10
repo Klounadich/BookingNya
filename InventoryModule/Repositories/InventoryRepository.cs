@@ -48,12 +48,13 @@ public class InventoryRepository: IInventoryRepository
            ))
            .AsNoTracking()
            .ToListAsync();
+       Console.WriteLine("FreeRooms not available");
         return new FreeRoomsResponse(
             availableRooms,
             availableRooms.Count,
             DateTime.UtcNow,
             RequestId
             );
-
+    
     }
 }

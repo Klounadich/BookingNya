@@ -71,6 +71,19 @@
           }
         }
       },
+      "FluentValidation/12.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/FluentValidation.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -1467,6 +1480,21 @@
         "lib/net8.0/DotNetCore.CAP.RabbitMQ.dll",
         "lib/net8.0/DotNetCore.CAP.RabbitMQ.pdb",
         "logo.png"
+      ]
+    },
+    "FluentValidation/12.1.1": {
+      "sha512": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw==",
+      "type": "package",
+      "path": "fluentvalidation/12.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "fluent-validation-icon.png",
+        "fluentvalidation.12.1.1.nupkg.sha512",
+        "fluentvalidation.nuspec",
+        "lib/net8.0/FluentValidation.dll",
+        "lib/net8.0/FluentValidation.xml"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -3794,6 +3822,7 @@
       "DotNetCore.CAP.InMemoryStorage >= 10.0.2-preview-287480508",
       "DotNetCore.CAP.PostgreSql >= 10.0.2-preview-287480508",
       "DotNetCore.CAP.RabbitMQ >= 10.0.2-preview-287480508",
+      "FluentValidation >= 12.1.1",
       "InventoryModule >= 1.0.0",
       "MediatR >= 14.0.0",
       "MediatR.Extensions.Microsoft.DependencyInjection >= 11.1.0",
@@ -3887,6 +3916,10 @@
           "DotNetCore.CAP.RabbitMQ": {
             "target": "Package",
             "version": "[10.0.2-preview-287480508, )"
+          },
+          "FluentValidation": {
+            "target": "Package",
+            "version": "[12.1.1, )"
           },
           "MediatR": {
             "target": "Package",
