@@ -21,8 +21,8 @@ public class BookingModel
     [Required] 
     public DateTime check_in { get; set; }
     [Required]
-    public DateTime check_out { get; set; } // проверка из csv
-    [Required ] // >0
+    public DateTime check_out { get; set; } 
+    [Required ] 
     public decimal total_price { get; set; }
 
     [Required]

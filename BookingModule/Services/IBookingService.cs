@@ -9,7 +9,7 @@ public interface IBookingService
     
     public Task ConfirmCode(ConfirmationCodeCommand data);
     
-    public Task GetFreeRooms(Guid requestId);
+    public Task GetFreeRooms(RoomFiltresCommand data , Guid requestId);
     
     
 }

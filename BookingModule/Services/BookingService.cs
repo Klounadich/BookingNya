@@ -81,9 +81,19 @@ public class BookingService : IBookingService
         );
     }
 
-    public async Task GetFreeRooms(Guid requestId)
+    public async Task GetFreeRooms(RoomFiltresCommand data , Guid requestId)
     {
-        await _capPublisher.PublishAsync("inventory.check.rooms",  requestId);
+        await _capPublisher.PublishAsync("inventory.check.rooms",  new RequestRoomFIltresCommand(
+            requestId,
+            data.From,
+            data.To,
+            data.room_class,
+            data.capacity,
+            data.minimal_price,
+            data.maximal_price,
+            data.floor,
+            data.amenities
+            ));
     }
     
     }

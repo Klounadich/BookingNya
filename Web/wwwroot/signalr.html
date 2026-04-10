@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>HotelBookPro | Smart Booking</title>
+    <title>HotelBookPro | Smart Booking with Filters</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -56,8 +56,99 @@
             border-radius: 40px;
             font-weight: 500;
         }
+
+        /* Filters Panel */
+        .filters-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin: 24px 0 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .filters-title {
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f3b4c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px 20px;
+            align-items: end;
+        }
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .filter-field label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #4f6f7f;
+        }
+        .filter-field input, .filter-field select {
+            padding: 10px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            background: #fafcfc;
+            transition: 0.15s;
+        }
+        .filter-field input:focus, .filter-field select:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+            outline: none;
+        }
+        .amenities-checkboxes {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 24px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px dashed #cddfe7;
+        }
+        .amenity-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1e3b4c;
+        }
+        .amenity-checkbox input {
+            width: 18px;
+            height: 18px;
+            accent-color: #4caf50;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1f3b4c;
+            border: 1px solid #cbd5e1;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
         .rooms-section {
-            margin: 32px 0 40px;
+            margin: 0 0 40px;
         }
         .section-title {
             font-size: 1.6rem;
@@ -257,9 +348,7 @@
             border-left: 4px solid #f44336;
         }
         .hidden { display: none; }
-        .saga-progress-container {
-            min-height: 200px;
-        }
+        .saga-progress-container { min-height: 200px; }
         .saga-step-item {
             padding: 12px;
             margin-bottom: 10px;
@@ -268,23 +357,10 @@
             border-left: 3px solid #4caf50;
             font-size: 0.85rem;
         }
-        .saga-step-loading {
-            border-left-color: #ff9800;
-            background: #fff8e7;
-        }
-        .saga-step-error {
-            border-left-color: #f44336;
-            background: #ffeaea;
-        }
-        .saga-step-success {
-            border-left-color: #4caf50;
-            background: #e8f5e9;
-        }
-        .code-input-group {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #e2e8f0;
-        }
+        .saga-step-loading { border-left-color: #ff9800; background: #fff8e7; }
+        .saga-step-error { border-left-color: #f44336; background: #ffeaea; }
+        .saga-step-success { border-left-color: #4caf50; background: #e8f5e9; }
+        .code-input-group { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
         .verification-code-input {
             text-align: center;
             letter-spacing: 4px;
@@ -314,6 +390,66 @@
 </header>
 
 <div class="container">
+    <!-- FILTERS SECTION -->
+    <div class="filters-panel">
+        <div class="filters-title"><i class="fas fa-sliders-h" style="color:#2e7d32;"></i> Refine your search</div>
+        <div class="filters-grid">
+            <div class="filter-field">
+                <label>Check-in</label>
+                <input type="date" id="filterFrom" placeholder="From">
+            </div>
+            <div class="filter-field">
+                <label>Check-out</label>
+                <input type="date" id="filterTo" placeholder="To">
+            </div>
+            <div class="filter-field">
+                <label>Room class</label>
+                <select id="filterRoomClass">
+                    <option value="">Any</option>
+                    <option value="Standard">Standard</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                    <option value="Family">Family</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label>Capacity (min)</label>
+                <input type="number" id="filterCapacity" min="1" placeholder="e.g., 2">
+            </div>
+            <div class="filter-field">
+                <label>Min price ($)</label>
+                <input type="number" id="filterMinPrice" step="0.01" placeholder="0">
+            </div>
+            <div class="filter-field">
+                <label>Max price ($)</label>
+                <input type="number" id="filterMaxPrice" step="0.01" placeholder="9999">
+            </div>
+            <div class="filter-field">
+                <label>Floor</label>
+                <input type="number" id="filterFloor" placeholder="Any floor">
+            </div>
+        </div>
+
+        <!-- Amenities checkboxes -->
+        <div class="amenities-checkboxes" id="amenitiesGroup">
+            Временно не работает
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="tv"> TV</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="wifi"> Wi‑Fi</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="minibar"> Minibar</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="bathrobe"> Bathrobe</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="slippers"> Slippers</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="coffee_machine"> Coffee machine</label>
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="air_conditioning"> A/C</label>
+            <!-- view не чекбокс, но если нужно, можно добавить select, но в задании было только true/false поля, поэтому оставим как галочку -->
+            <label class="amenity-checkbox"><input type="checkbox" data-amenity="view"> View (city)</label>
+        </div>
+
+        <div class="filter-actions">
+            <button id="resetFiltersBtn" class="btn-secondary"><i class="fas fa-undo-alt"></i> Reset</button>
+            <button id="applyFiltersBtn"><i class="fas fa-search"></i> Apply Filters</button>
+        </div>
+    </div>
+
     <div class="rooms-section">
         <div class="section-title">
             <span><i class="fas fa-door-open" style="color:#4caf50;"></i> Available rooms</span>
@@ -328,8 +464,9 @@
 
 <footer><div class="container">© 2026 HotelBookPro — instant booking with real-time confirmation</div></footer>
 
-<!-- BOOKING FORM MODAL -->
+<!-- BOOKING FORM MODAL (unchanged) -->
 <div id="bookingFormModal" class="modal-overlay hidden">
+    <!-- ... same as original ... -->
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-calendar-check"></i> Complete your reservation</h3>
@@ -356,7 +493,7 @@
     </div>
 </div>
 
-<!-- SAGA PROGRESS MODAL -->
+<!-- SAGA PROGRESS MODAL (unchanged) -->
 <div id="sagaProgressModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width: 550px;">
         <div class="modal-header">
@@ -393,96 +530,68 @@
     const connectionIndicator = document.getElementById('connectionIndicator');
     const roomsGrid = document.getElementById('roomsGrid');
     const refreshRoomsBtn = document.getElementById('refreshRoomsBtn');
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
 
-    function updateConnectionUI(connected) {
-        if (connected) {
-            connectionIndicator.innerHTML = '<i class="fas fa-circle" style="font-size: 0.7rem; color: #4caf50;"></i> live';
-            connectionIndicator.style.background = '#e8f5e9';
-            connectionIndicator.style.color = '#2e7d32';
-        } else {
-            connectionIndicator.innerHTML = '<i class="fas fa-circle" style="font-size: 0.7rem; color: #f44336;"></i> offline';
-            connectionIndicator.style.background = '#ffebee';
-            connectionIndicator.style.color = '#c62828';
-        }
-    }
+    // --- FILTER COLLECTION FUNCTION ---
+    function collectFilters() {
+        const from = document.getElementById('filterFrom').value;
+        const to = document.getElementById('filterTo').value;
+        const roomClass = document.getElementById('filterRoomClass').value;
+        const capacity = document.getElementById('filterCapacity').value;
+        const minPrice = document.getElementById('filterMinPrice').value;
+        const maxPrice = document.getElementById('filterMaxPrice').value;
+        const floor = document.getElementById('filterFloor').value;
 
-    async function initSignalR() {
-        if (connection) return;
-        connection = new signalR.HubConnectionBuilder()
-            .withUrl(SIGNALR_HUB_URL)
-            .withAutomaticReconnect([0, 2000, 5000, 10000])
-            .build();
-
-        connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
-            if (sagaId === currentTrackingSagaId && activeSagaModalOpen) {
-                addSagaStepToModal(step, status, message);
-                if (step === "Notification" && status?.toLowerCase() === "completed") {
-                    showCodeVerificationInModal(sagaId);
-                }
-            }
+        // Build amenities object from checkboxes
+        const amenities = {};
+        document.querySelectorAll('#amenitiesGroup input[type="checkbox"]').forEach(cb => {
+            const key = cb.getAttribute('data-amenity');
+            amenities[key] = cb.checked;
         });
 
-        connection.on("ReceiveSagaError", (sagaId, step, errorCode, errorMessage) => {
-            if (sagaId === currentTrackingSagaId && activeSagaModalOpen) {
-                addSagaStepToModal(step, `ERROR ${errorCode}`, errorMessage, true);
-                if (step === "Notification" && pendingCodeSagaId === sagaId) {
-                    const errDiv = document.getElementById('sagaCodeError');
-                    if (errDiv) {
-                        errDiv.innerText = `Verification failed: ${errorMessage}`;
-                        errDiv.classList.remove('hidden');
-                    }
-                    enableCodeRetry();
-                }
-            }
-        });
+        // Construct filter payload, omit empty/null fields
+        const payload = {};
+        if (from) payload.from = from;
+        if (to) payload.to = to;
+        if (roomClass) payload.room_class = roomClass;
+        if (capacity && !isNaN(parseInt(capacity))) payload.capacity = parseInt(capacity);
+        if (minPrice && !isNaN(parseFloat(minPrice))) payload.minimal_price = parseFloat(minPrice);
+        if (maxPrice && !isNaN(parseFloat(maxPrice))) payload.maximal_price = parseFloat(maxPrice);
+        if (floor && !isNaN(parseInt(floor))) payload.floor = parseInt(floor);
 
-        connection.onclose(() => {
-            isConnected = false;
-            updateConnectionUI(false);
-        });
-        connection.onreconnected(() => {
-            isConnected = true;
-            updateConnectionUI(true);
-            if (currentTrackingSagaId && activeSagaModalOpen) {
-                connection.invoke("JoinSagaGroup", currentTrackingSagaId).catch(e => console.warn);
-            }
-        });
+        // Only include amenities if at least one checked
+        const hasAmenities = Object.values(amenities).some(v => v === true);
+        if (hasAmenities) payload.amenities = amenities;
+
+        return payload;
     }
 
-    async function connectSignalR() {
-        if (isConnected) return;
-        try {
-            await initSignalR();
-            await connection.start();
-            isConnected = true;
-            updateConnectionUI(true);
-        } catch(err) {
-            updateConnectionUI(false);
-        }
+    // Reset filters to empty/default
+    function resetFilters() {
+        document.getElementById('filterFrom').value = '';
+        document.getElementById('filterTo').value = '';
+        document.getElementById('filterRoomClass').value = '';
+        document.getElementById('filterCapacity').value = '';
+        document.getElementById('filterMinPrice').value = '';
+        document.getElementById('filterMaxPrice').value = '';
+        document.getElementById('filterFloor').value = '';
+        document.querySelectorAll('#amenitiesGroup input[type="checkbox"]').forEach(cb => cb.checked = false);
     }
 
-    async function joinSagaGroup(sagaId) {
-        if (!isConnected) await connectSignalR();
-        if (currentTrackingSagaId && currentTrackingSagaId !== sagaId) {
-            try { if (connection) await connection.invoke("LeaveSagaGroup", currentTrackingSagaId); } catch(e) {}
-        }
-        try {
-            await connection.invoke("JoinSagaGroup", sagaId);
-            currentTrackingSagaId = sagaId;
-        } catch(err) {
-            console.error("Join group failed", err);
-        }
-    }
-
-    async function fetchFreeRooms() {
+    // --- FETCH ROOMS with filters ---
+    async function fetchFreeRooms(filters = {}) {
         roomsGrid.innerHTML = `<div class="room-card" style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-pulse"></i> Loading premium rooms...</div>`;
         try {
             const response = await fetch(`${API_BASE_URL}/api/hotel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
+                body: JSON.stringify(filters)
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) {
+                const errorText = await extractErrorMessage(response);
+                throw new Error(errorText || `HTTP ${response.status}`);
+            }
             const data = await response.json();
             let rooms = [];
             if (Array.isArray(data)) rooms = data;
@@ -499,10 +608,11 @@
             document.getElementById('roomsCountBadge').innerHTML = `${rooms.length} ${rooms.length === 1 ? 'room available' : 'rooms available'}`;
         } catch (err) {
             roomsGrid.innerHTML = `<div class="room-card" style="padding: 20px; text-align: center;">⚠️ Failed to load rooms: ${err.message}<br><button id="retryRoomsBtn" style="margin-top:12px;">Retry</button></div>`;
-            document.getElementById('retryRoomsBtn')?.addEventListener('click', fetchFreeRooms);
+            document.getElementById('retryRoomsBtn')?.addEventListener('click', () => fetchFreeRooms(collectFilters()));
         }
     }
 
+    // --- RENDER ROOMS (same as before) ---
     function renderRooms(rooms) {
         roomsGrid.innerHTML = '';
         rooms.forEach(room => {
@@ -548,7 +658,85 @@
 
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 
-    function openBookingFormModal(room) {
+    // --- EVENT LISTENERS FOR FILTERS ---
+    applyFiltersBtn.addEventListener('click', () => {
+        const filters = collectFilters();
+        fetchFreeRooms(filters);
+    });
+
+    resetFiltersBtn.addEventListener('click', () => {
+        resetFilters();
+        fetchFreeRooms({});  // empty object = default no filters
+    });
+
+    refreshRoomsBtn.addEventListener('click', () => {
+        // refresh with current filters (don't reset)
+        const filters = collectFilters();
+        fetchFreeRooms(filters);
+    });
+
+    // --- SIGNALR & BOOKING LOGIC (unchanged except helper extractErrorMessage) ---
+    function updateConnectionUI(connected) { /* same */
+        if (connected) {
+            connectionIndicator.innerHTML = '<i class="fas fa-circle" style="font-size: 0.7rem; color: #4caf50;"></i> live';
+            connectionIndicator.style.background = '#e8f5e9';
+            connectionIndicator.style.color = '#2e7d32';
+        } else {
+            connectionIndicator.innerHTML = '<i class="fas fa-circle" style="font-size: 0.7rem; color: #f44336;"></i> offline';
+            connectionIndicator.style.background = '#ffebee';
+            connectionIndicator.style.color = '#c62828';
+        }
+    }
+
+    async function initSignalR() { /* unchanged */
+        if (connection) return;
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(SIGNALR_HUB_URL)
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
+            .build();
+
+        connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
+            if (sagaId === currentTrackingSagaId && activeSagaModalOpen) {
+                addSagaStepToModal(step, status, message);
+                if (step === "Notification" && status?.toLowerCase() === "completed") {
+                    showCodeVerificationInModal(sagaId);
+                }
+            }
+        });
+
+        connection.on("ReceiveSagaError", (sagaId, step, errorCode, errorMessage) => {
+            if (sagaId === currentTrackingSagaId && activeSagaModalOpen) {
+                addSagaStepToModal(step, `ERROR ${errorCode}`, errorMessage, true);
+                if (step === "Notification" && pendingCodeSagaId === sagaId) {
+                    const errDiv = document.getElementById('sagaCodeError');
+                    if (errDiv) {
+                        errDiv.innerText = `Verification failed: ${errorMessage}`;
+                        errDiv.classList.remove('hidden');
+                    }
+                    enableCodeRetry();
+                }
+            }
+        });
+
+        connection.onclose(() => { isConnected = false; updateConnectionUI(false); });
+        connection.onreconnected(() => { isConnected = true; updateConnectionUI(true); if (currentTrackingSagaId && activeSagaModalOpen) { connection.invoke("JoinSagaGroup", currentTrackingSagaId).catch(e => console.warn); } });
+    }
+
+    async function connectSignalR() { if (isConnected) return; try { await initSignalR(); await connection.start(); isConnected = true; updateConnectionUI(true); } catch(err) { updateConnectionUI(false); } }
+    async function joinSagaGroup(sagaId) { if (!isConnected) await connectSignalR(); if (currentTrackingSagaId && currentTrackingSagaId !== sagaId) { try { if (connection) await connection.invoke("LeaveSagaGroup", currentTrackingSagaId); } catch(e) {} } try { await connection.invoke("JoinSagaGroup", sagaId); currentTrackingSagaId = sagaId; } catch(err) { console.error("Join group failed", err); } }
+
+    async function extractErrorMessage(response) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            try { const json = await response.json(); return json.error || json.detail || json.message || JSON.stringify(json); } catch (e) { return 'Invalid JSON error response'; }
+        } else {
+            const text = await response.text();
+            return text || `Request failed with status ${response.status}`;
+        }
+    }
+
+    // --- BOOKING SUBMIT (unchanged) ---
+    function openBookingFormModal(room) { /* same as original */
         document.getElementById('selectedRoomId').value = room.roomId;
         document.getElementById('selectedPricePerNight').value = room.pricePerNight;
         document.getElementById('bookingRoomInfo').innerHTML = `<strong>${room.roomId}</strong> (${room.type}) • $${room.pricePerNight}/night<br><small>${room.description || ''}</small>`;
@@ -561,10 +749,8 @@
         const today = new Date().toISOString().split('T')[0];
         const checkIn = document.getElementById('checkInDate');
         const checkOut = document.getElementById('checkOutDate');
-        checkIn.min = today;
-        checkOut.min = today;
-        checkIn.value = '';
-        checkOut.value = '';
+        checkIn.min = today; checkOut.min = today;
+        checkIn.value = ''; checkOut.value = '';
 
         const updateTotal = () => {
             const start = checkIn.value, end = checkOut.value;
@@ -580,25 +766,7 @@
         checkOut.removeEventListener('change', updateTotal);
         checkIn.addEventListener('change', updateTotal);
         checkOut.addEventListener('change', updateTotal);
-
         document.getElementById('bookingFormModal').classList.remove('hidden');
-    }
-
-    // Новая функция для извлечения сообщения об ошибке из HTTP-ответа (поддержка plain text и JSON)
-    async function extractErrorMessage(response) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            try {
-                const json = await response.json();
-                return json.error || json.detail || json.message || JSON.stringify(json);
-            } catch (e) {
-                return 'Invalid JSON error response';
-            }
-        } else {
-            // plain text или другой формат
-            const text = await response.text();
-            return text || `Request failed with status ${response.status}`;
-        }
     }
 
     async function submitBooking() {
@@ -612,24 +780,15 @@
         const paymentMethod = document.getElementById('paymentMethodSelect').value;
         const pricePerNight = parseFloat(document.getElementById('selectedPricePerNight').value);
 
-        if(!guestName || !guestEmail || !guestPhone || !checkIn || !checkOut) {
-            showFormError('Please fill all fields');
-            return;
-        }
+        if(!guestName || !guestEmail || !guestPhone || !checkIn || !checkOut) { showFormError('Please fill all fields'); return; }
         const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000*60*60*24));
         if (nights <= 0) { showFormError('Check-out must be after check-in'); return; }
         const totalPrice = pricePerNight * nights;
 
         const payload = {
-            room_id: roomId,
-            guest_name: guestName,
-            guest_email: guestEmail,
-            guest_phone: guestPhone,
-            check_in: new Date(checkIn).toISOString(),
-            check_out: new Date(checkOut).toISOString(),
-            total_price: totalPrice,
-            currency: currency,
-            payment_method: paymentMethod,
+            room_id: roomId, guest_name: guestName, guest_email: guestEmail, guest_phone: guestPhone,
+            check_in: new Date(checkIn).toISOString(), check_out: new Date(checkOut).toISOString(),
+            total_price: totalPrice, currency: currency, payment_method: paymentMethod,
             payment_reservation_id: `RES_${Date.now()}_${Math.floor(Math.random()*10000)}`
         };
 
@@ -642,11 +801,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) {
-                // Пытаемся извлечь сообщение об ошибке (валидатор возвращает plain text или JSON)
-                const errorMessage = await extractErrorMessage(response);
-                throw new Error(errorMessage);
-            }
+            if (!response.ok) { const errorMessage = await extractErrorMessage(response); throw new Error(errorMessage); }
             const result = await response.json();
             const sagaId = result.sagaId;
             if (!sagaId) throw new Error('No sagaId in response');
@@ -666,11 +821,10 @@
         const errDiv = document.getElementById('formModalError');
         errDiv.innerText = msg;
         errDiv.classList.remove('hidden');
-        // Автоматически скрыть через 7 секунд (длинные сообщения валидации)
         setTimeout(() => errDiv.classList.add('hidden'), 7000);
     }
 
-    function openSagaProgressModal(sagaId) {
+    function openSagaProgressModal(sagaId) { /* unchanged */
         const container = document.getElementById('sagaStepsContainer');
         container.innerHTML = '<div class="saga-step-item saga-step-loading">Initializing secure transaction...</div>';
         document.getElementById('codeVerificationSection').classList.add('hidden');
@@ -682,11 +836,9 @@
         verifyBtn.disabled = false;
         verifyBtn.innerHTML = 'Verify code';
         pendingCodeSagaId = null;
-
         activeSagaModalOpen = true;
         currentTrackingSagaId = sagaId;
         document.getElementById('sagaProgressModal').classList.remove('hidden');
-
         addSagaStepToModal('Booking', 'started', 'Saga initiated, waiting for server response...');
     }
 
@@ -697,7 +849,6 @@
         if (isError || status?.toLowerCase() === 'failed') statusClass = 'saga-step-error';
         else if (status?.toLowerCase() === 'running' || status?.toLowerCase() === 'started') statusClass = 'saga-step-loading';
         else statusClass = 'saga-step-success';
-
         stepDiv.className = `saga-step-item ${statusClass}`;
         const time = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
         stepDiv.innerHTML = `<strong>${step}</strong> ${status ? `[${status}]` : ''}<br>${message}<br><span style="font-size:0.7rem; color:#6c757d;">${time}</span>`;
@@ -711,27 +862,17 @@
         section.classList.remove('hidden');
         const codeInput = document.getElementById('sagaCodeInput');
         const verifyBtn = document.getElementById('submitSagaCodeBtn');
-        codeInput.disabled = false;
-        codeInput.value = '';
-        verifyBtn.disabled = false;
-        verifyBtn.innerHTML = 'Verify code';
+        codeInput.disabled = false; codeInput.value = ''; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
         codeInput.focus();
         const errDiv = document.getElementById('sagaCodeError');
-        errDiv.classList.add('hidden');
-        errDiv.innerText = '';
-        codeInput.oninput = () => {
-            errDiv.classList.add('hidden');
-            errDiv.innerText = '';
-        };
+        errDiv.classList.add('hidden'); errDiv.innerText = '';
+        codeInput.oninput = () => { errDiv.classList.add('hidden'); errDiv.innerText = ''; };
     }
 
     function enableCodeRetry() {
         const codeInput = document.getElementById('sagaCodeInput');
         const verifyBtn = document.getElementById('submitSagaCodeBtn');
-        codeInput.disabled = false;
-        verifyBtn.disabled = false;
-        verifyBtn.innerHTML = 'Verify code';
-        codeInput.focus();
+        codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code'; codeInput.focus();
     }
 
     async function submitSagaCode() {
@@ -747,47 +888,30 @@
         const sagaId = pendingCodeSagaId || currentTrackingSagaId;
         if (!sagaId) return;
 
-        codeInput.disabled = true;
-        verifyBtn.disabled = true;
-        verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
-
+        codeInput.disabled = true; verifyBtn.disabled = true; verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
         try {
             const response = await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sagaId: sagaId, code: code })
             });
             if (response.ok) {
                 addSagaStepToModal('Verification', 'completed', 'Code confirmed successfully! Booking finalized.');
-                verifyBtn.disabled = true;
-                verifyBtn.innerHTML = 'Verified ✓';
-                codeInput.disabled = true;
+                verifyBtn.disabled = true; verifyBtn.innerHTML = 'Verified ✓'; codeInput.disabled = true;
             } else {
                 let errorMsg = 'Invalid confirmation code. Please try again.';
-                try {
-                    const errorText = await extractErrorMessage(response);
-                    errorMsg = errorText;
-                } catch(e) {}
+                try { errorMsg = await extractErrorMessage(response); } catch(e) {}
                 const errDiv = document.getElementById('sagaCodeError');
-                errDiv.innerText = errorMsg;
-                errDiv.classList.remove('hidden');
+                errDiv.innerText = errorMsg; errDiv.classList.remove('hidden');
                 addSagaStepToModal('Verification', 'failed', errorMsg, true);
-                codeInput.disabled = false;
-                verifyBtn.disabled = false;
-                verifyBtn.innerHTML = 'Verify code';
+                codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
                 codeInput.focus();
-                codeInput.oninput = () => {
-                    errDiv.classList.add('hidden');
-                    errDiv.innerText = '';
-                };
+                codeInput.oninput = () => { errDiv.classList.add('hidden'); errDiv.innerText = ''; };
             }
         } catch (netErr) {
             const errDiv = document.getElementById('sagaCodeError');
             errDiv.innerText = `Network error: ${netErr.message}`;
             errDiv.classList.remove('hidden');
-            codeInput.disabled = false;
-            verifyBtn.disabled = false;
-            verifyBtn.innerHTML = 'Verify code';
+            codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
         }
     }
 
@@ -796,16 +920,17 @@
         document.getElementById('sagaProgressModal').classList.add('hidden');
     }
 
+    // Attach event listeners
     document.getElementById('submitBookingBtn').addEventListener('click', submitBooking);
     document.getElementById('cancelBookingFormBtn').addEventListener('click', () => document.getElementById('bookingFormModal').classList.add('hidden'));
     document.getElementById('closeBookingFormBtn').addEventListener('click', () => document.getElementById('bookingFormModal').classList.add('hidden'));
     document.getElementById('closeSagaModalBtn').addEventListener('click', closeSagaModal);
     document.getElementById('closeSagaProgressFooterBtn').addEventListener('click', closeSagaModal);
     document.getElementById('submitSagaCodeBtn').addEventListener('click', submitSagaCode);
-    refreshRoomsBtn.addEventListener('click', fetchFreeRooms);
 
+    // Initialize connection and fetch rooms with empty filters
     connectSignalR();
-    fetchFreeRooms();
+    fetchFreeRooms({});
 </script>
 </body>
 </html>

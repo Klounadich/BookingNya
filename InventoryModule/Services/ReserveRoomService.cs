@@ -38,8 +38,8 @@ public class ReserveRoomService: IReserveRoomService
         
     }
 
-    public async Task<FreeRoomsResponse> CheckFreeRoomsAsync(Guid RequestId)
+    public async Task<FreeRoomsResponse> CheckFreeRoomsAsync(RequestRoomFIltresCommand command)
     {
-       return await _inventoryRepository.FreeRoomsAsync(RequestId);
+       return await _inventoryRepository.FreeRoomsAsync(command);
     }
 }

@@ -111,7 +111,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.MapSagaEndpont();
-app.MapBookingEndpont();
+app.MapBookingEndpoint();
 
 
 app.Run();
