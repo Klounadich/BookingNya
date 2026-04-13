@@ -105,14 +105,22 @@
             box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
             outline: none;
         }
-        .amenities-checkboxes {
+        .amenities-section {
             grid-column: 1 / -1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px 24px;
             margin-top: 8px;
             padding-top: 6px;
             border-top: 1px dashed #cddfe7;
+        }
+        .amenities-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4f6f7f;
+            margin-bottom: 12px;
+        }
+        .amenities-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 24px;
         }
         .amenity-checkbox {
             display: flex;
@@ -126,6 +134,25 @@
             width: 18px;
             height: 18px;
             accent-color: #4caf50;
+        }
+        .view-select-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        .view-select-container label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4f6f7f;
+        }
+        .view-select-container select {
+            width: auto;
+            min-width: 120px;
+            padding: 6px 12px;
+            border-radius: 40px;
+            border: 1.5px solid #e2e8f0;
+            background: #fafcfc;
         }
         .filter-actions {
             display: flex;
@@ -430,18 +457,29 @@
             </div>
         </div>
 
-        <!-- Amenities checkboxes -->
-        <div class="amenities-checkboxes" id="amenitiesGroup">
-            Временно не работает
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="tv"> TV</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="wifi"> Wi‑Fi</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="minibar"> Minibar</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="bathrobe"> Bathrobe</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="slippers"> Slippers</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="coffee_machine"> Coffee machine</label>
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="air_conditioning"> A/C</label>
-            <!-- view не чекбокс, но если нужно, можно добавить select, но в задании было только true/false поля, поэтому оставим как галочку -->
-            <label class="amenity-checkbox"><input type="checkbox" data-amenity="view"> View (city)</label>
+        <!-- Amenities section -->
+        <div class="amenities-section">
+            <div class="amenities-title">Amenities</div>
+            <div class="amenities-checkboxes" id="amenitiesGroup">
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="tv"> TV</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="wifi"> Wi‑Fi</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="minibar"> Minibar</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="bathrobe"> Bathrobe</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="slippers"> Slippers</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="coffee_machine"> Coffee machine</label>
+                <label class="amenity-checkbox"><input type="checkbox" data-amenity="air_conditioning"> A/C</label>
+
+                <div class="view-select-container">
+                    <label>View:</label>
+                    <select id="filterView">
+                        <option value="">Any</option>
+                        <option value="city">City</option>
+                        <option value="sea">Sea</option>
+                        <option value="mountain">Mountain</option>
+                        <option value="garden">Garden</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="filter-actions">
@@ -464,9 +502,8 @@
 
 <footer><div class="container">© 2026 HotelBookPro — instant booking with real-time confirmation</div></footer>
 
-<!-- BOOKING FORM MODAL (unchanged) -->
+<!-- BOOKING FORM MODAL -->
 <div id="bookingFormModal" class="modal-overlay hidden">
-    <!-- ... same as original ... -->
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-calendar-check"></i> Complete your reservation</h3>
@@ -493,7 +530,7 @@
     </div>
 </div>
 
-<!-- SAGA PROGRESS MODAL (unchanged) -->
+<!-- SAGA PROGRESS MODAL -->
 <div id="sagaProgressModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width: 550px;">
         <div class="modal-header">
@@ -533,7 +570,7 @@
     const applyFiltersBtn = document.getElementById('applyFiltersBtn');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
 
-    // --- FILTER COLLECTION FUNCTION ---
+    // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ СБОРА ФИЛЬТРОВ ---
     function collectFilters() {
         const from = document.getElementById('filterFrom').value;
         const to = document.getElementById('filterTo').value;
@@ -542,15 +579,24 @@
         const minPrice = document.getElementById('filterMinPrice').value;
         const maxPrice = document.getElementById('filterMaxPrice').value;
         const floor = document.getElementById('filterFloor').value;
+        const viewSelect = document.getElementById('filterView').value;
 
-        // Build amenities object from checkboxes
+        // Собираем ТОЛЬКО отмеченные чекбоксы (true)
         const amenities = {};
-        document.querySelectorAll('#amenitiesGroup input[type="checkbox"]').forEach(cb => {
-            const key = cb.getAttribute('data-amenity');
-            amenities[key] = cb.checked;
+
+        // Булевые amenities - только если чекбокс отмечен
+        document.querySelectorAll('#amenitiesGroup input[type="checkbox"][data-amenity]').forEach(cb => {
+            if (cb.checked) {
+                amenities[cb.dataset.amenity] = true;
+            }
         });
 
-        // Construct filter payload, omit empty/null fields
+        // Добавляем view, если выбрано значение
+        if (viewSelect) {
+            amenities['view'] = viewSelect;
+        }
+
+        // Формируем payload
         const payload = {};
         if (from) payload.from = from;
         if (to) payload.to = to;
@@ -560,14 +606,17 @@
         if (maxPrice && !isNaN(parseFloat(maxPrice))) payload.maximal_price = parseFloat(maxPrice);
         if (floor && !isNaN(parseInt(floor))) payload.floor = parseInt(floor);
 
-        // Only include amenities if at least one checked
-        const hasAmenities = Object.values(amenities).some(v => v === true);
-        if (hasAmenities) payload.amenities = amenities;
+        // Добавляем amenities только если объект не пустой
+        if (Object.keys(amenities).length > 0) {
+            payload.amenities = amenities;
+        }
+
+        console.log('Filters payload:', payload); // Для отладки
 
         return payload;
     }
 
-    // Reset filters to empty/default
+    // Сброс фильтров
     function resetFilters() {
         document.getElementById('filterFrom').value = '';
         document.getElementById('filterTo').value = '';
@@ -576,6 +625,7 @@
         document.getElementById('filterMinPrice').value = '';
         document.getElementById('filterMaxPrice').value = '';
         document.getElementById('filterFloor').value = '';
+        document.getElementById('filterView').value = '';
         document.querySelectorAll('#amenitiesGroup input[type="checkbox"]').forEach(cb => cb.checked = false);
     }
 
@@ -600,7 +650,7 @@
             else throw new Error("Invalid rooms data format");
 
             if (!rooms.length) {
-                roomsGrid.innerHTML = `<div class="room-card" style="padding: 20px; text-align: center;">No free rooms available</div>`;
+                roomsGrid.innerHTML = `<div class="room-card" style="padding: 20px; text-align: center;">No free rooms available with selected filters</div>`;
                 document.getElementById('roomsCountBadge').innerText = '';
                 return;
             }
@@ -612,21 +662,26 @@
         }
     }
 
-    // --- RENDER ROOMS (same as before) ---
+    // --- RENDER ROOMS ---
     function renderRooms(rooms) {
         roomsGrid.innerHTML = '';
         rooms.forEach(room => {
             const card = document.createElement('div');
             card.className = 'room-card';
-            const roomId = room.roomId || room.room_id || 'N/A';
+            const roomId = room.roomId || room.room_id || room.id || 'N/A';
             const roomType = room.type || 'Standard';
             const capacity = room.capacity || 2;
             const floor = room.floor ?? '—';
             const pricePerNight = room.price_per_night || room.pricePerNight || 0;
             const description = room.description || 'Comfortable and modern space';
             const amenitiesObj = room.amenities || {};
-            const amenityList = Object.entries(amenitiesObj).filter(([,v]) => v===true).map(([k]) => k).slice(0,4);
-            const amenitiesHtml = amenityList.map(a => `<span class="amenity-tag">${escapeHtml(a)}</span>`).join('') || '<span class="amenity-tag">standard</span>';
+            const amenityList = Object.entries(amenitiesObj)
+                .filter(([,v]) => v === true || (typeof v === 'string' && v))
+                .map(([k]) => k)
+                .slice(0, 4);
+            const amenitiesHtml = amenityList.length
+                ? amenityList.map(a => `<span class="amenity-tag">${escapeHtml(a)}</span>`).join('')
+                : '<span class="amenity-tag">standard</span>';
 
             card.innerHTML = `
                 <div class="room-img-placeholder"><i class="fas fa-bed fa-3x"></i></div>
@@ -656,9 +711,11 @@
         });
     }
 
-    function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
 
-    // --- EVENT LISTENERS FOR FILTERS ---
+    // --- EVENT LISTENERS ---
     applyFiltersBtn.addEventListener('click', () => {
         const filters = collectFilters();
         fetchFreeRooms(filters);
@@ -666,17 +723,16 @@
 
     resetFiltersBtn.addEventListener('click', () => {
         resetFilters();
-        fetchFreeRooms({});  // empty object = default no filters
+        fetchFreeRooms({});
     });
 
     refreshRoomsBtn.addEventListener('click', () => {
-        // refresh with current filters (don't reset)
         const filters = collectFilters();
         fetchFreeRooms(filters);
     });
 
-    // --- SIGNALR & BOOKING LOGIC (unchanged except helper extractErrorMessage) ---
-    function updateConnectionUI(connected) { /* same */
+    // --- SIGNALR & BOOKING LOGIC (без изменений) ---
+    function updateConnectionUI(connected) {
         if (connected) {
             connectionIndicator.innerHTML = '<i class="fas fa-circle" style="font-size: 0.7rem; color: #4caf50;"></i> live';
             connectionIndicator.style.background = '#e8f5e9';
@@ -688,7 +744,7 @@
         }
     }
 
-    async function initSignalR() { /* unchanged */
+    async function initSignalR() {
         if (connection) return;
         connection = new signalR.HubConnectionBuilder()
             .withUrl(SIGNALR_HUB_URL)
@@ -719,24 +775,56 @@
         });
 
         connection.onclose(() => { isConnected = false; updateConnectionUI(false); });
-        connection.onreconnected(() => { isConnected = true; updateConnectionUI(true); if (currentTrackingSagaId && activeSagaModalOpen) { connection.invoke("JoinSagaGroup", currentTrackingSagaId).catch(e => console.warn); } });
+        connection.onreconnected(() => {
+            isConnected = true;
+            updateConnectionUI(true);
+            if (currentTrackingSagaId && activeSagaModalOpen) {
+                connection.invoke("JoinSagaGroup", currentTrackingSagaId).catch(e => console.warn);
+            }
+        });
     }
 
-    async function connectSignalR() { if (isConnected) return; try { await initSignalR(); await connection.start(); isConnected = true; updateConnectionUI(true); } catch(err) { updateConnectionUI(false); } }
-    async function joinSagaGroup(sagaId) { if (!isConnected) await connectSignalR(); if (currentTrackingSagaId && currentTrackingSagaId !== sagaId) { try { if (connection) await connection.invoke("LeaveSagaGroup", currentTrackingSagaId); } catch(e) {} } try { await connection.invoke("JoinSagaGroup", sagaId); currentTrackingSagaId = sagaId; } catch(err) { console.error("Join group failed", err); } }
+    async function connectSignalR() {
+        if (isConnected) return;
+        try {
+            await initSignalR();
+            await connection.start();
+            isConnected = true;
+            updateConnectionUI(true);
+        } catch(err) {
+            updateConnectionUI(false);
+        }
+    }
+
+    async function joinSagaGroup(sagaId) {
+        if (!isConnected) await connectSignalR();
+        if (currentTrackingSagaId && currentTrackingSagaId !== sagaId) {
+            try { if (connection) await connection.invoke("LeaveSagaGroup", currentTrackingSagaId); } catch(e) {}
+        }
+        try {
+            await connection.invoke("JoinSagaGroup", sagaId);
+            currentTrackingSagaId = sagaId;
+        } catch(err) {
+            console.error("Join group failed", err);
+        }
+    }
 
     async function extractErrorMessage(response) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
-            try { const json = await response.json(); return json.error || json.detail || json.message || JSON.stringify(json); } catch (e) { return 'Invalid JSON error response'; }
+            try {
+                const json = await response.json();
+                return json.error || json.detail || json.message || JSON.stringify(json);
+            } catch (e) {
+                return 'Invalid JSON error response';
+            }
         } else {
             const text = await response.text();
             return text || `Request failed with status ${response.status}`;
         }
     }
 
-    // --- BOOKING SUBMIT (unchanged) ---
-    function openBookingFormModal(room) { /* same as original */
+    function openBookingFormModal(room) {
         document.getElementById('selectedRoomId').value = room.roomId;
         document.getElementById('selectedPricePerNight').value = room.pricePerNight;
         document.getElementById('bookingRoomInfo').innerHTML = `<strong>${room.roomId}</strong> (${room.type}) • $${room.pricePerNight}/night<br><small>${room.description || ''}</small>`;
@@ -780,15 +868,27 @@
         const paymentMethod = document.getElementById('paymentMethodSelect').value;
         const pricePerNight = parseFloat(document.getElementById('selectedPricePerNight').value);
 
-        if(!guestName || !guestEmail || !guestPhone || !checkIn || !checkOut) { showFormError('Please fill all fields'); return; }
+        if(!guestName || !guestEmail || !guestPhone || !checkIn || !checkOut) {
+            showFormError('Please fill all fields');
+            return;
+        }
         const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000*60*60*24));
-        if (nights <= 0) { showFormError('Check-out must be after check-in'); return; }
+        if (nights <= 0) {
+            showFormError('Check-out must be after check-in');
+            return;
+        }
         const totalPrice = pricePerNight * nights;
 
         const payload = {
-            room_id: roomId, guest_name: guestName, guest_email: guestEmail, guest_phone: guestPhone,
-            check_in: new Date(checkIn).toISOString(), check_out: new Date(checkOut).toISOString(),
-            total_price: totalPrice, currency: currency, payment_method: paymentMethod,
+            room_id: roomId,
+            guest_name: guestName,
+            guest_email: guestEmail,
+            guest_phone: guestPhone,
+            check_in: new Date(checkIn).toISOString(),
+            check_out: new Date(checkOut).toISOString(),
+            total_price: totalPrice,
+            currency: currency,
+            payment_method: paymentMethod,
             payment_reservation_id: `RES_${Date.now()}_${Math.floor(Math.random()*10000)}`
         };
 
@@ -801,7 +901,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) { const errorMessage = await extractErrorMessage(response); throw new Error(errorMessage); }
+            if (!response.ok) {
+                const errorMessage = await extractErrorMessage(response);
+                throw new Error(errorMessage);
+            }
             const result = await response.json();
             const sagaId = result.sagaId;
             if (!sagaId) throw new Error('No sagaId in response');
@@ -824,7 +927,7 @@
         setTimeout(() => errDiv.classList.add('hidden'), 7000);
     }
 
-    function openSagaProgressModal(sagaId) { /* unchanged */
+    function openSagaProgressModal(sagaId) {
         const container = document.getElementById('sagaStepsContainer');
         container.innerHTML = '<div class="saga-step-item saga-step-loading">Initializing secure transaction...</div>';
         document.getElementById('codeVerificationSection').classList.add('hidden');
@@ -862,17 +965,27 @@
         section.classList.remove('hidden');
         const codeInput = document.getElementById('sagaCodeInput');
         const verifyBtn = document.getElementById('submitSagaCodeBtn');
-        codeInput.disabled = false; codeInput.value = ''; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
+        codeInput.disabled = false;
+        codeInput.value = '';
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = 'Verify code';
         codeInput.focus();
         const errDiv = document.getElementById('sagaCodeError');
-        errDiv.classList.add('hidden'); errDiv.innerText = '';
-        codeInput.oninput = () => { errDiv.classList.add('hidden'); errDiv.innerText = ''; };
+        errDiv.classList.add('hidden');
+        errDiv.innerText = '';
+        codeInput.oninput = () => {
+            errDiv.classList.add('hidden');
+            errDiv.innerText = '';
+        };
     }
 
     function enableCodeRetry() {
         const codeInput = document.getElementById('sagaCodeInput');
         const verifyBtn = document.getElementById('submitSagaCodeBtn');
-        codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code'; codeInput.focus();
+        codeInput.disabled = false;
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = 'Verify code';
+        codeInput.focus();
     }
 
     async function submitSagaCode() {
@@ -888,30 +1001,43 @@
         const sagaId = pendingCodeSagaId || currentTrackingSagaId;
         if (!sagaId) return;
 
-        codeInput.disabled = true; verifyBtn.disabled = true; verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
+        codeInput.disabled = true;
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
         try {
             const response = await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sagaId: sagaId, code: code })
             });
             if (response.ok) {
                 addSagaStepToModal('Verification', 'completed', 'Code confirmed successfully! Booking finalized.');
-                verifyBtn.disabled = true; verifyBtn.innerHTML = 'Verified ✓'; codeInput.disabled = true;
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = 'Verified ✓';
+                codeInput.disabled = true;
             } else {
                 let errorMsg = 'Invalid confirmation code. Please try again.';
                 try { errorMsg = await extractErrorMessage(response); } catch(e) {}
                 const errDiv = document.getElementById('sagaCodeError');
-                errDiv.innerText = errorMsg; errDiv.classList.remove('hidden');
+                errDiv.innerText = errorMsg;
+                errDiv.classList.remove('hidden');
                 addSagaStepToModal('Verification', 'failed', errorMsg, true);
-                codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
+                codeInput.disabled = false;
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verify code';
                 codeInput.focus();
-                codeInput.oninput = () => { errDiv.classList.add('hidden'); errDiv.innerText = ''; };
+                codeInput.oninput = () => {
+                    errDiv.classList.add('hidden');
+                    errDiv.innerText = '';
+                };
             }
         } catch (netErr) {
             const errDiv = document.getElementById('sagaCodeError');
             errDiv.innerText = `Network error: ${netErr.message}`;
             errDiv.classList.remove('hidden');
-            codeInput.disabled = false; verifyBtn.disabled = false; verifyBtn.innerHTML = 'Verify code';
+            codeInput.disabled = false;
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = 'Verify code';
         }
     }
 

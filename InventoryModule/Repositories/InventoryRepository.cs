@@ -1,9 +1,9 @@
+using System.Text.Json;
 using InventoryModule.Commands;
 using InventoryModule.Infrastructure;
 using InventoryModule.Models;
 using Microsoft.EntityFrameworkCore;
 using Shared.Enums;
-
 namespace InventoryModule.Repositories;
 
 public class InventoryRepository : IInventoryRepository
@@ -17,57 +17,75 @@ public class InventoryRepository : IInventoryRepository
 
     public async Task<bool> IsRoomAvailableAsync(string roomId)
     {
-
-        var checkroom = await _context.Rooms.Where(x => x.id == roomId).Select((x => x.status == RoomStatus.Available))
+        var checkroom = await _context.Rooms
+            .Where(x => x.id == roomId)
+            .Select(x => x.status == RoomStatus.Available)
             .FirstOrDefaultAsync();
         return checkroom;
     }
 
     public async Task<bool> ReserveRoomAsync(RoomReservationModel data)
     {
-        _context.RoomReservations.Add(data);
-        if (await _context.SaveChangesAsync() > 0)
-        {
-            return true;
-        }
+        
+       await _context.RoomReservations.AddAsync(data);
+       var utcNow = DateTime.UtcNow;
+       if (data.check_in == utcNow.Date)
+       {
+           var room = await _context.Rooms.FirstAsync(x => x.id == data.room_id);
+           room.status = RoomStatus.Occupied;
+           _context.Rooms.Update(room);
+       }
 
-        return false;
+       return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<FreeRoomsResponse> FreeRoomsAsync(RequestRoomFIltresCommand command)
+       public async Task<FreeRoomsResponse> FreeRoomsAsync(RequestRoomFIltresCommand command)
     {
+       
+        
+        var query = _context.Rooms.AsQueryable();
 
-        var query = _context.Rooms.Where(x => x.status == RoomStatus.Available);
+        bool isDateSearch = command.From.HasValue && command.To.HasValue;
 
-
-        if (!string.IsNullOrEmpty(command.room_class))
+        if (isDateSearch)
         {
-            query = query.Where(x => x.type == command.room_class);
+            
         }
+        else
+        {
+            query = query.Where(x => x.status == RoomStatus.Available);
+        }
+
+        if (isDateSearch)
+        {
+            var checkInUtc = DateTime.SpecifyKind(command.From.Value.Date, DateTimeKind.Utc);
+            
+            var checkOutUtc = DateTime.SpecifyKind(command.To.Value.Date, DateTimeKind.Utc);
+
+            query = query.Where(room => 
+                !_context.RoomReservations.Any(reservation => 
+                    reservation.room_id == room.id &&
+                    
+                    reservation.check_in < checkOutUtc &&
+                    reservation.check_out > checkInUtc
+                )
+            );
+        }
+        
+        if (!string.IsNullOrEmpty(command.room_class))
+            query = query.Where(x => x.type == command.room_class);
 
         if (command.capacity.HasValue)
-        {
-            var capacity = command.capacity.Value;
-            query = query.Where(x => x.capacity == capacity);
-        }
+            query = query.Where(x => x.capacity == command.capacity.Value);
 
         if (command.minimal_price.HasValue)
-        {
-            var minPrice = command.minimal_price.Value;
-            query = query.Where(x => x.price_per_night >= minPrice);
-        }
+            query = query.Where(x => x.price_per_night >= command.minimal_price.Value);
 
         if (command.maximal_price.HasValue)
-        {
-            var maxPrice = command.maximal_price.Value;
-            query = query.Where(x => x.price_per_night <= maxPrice);
-        }
+            query = query.Where(x => x.price_per_night <= command.maximal_price.Value);
 
         if (command.floor.HasValue)
-        {
-            var floor = command.floor.Value;
-            query = query.Where(x => x.floor == floor);
-        }
+            query = query.Where(x => x.floor == command.floor.Value);
 
         if (command.amenities != null && command.amenities.Any())
         {
@@ -76,19 +94,26 @@ public class InventoryRepository : IInventoryRepository
                 var key = amenity.Key;
                 var value = amenity.Value;
 
-                if (value is bool boolValue)
+                if (value is JsonElement jsonElement)
                 {
-                    var searchString = $"\"{key}\":{boolValue.ToString().ToLower()}";
-                    query = query.Where(x => 
-                        EF.Property<string>(x, "amenities") != null &&
-                        EF.Property<string>(x, "amenities").ToString().Contains(searchString));
-                }
-                else if (value is string stringValue)
-                {
-                    var searchString = $"\"{key}\":\"{stringValue}\"";
-                    query = query.Where(x => 
-                        EF.Property<string>(x, "amenities") != null &&
-                        EF.Property<string>(x, "amenities").ToString().Contains(searchString));
+                    if (jsonElement.ValueKind == JsonValueKind.True)
+                    {
+                        var jsonFilter = $"{{\"{key}\":true}}";
+                        query = query.Where(x => EF.Functions.JsonContains(x.amenities, jsonFilter));
+                    }
+                    else if (jsonElement.ValueKind == JsonValueKind.False)
+                    {
+                        var jsonFilter = $"{{\"{key}\":true}}";
+                        query = query.Where(x => !EF.Functions.JsonContains(x.amenities, jsonFilter));
+                    }
+                    else if (jsonElement.ValueKind == JsonValueKind.String)
+                    {
+                        var stringValue = jsonElement.GetString();
+                       
+                        var safeValue = JsonSerializer.Serialize(stringValue);
+                        var jsonFilter = $"{{\"{key}\":{safeValue}}}";
+                        query = query.Where(x => EF.Functions.JsonContains(x.amenities, jsonFilter));
+                    }
                 }
             }
         }
