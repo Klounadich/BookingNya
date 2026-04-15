@@ -51,4 +51,10 @@ public class ReserveRoomSubscriber : ICapSubscribe
 
 
     }
+
+    [CapSubscribe("inventory.callback.room.reserve")]
+    public async Task CallbackReserveRoom(Guid sagaId)
+    {
+        await _service.CallbackReserve(sagaId);
+    }
 }

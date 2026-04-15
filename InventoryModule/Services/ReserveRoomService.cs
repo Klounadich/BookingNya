@@ -42,4 +42,9 @@ public class ReserveRoomService: IReserveRoomService
     {
        return await _inventoryRepository.FreeRoomsAsync(command);
     }
+
+    public async Task<bool> CallbackReserve(Guid sagaId)
+    {
+        return await _inventoryRepository.CallbackReserve(sagaId);
+    }
 }

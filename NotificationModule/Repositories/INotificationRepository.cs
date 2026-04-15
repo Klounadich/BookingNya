@@ -7,5 +7,5 @@ public interface INotificationRepository
 {
     public Task<bool> AddAsync(NotificationModel notification);
     
-    Task<bool?>CheckCodeAsync(ConfirmCodeCommand data);
+    Task<(bool?,int?)>CheckCodeAsync(ConfirmCodeCommand data);
 }

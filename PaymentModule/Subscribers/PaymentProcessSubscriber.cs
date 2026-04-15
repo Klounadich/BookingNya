@@ -40,4 +40,6 @@ public class PaymentProcessSubscriber : ICapSubscribe
                     command.BookingId, ex.Message));
         }
     }
+
+    
 }

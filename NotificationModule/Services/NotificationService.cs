@@ -35,7 +35,7 @@ public class NotificationService : INotificationService
         return false;
     }
 
-    public async Task<bool?> ConfirmCode(ConfirmCodeCommand data)
+    public async Task<(bool?,int?)> ConfirmCode(ConfirmCodeCommand data)
     {
         return await _notificationRepository.CheckCodeAsync(data);
     }

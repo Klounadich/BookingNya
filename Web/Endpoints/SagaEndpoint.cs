@@ -66,11 +66,13 @@ public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMed
     {
         try
         {
+           
             await mediator.Send(data);
             return Results.Accepted();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            
             return Results.Problem( statusCode: 500);
         }
     }

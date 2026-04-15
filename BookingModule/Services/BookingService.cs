@@ -77,7 +77,7 @@ public class BookingService : IBookingService
     {
         await _capPublisher.PublishAsync("notification.confirm.event", new ConfirmCodeCommand(
                 data.SagaId,
-                data.Code)
+                data.Code,0)
         );
     }
 
@@ -95,6 +95,11 @@ public class BookingService : IBookingService
             data.amenities
             ));
     }
-    
+
+    public async Task RollBack(Guid sagaId)
+    {
+        await _capPublisher.PublishAsync("inventory.callback.room.reserve", sagaId);
+        
     }
+}
     

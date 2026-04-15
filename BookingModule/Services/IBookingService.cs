@@ -11,5 +11,7 @@ public interface IBookingService
     
     public Task GetFreeRooms(RoomFiltresCommand data , Guid requestId);
     
+    public Task RollBack(Guid sagaId);
+    
     
 }
