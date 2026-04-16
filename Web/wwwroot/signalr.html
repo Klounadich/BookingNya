@@ -239,7 +239,7 @@
     </div>
 </div>
 
-<!-- SAGA PROGRESS MODAL (ИСПРАВЛЕНА ЛОГИКА) -->
+<!-- SAGA PROGRESS MODAL -->
 <div id="sagaProgressModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-spinner fa-pulse"></i> Processing</h3><button class="btn-modal-close" id="closeSagaModalBtn">✕</button></div>
@@ -285,7 +285,7 @@
         let currentSagaPercent = 0;
         let currentRooms = [], currentSort = 'none';
         let currentBookingData = null;
-        let isBookingSuccess = false; // блокируем повторные попытки после успеха
+        let isBookingSuccess = false;
 
         const connectionIndicator = document.getElementById('connectionIndicator');
         const roomsGrid = document.getElementById('roomsGrid');
@@ -437,27 +437,36 @@
         async function initSignalR() {
             if(connection) return;
             connection = new signalR.HubConnectionBuilder().withUrl(SIGNALR_HUB_URL).withAutomaticReconnect().build();
+
+            // === ОБРАБОТКА ReceiveSagaProgress ===
             connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
                 if(sagaId === currentTrackingSagaId && activeSagaModalOpen && !isBookingSuccess) {
+                    // === УСПЕШНОЕ ЗАВЕРШЕНИЕ БРОНИРОВАНИЯ ===
+                    if (step === "Booking" && status === "Completed") {
+                        showSuccessUI(message || `Room booking completed successfully.`);
+                        return;
+                    }
+                    // Обычное обновление прогресса
                     updateSagaStatusFromStep(step, status, message);
                 }
             });
-            connection.on("ReceiveSagaError", (sagaId, step, code, msg) => {
+
+            // === ОБРАБОТКА ReceiveSagaError ===
+            connection.on("ReceiveSagaError", (sagaId, step, status, message) => {
                 if(sagaId === currentTrackingSagaId && activeSagaModalOpen && !isBookingSuccess) {
-                    // Показываем ошибку в секции кода, но не переключаем на success
+                    // === ОШИБКА ПРОВЕРКИ КОДА ===
+                    if (step === "Notification" && status === "Cancelled" && message && message.includes("Confirm Notification cancelled")) {
+                        handleWrongCode();
+                        return;
+                    }
+                    // Другие ошибки Saga
                     const errDiv = document.getElementById('sagaCodeError');
-                    errDiv.innerText = `Verification error: ${msg || 'Invalid code or expired'}`;
+                    errDiv.innerText = `Error: ${message || 'Unknown error occurred'}`;
                     errDiv.classList.remove('hidden');
-                    // Разблокируем ввод для повторной попытки
-                    const codeInput = document.getElementById('sagaCodeInput');
-                    const verifyBtn = document.getElementById('submitSagaCodeBtn');
-                    codeInput.disabled = false;
-                    verifyBtn.disabled = false;
-                    verifyBtn.innerHTML = 'Verify Code';
-                    codeInput.value = '';
-                    codeInput.focus();
+                    enableCodeInput();
                 }
             });
+
             connection.onclose(() => { isConnected=false; updateConnectionUI(false); });
             connection.onreconnected(() => { isConnected=true; updateConnectionUI(true); });
         }
@@ -475,19 +484,48 @@
             document.getElementById('sagaProgressLabel').innerText = statusText;
         }
 
-        function resetVerificationUI() {
+        // === ОБРАБОТКА НЕВЕРНОГО КОДА ===
+        function handleWrongCode() {
+            const errDiv = document.getElementById('sagaCodeError');
+            errDiv.innerText = '❌ Incorrect confirmation code. Please try again.';
+            errDiv.classList.remove('hidden');
+            enableCodeInput();
+        }
+
+        // === РАЗБЛОКИРОВКА ПОЛЯ ВВОДА (вызывается всегда, когда можно вводить код) ===
+        function enableCodeInput() {
             const codeInput = document.getElementById('sagaCodeInput');
             const verifyBtn = document.getElementById('submitSagaCodeBtn');
+            if (codeInput) codeInput.disabled = false;
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verify Code';
+            }
+            if (codeInput) {
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+
+        // === БЛОКИРОВКА ПОЛЯ ВВОДА (во время отправки/ожидания) ===
+        function disableCodeInput() {
+            const codeInput = document.getElementById('sagaCodeInput');
+            const verifyBtn = document.getElementById('submitSagaCodeBtn');
+            if (codeInput) codeInput.disabled = true;
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
+            }
+        }
+
+        function resetVerificationUI() {
             const errDiv = document.getElementById('sagaCodeError');
-            codeInput.disabled = false;
-            verifyBtn.disabled = false;
-            verifyBtn.innerHTML = 'Verify Code';
-            codeInput.value = '';
             errDiv.classList.add('hidden');
             errDiv.innerText = '';
             document.getElementById('codeVerificationSection').style.display = 'block';
             document.getElementById('successSection').classList.add('hidden');
             isBookingSuccess = false;
+            enableCodeInput();
         }
 
         function showSuccessUI(message) {
@@ -500,7 +538,7 @@
                 const checkOut = new Date(currentBookingData.checkOut).toLocaleDateString();
                 successMessage.innerText = `${currentBookingData.roomId} has been received on period from ${checkIn} to ${checkOut}.`;
             } else {
-                successMessage.innerText = message;
+                successMessage.innerText = message || 'Booking confirmed successfully!';
             }
             successSection.classList.remove('hidden');
             document.getElementById('sagaProgressBar').style.width = '100%';
@@ -554,14 +592,16 @@
             document.getElementById('sagaProgressModal').classList.remove('hidden');
         }
 
-        // ГЛАВНОЕ ИСПРАВЛЕНИЕ: обработка кода с проверкой на 202 Accepted
+        // === ОБРАБОТКА ОТПРАВКИ КОДА ПОДТВЕРЖДЕНИЯ ===
         const submitCodeBtn = document.getElementById('submitSagaCodeBtn');
         if (submitCodeBtn) {
             submitCodeBtn.onclick = async function() {
+                // Если уже успешно забронировано — игнорируем
                 if (isBookingSuccess) return;
+
                 const codeInput = document.getElementById('sagaCodeInput');
                 const verifyBtn = document.getElementById('submitSagaCodeBtn');
-                const code = codeInput.value.trim();
+                const code = codeInput?.value.trim();
 
                 if (!code || code.length !== 4) {
                     const errDiv = document.getElementById('sagaCodeError');
@@ -573,50 +613,27 @@
                 const sagaId = pendingCodeSagaId || currentTrackingSagaId;
                 if (!sagaId) return;
 
-                codeInput.disabled = true;
-                verifyBtn.disabled = true;
-                verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
+                // Блокируем ввод и показываем загрузку
                 const errDiv = document.getElementById('sagaCodeError');
                 errDiv.classList.add('hidden');
+                disableCodeInput();
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, {
+                    // Отправляем код на бэкенд
+                    await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ sagaId: sagaId, code: code })
                     });
+                    // НЕ ждём здесь ответа — результат придёт через SignalR:
+                    // - ReceiveSagaError с "Cancelled" = неверный код → handleWrongCode()
+                    // - ReceiveSagaProgress с "Booking"/"Completed" = успех → showSuccessUI()
 
-                    // ВАЖНО: ваш бэкенд при успехе возвращает 202 (Accepted)
-                    if (response.status === 202 || response.ok) {
-                        showSuccessUI('Booking confirmed!');
-                        verifyBtn.disabled = true;
-                        verifyBtn.innerHTML = 'Verified ✓';
-                        codeInput.disabled = true;
-                    } else {
-                        // ЛЮБАЯ другая ошибка (включая 500) — показываем красное сообщение, оставляем секцию кода
-                        let errorMsg = 'Invalid confirmation code. Please try again.';
-                        try {
-                            const errorText = await response.text();
-                            if (errorText) {
-                                const parsed = JSON.parse(errorText);
-                                errorMsg = parsed.detail || parsed.message || parsed.title || errorMsg;
-                            }
-                        } catch(e) {}
-                        errDiv.innerText = errorMsg;
-                        errDiv.classList.remove('hidden');
-                        // Возвращаем возможность повторной попытки — секция кода остается открытой
-                        codeInput.disabled = false;
-                        verifyBtn.disabled = false;
-                        verifyBtn.innerHTML = 'Verify Code';
-                        codeInput.value = '';
-                        codeInput.focus();
-                    }
                 } catch (netErr) {
-                    errDiv.innerText = `Network error: ${netErr.message}`;
+                    // Сетевая ошибка при отправке запроса
+                    errDiv.innerText = `Network error: ${netErr.message}. Please try again.`;
                     errDiv.classList.remove('hidden');
-                    codeInput.disabled = false;
-                    verifyBtn.disabled = false;
-                    verifyBtn.innerHTML = 'Verify Code';
+                    enableCodeInput();
                 }
             };
         }

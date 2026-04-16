@@ -10,10 +10,10 @@ public class BookingRequestValidator: AbstractValidator<BookingRequestCommand>
     {
         RuleFor(x=>x.room_id).NotNull().NotEmpty().WithMessage("Room ID is required");
         RuleFor(x=> x.guest_name).NotNull().NotEmpty().WithMessage("Guest Name is required");
-        RuleFor(x=> x.guest_name).Length(3,50).Matches(@"^[a-zA-Zа-яА-ЯёЁ\s\-']+$").WithMessage("Guest Name must be between 3 and 50 characters");
+        RuleFor(x=> x.guest_name).Length(3,50).Matches(@"^[a-zA-Zа-яА-ЯёЁ\s\']+$").WithMessage("Guest Name must be between 3 and 50 characters");
         RuleFor(x => x.guest_email).NotNull().NotEmpty().EmailAddress().WithMessage("Email is required");
         RuleFor(x=> x.guest_phone).NotNull().NotEmpty().WithMessage("Phone Number is required");
-        RuleFor(x => x.guest_phone).MaximumLength(12).Matches(@"^[\+\-\s\(\)0-9]{7,20}$").WithMessage("Phone Number must be 12 characters");
+        RuleFor(x => x.guest_phone).MaximumLength(12).Matches(@"^[\+\s\(\)0-9]{7,20}$").WithMessage("Phone Number must be 12 characters");
         RuleFor(x => x.check_in).NotNull().NotEmpty().WithMessage("Check In Date is required");
         RuleFor(x => x.check_in).GreaterThanOrEqualTo(DateTime.UtcNow.Date).WithMessage("Check-in date cannot be in the past");
         RuleFor(x => x.check_out).NotNull().NotEmpty().WithMessage("Check Out Date is required");

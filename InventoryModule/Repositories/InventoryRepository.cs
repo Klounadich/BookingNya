@@ -141,9 +141,11 @@ public class InventoryRepository : IInventoryRepository
 
     public async Task<bool> CallbackReserve(Guid sagaId)
     {
-       var room_id= await _context.RoomReservations.Where(X => X.saga_id == sagaId).Select(x => x.room_id).FirstAsync();
-       var status =await _context.Rooms.Where(x=> x.id == room_id).FirstAsync();
+       var room_reservation = await _context.RoomReservations.Where(X => X.saga_id == sagaId).FirstAsync();
+       var status =await _context.Rooms.Where(x=> x.id == room_reservation.room_id).FirstAsync();
        status.status = RoomStatus.Available;
+       room_reservation.status = ReservationStatus.Cancelled;
+       _context.RoomReservations.Update(room_reservation);
         _context.Rooms.Update(status);
         return await _context.SaveChangesAsync() > 0;
     }
