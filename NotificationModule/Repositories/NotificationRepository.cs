@@ -24,6 +24,16 @@ public class NotificationRepository : INotificationRepository
         return false;
         
     }
+    public async Task<bool> UpdateAsync(NotificationModel notification)
+    {
+        _notificationDbContext.Update(notification);
+        if (await _notificationDbContext.SaveChangesAsync() > 0)
+        {
+            return true;
+        }
+        return false;
+        
+    }
 
     public async Task<(bool?,int?)> CheckCodeAsync(ConfirmCodeCommand data)
     {
