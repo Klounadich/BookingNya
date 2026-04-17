@@ -53,7 +53,7 @@ public class RoomReservedSubscriber : ICapSubscribe
                     booking.total_price,
                     booking.currency,
                     booking.payment_method,
-                    " ", /// check empty fields
+                    " ", 
                     " ",
                     booking.guest_email,
                     booking.guest_phone,
@@ -81,12 +81,19 @@ public class RoomReservedSubscriber : ICapSubscribe
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
         if (sagaState!=null)
         {
-
-            sagaState.status = SagaTypes.Failed;
-            sagaState.current_step = "ReserveRoom";
-            sagaState.last_updated_at = DateTime.UtcNow;
-
-            await _bookingRepository.UpdateSagaStateAsync(sagaState);
+            var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
+            if (booking != null)
+            {
+                booking.status = BookingStatus.Cancelled;
+                booking.updated_at = DateTime.UtcNow;
+                booking.cancellation_reason = "Reservation is Cancelled";
+                booking.cancelled_at = DateTime.UtcNow;
+                sagaState.status = SagaTypes.Failed;
+                sagaState.current_step = "ReserveRoom";
+                sagaState.last_updated_at = DateTime.UtcNow;
+                await _bookingRepository.UpdateBookingAsync(booking);
+                await _bookingRepository.UpdateSagaStateAsync(sagaState);
+            }
         }
     }
 }

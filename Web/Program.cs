@@ -1,10 +1,11 @@
+using BookingModule.Commands;
 using BookingModule.Handlers;
 using BookingModule.Infrastructure;
 using BookingModule.Repositories;
 using BookingModule.Services;
 using BookingModule.Subscribers;
 using BookingNya.Endpoints;
-
+using BookingNya.Validators;
 using InventoryModule.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,21 @@ using NotificationModule.Infrastructure;
 using PaymentModule.Infrastructure;
 using Scalar.AspNetCore;
 using DotNetCore.CAP;
+using FluentValidation;
 using InventoryModule.Handlers;
 using InventoryModule.Repositories;
 using InventoryModule.Services;
 using NotificationModule.Repositories;
 using NotificationModule.Services;
+using NotificationModule.SMTP.Models;
+using NotificationModule.SMTP.Services;
 using NotificationModule.Subscribers;
 using Npgsql;
 using PaymentModule.Repositories;
 using PaymentModule.Services;
 using PaymentModule.Subscribers;
 using Savorboard.CAP.InMemoryMessageQueue;
+using Shared.Other;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +62,8 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<Mock>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IValidator<BookingRequestCommand>, BookingRequestValidator>();
+
 //trasients:
 builder.Services.AddTransient<ReserveRoomSubscriber>();
 builder.Services.AddTransient<SagaStatusSubscriber>();
@@ -68,8 +75,10 @@ builder.Services.AddTransient<NotificationSentSubscriber>();
 builder.Services.AddTransient<NotificationConfirmSubscriber>();
 builder.Services.AddTransient<FreeRoomsSubscriber>();
 builder.Services.AddTransient<CheckRoomSubscriber>();
+builder.Services.AddTransient<IMailService, MailService>();
 //Singletones:
 builder.Services.AddSingleton<IRequestTracker, RequestTracker>();
+builder.Services.AddSingleton<IEmailTemplateLoader, EmailTemplateLoader>();
 //Others:
 builder.Services.AddMediatR(cfg =>
 {
@@ -97,6 +106,10 @@ builder.Services.AddCors(options =>
     });
 });
 //  --------------------------------------------------------------------------------
+builder.Services.Configure<MailSettings>(
+    builder.Configuration.GetSection("MailSettings")
+);
+
 var app = builder.Build();
 app.UseCors();
 app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
@@ -108,7 +121,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.MapSagaEndpont();
-app.MapBookingEndpont();
+app.MapBookingEndpoint();
 
 
 app.Run();

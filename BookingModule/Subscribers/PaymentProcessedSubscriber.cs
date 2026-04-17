@@ -1,4 +1,5 @@
 using BookingModule.Repositories;
+using BookingModule.Services;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.SignalR;
 using PaymentModule.Commands;
@@ -11,14 +12,16 @@ namespace BookingModule.Subscribers;
 public class PaymentProcessedSubscriber : ICapSubscribe
 {
  private readonly ICapPublisher _capPublisher;
+ private readonly IBookingService _service;
  private readonly IHubContext<SagaProcessHub> _hubContext;
  private readonly IBookingRepository  _bookingRepository;
 
- public PaymentProcessedSubscriber(IBookingRepository bookingRepository , IHubContext<SagaProcessHub> hubContext ,  ICapPublisher capPublisher)
+ public PaymentProcessedSubscriber(IBookingRepository bookingRepository , IHubContext<SagaProcessHub> hubContext ,  ICapPublisher capPublisher , IBookingService service)
  {
   _bookingRepository = bookingRepository;
   _hubContext = hubContext;
   _capPublisher = capPublisher;
+  _service = service;
  }
  [CapSubscribe("payment.processed.event")]
  public async Task HandleAsync(PaymentProcessed command)
@@ -58,20 +61,27 @@ public class PaymentProcessedSubscriber : ICapSubscribe
  {
   var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
   if (sagaState !=null)
-  {
-   await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
-    command.SagaId,
-    "ProcessPayment",
-    "Failed",
-    $"Payment failed   ({command.Error})."
-   );
+  { var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
+   if (booking != null)
+   {
+    await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
+     command.SagaId,
+     "ProcessPayment",
+     "Failed",
+     $"Payment failed   ({command.Error})."
+    );
 
-   sagaState.status = SagaTypes.Failed;
-   sagaState.last_updated_at = DateTime.UtcNow;
-   sagaState.error_message = command.Error;
-
-   await _bookingRepository.UpdateSagaStateAsync(sagaState);
-
+    booking.status = BookingStatus.Cancelled;
+    booking.updated_at = DateTime.UtcNow;
+    booking.cancellation_reason = $"Payment failed {command.Error} ";
+    booking.cancelled_at = DateTime.UtcNow;
+    sagaState.status = SagaTypes.Failed;
+    sagaState.last_updated_at = DateTime.UtcNow;
+    sagaState.error_message = command.Error;
+    await _service.RollBack(sagaState.saga_id);
+    await _bookingRepository.UpdateSagaStateAsync(sagaState);
+    await _bookingRepository.UpdateBookingAsync(booking);
+   }
   }
  }
 }

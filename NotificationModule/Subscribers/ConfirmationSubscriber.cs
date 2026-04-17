@@ -30,9 +30,15 @@ public class ConfirmationSubscriber : ICapSubscribe
     [CapSubscribe("notification.confirm.event")]
     public async Task Confirm(ConfirmCodeCommand data)
     {
-        if (await _notificationService.ConfirmCode(data) == true)
+        var result = await _notificationService.ConfirmCode(data);
+        if (result.Item1== true && result.Item2 >= 0 && result.Item2 <= 3)
+
         {
             await _capPublisher.PublishAsync("notification.confirm.success", data);
+        }
+        else if (result.Item1== false && result.Item2>= 3)
+        {
+            await _capPublisher.PublishAsync("notification.confirm.cancel", data);
         }
         else
         {

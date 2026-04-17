@@ -1,4 +1,5 @@
 using DotNetCore.CAP;
+using InventoryModule.Commands;
 using InventoryModule.Services;
 
 namespace InventoryModule.Handlers;
@@ -14,10 +15,10 @@ public class CheckRoomSubscriber: ICapSubscribe
         _capPublisher = capPublisher;
     }
     [CapSubscribe("inventory.check.rooms")]
-    public async Task CheckRoomHandle(Guid RequestId)
+    public async Task CheckRoomHandle(RequestRoomFIltresCommand data)
     {
         await _capPublisher.PublishAsync("inventory.free_rooms.list", 
-            await _reserveRoomService.CheckFreeRoomsAsync(RequestId));
+            await _reserveRoomService.CheckFreeRoomsAsync(data));
         
     }
 }
