@@ -39,7 +39,7 @@ public class NotificationRepository : INotificationRepository
     {
         var codeFromDb = await _notificationDbContext.Notifications.Where(x => x.saga_id == data.SagaId && x.attempts <=3)
             .Select(x => x.content).SingleOrDefaultAsync();
-        if (codeFromDb == data.ConfirmationCode)
+        if ( codeFromDb != null && codeFromDb == data.ConfirmationCode)
         {
             return (true,0);
         }

@@ -31,9 +31,13 @@ public class InventoryRepository : IInventoryRepository
        var utcNow = DateTime.UtcNow;
        if (data.check_in == utcNow.Date)
        {
-           var room = await _context.Rooms.FirstAsync(x => x.id == data.room_id);
-           room.status = RoomStatus.Occupied;
-           _context.Rooms.Update(room);
+           var room = await _context.Rooms.FirstOrDefaultAsync(x => x.id == data.room_id);
+           if (room != null)
+           {
+               room.status = RoomStatus.Occupied;
+               _context.Rooms.Update(room);
+           }
+           return false;
        }
 
        return await _context.SaveChangesAsync() > 0;

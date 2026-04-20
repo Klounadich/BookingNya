@@ -74,6 +74,15 @@ public class NotificationSentSubscriber : ICapSubscribe
                 await _bookingRepository.UpdateSagaStateAsync(sagaState);
 
             }
+            else
+            {
+                await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
+                    command.SagaId,
+                    "Notification",
+                    "Failed",
+                    "Send Notification failed."
+                );
+            }
 
         }
             }

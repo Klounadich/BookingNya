@@ -23,15 +23,15 @@ public class RoomReservedSubscriber : ICapSubscribe
     [CapSubscribe("inventory.room.reserved.event")]
     public async Task HandleAsync(RoomReservedEvent command)
     {
-        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
-            command.SagaId, 
-            "ReserveRoom",  
-            "Completed",    
-            $"Room has been successfully reserved  {command.ReservationId}." 
-        );
+        
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
         if (sagaState!=null)
-        {
+        {  await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
+                command.SagaId, 
+                "ReserveRoom",  
+                "Completed",    
+                $"Room has been successfully reserved  {command.ReservationId}." 
+            );
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
             if (booking!=null)
             {
@@ -71,16 +71,18 @@ public class RoomReservedSubscriber : ICapSubscribe
     [CapSubscribe("inventory.room.reserved.event.failed")]
     public async Task HandleAsyncFailed(RoomReservedEvent command)
     {
-        await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
-            command.SagaId,
-            "ReserveRoom",
-            "Failed",
-            "Reservation is Failed."
-        );
+        
         
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
         if (sagaState!=null)
         {
+            await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
+                command.SagaId,
+                "ReserveRoom",
+                "Failed",
+                "Reservation is Failed."
+            );
+            
             var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
             if (booking != null)
             {
