@@ -93,8 +93,7 @@ public class RoomReservedSubscriber : ICapSubscribe
                 sagaState.status = SagaTypes.Failed;
                 sagaState.current_step = "ReserveRoom";
                 sagaState.last_updated_at = DateTime.UtcNow;
-                await _bookingRepository.UpdateBookingAsync(booking);
-                await _bookingRepository.UpdateSagaStateAsync(sagaState);
+                await _bookingRepository.UpdateSagaAsync(sagaState , booking);
             }
         }
     }

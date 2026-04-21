@@ -79,8 +79,7 @@ public class PaymentProcessedSubscriber : ICapSubscribe
     sagaState.last_updated_at = DateTime.UtcNow;
     sagaState.error_message = command.Error;
     await _service.RollBack(sagaState.saga_id);
-    await _bookingRepository.UpdateSagaStateAsync(sagaState);
-    await _bookingRepository.UpdateBookingAsync(booking);
+   await _bookingRepository.UpdateSagaAsync(sagaState , booking);
    }
   }
  }

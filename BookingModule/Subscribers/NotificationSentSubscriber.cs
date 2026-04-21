@@ -70,8 +70,7 @@ public class NotificationSentSubscriber : ICapSubscribe
                 sagaState.current_step = "SendConfirmation";
                 sagaState.last_updated_at = DateTime.UtcNow;
                 await _service.RollBack(sagaState.saga_id);
-                await _bookingRepository.UpdateBookingAsync(booking);
-                await _bookingRepository.UpdateSagaStateAsync(sagaState);
+                await _bookingRepository.UpdateSagaAsync(sagaState , booking);
 
             }
             else

@@ -36,11 +36,13 @@ public class InventoryRepository : IInventoryRepository
            {
                room.status = RoomStatus.Occupied;
                _context.Rooms.Update(room);
+               return await _context.SaveChangesAsync() > 0;
            }
-           return false;
+           
        }
 
-       return await _context.SaveChangesAsync() > 0;
+       return false;
+
     }
 
        public async Task<FreeRoomsResponse> FreeRoomsAsync(RequestRoomFIltresCommand command)

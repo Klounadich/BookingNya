@@ -53,7 +53,7 @@ public class BookingRepository : IBookingRepository
         
     }
     
-    public async Task<bool?> UpdateSagaStateAsync(SagaStatesModel data)
+    public async Task<bool> UpdateSagaStateAsync(SagaStatesModel data)
     {
         try
         {
@@ -71,7 +71,7 @@ public class BookingRepository : IBookingRepository
         }
     }
     
-    public async Task<bool?> UpdateBookingAsync(BookingModel data)
+    private async Task<bool?> UpdateBookingAsync(BookingModel data)
     {
         try
         {
@@ -87,6 +87,28 @@ public class BookingRepository : IBookingRepository
         {
             return false;
         }
+    }
+
+    public async Task<bool> UpdateSagaAsync(SagaStatesModel saga_data ,  BookingModel booking_data)
+    {
+        using (var transaction = await _context.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                if (await UpdateSagaStateAsync(saga_data) != false && await UpdateBookingAsync(booking_data) != false)
+                {
+                    await transaction.CommitAsync();
+                    return true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
+        return false;
     }
 
     
