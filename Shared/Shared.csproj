@@ -7,11 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Contracts\" />
-      <Folder Include="Extensions\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="DotNetCore.CAP" Version="10.0.2-preview-287480508" />
       <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="10.0.2-preview-287480508" />
       <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.2-preview-287480508" />

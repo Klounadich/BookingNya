@@ -13,10 +13,7 @@ public static class SagaEndpoint
     {
         var group = endpoints.MapGroup("api/").WithTags("Booking");
         group.MapPost("/booking", BookSaga);
-        group.MapGet("/booking/{sagaId}", SagaStatus);
         group.MapPost("/booking/{sagaId}/confirm", ConfirmCode);
-        group.MapPost("/booking/{sagaId}/retry", BookSagaRetry);
-        group.MapPost("/booking/{sagaId}/compensate", BookSagaCompensate);
     }
 
     public async static Task<IResult> BookSaga(BookingRequestCommand data, IMediator mediator,
@@ -77,19 +74,4 @@ public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMed
         }
     }
 
-    public static Task<IResult> SagaStatus(int sagaId)
-    {
-        return Task.FromResult<IResult>(Results.Ok());
-    }
-    
-    
-    public static Task<IResult> BookSagaRetry(int sagaId)
-    {
-        return Task.FromResult<IResult>(Results.Ok());
-    }
-    
-    public static Task<IResult> BookSagaCompensate(int sagaId)
-    {
-        return Task.FromResult<IResult>(Results.Ok());
-    }
 }
