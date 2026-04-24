@@ -23,41 +23,6 @@ namespace InventoryModule.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("InventoryModule.Models.RoomAvailability", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("is_available")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("notes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("price_multiplier")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("room_id")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime>("updated_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("id");
-
-                    b.ToTable("RoomAvailabilities");
-                });
-
             modelBuilder.Entity("InventoryModule.Models.RoomModel", b =>
                 {
                     b.Property<string>("id")
@@ -78,6 +43,9 @@ namespace InventoryModule.Migrations
 
                     b.Property<int?>("floor")
                         .HasColumnType("integer");
+
+                    b.PrimitiveCollection<List<byte[]>>("pictures")
+                        .HasColumnType("bytea[]");
 
                     b.Property<decimal>("price_per_night")
                         .HasColumnType("numeric");

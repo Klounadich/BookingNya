@@ -1,3 +1,9 @@
+using System.Text;
+using AuthModule.Commands;
+using AuthModule.Handlers;
+using AuthModule.Infrastructure;
+using AuthModule.Repositories;
+using AuthModule.Services;
 using BookingModule.Commands;
 using BookingModule.Handlers;
 using BookingModule.Infrastructure;
@@ -15,6 +21,9 @@ using FluentValidation;
 using InventoryModule.Handlers;
 using InventoryModule.Repositories;
 using InventoryModule.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using NotificationModule.Repositories;
 using NotificationModule.Services;
 using NotificationModule.SMTP.Models;
@@ -47,6 +56,10 @@ builder.Services.AddDbContext<NotificationDbContext>(options =>
 
 builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(PaymentDbContext).Assembly.FullName)));
+
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseNpgsql(dataSource, b => b.MigrationsAssembly(typeof(AuthDbContext).Assembly.FullName)));
+
 //--------------------------------------------------------------
 
 //SERVICES ------------------------------------------------------------------
@@ -61,6 +74,10 @@ builder.Services.AddScoped<Mock>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IValidator<BookingRequestCommand>, BookingRequestValidator>();
+builder.Services.AddScoped<IValidator<RegisterRequestCommand>, RegisterRequestValidator>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
 
 //trasients:
 builder.Services.AddTransient<ReserveRoomSubscriber>();
@@ -81,6 +98,7 @@ builder.Services.AddSingleton<IEmailTemplateLoader, EmailTemplateLoader>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(BookingRequestHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(AuthHandler).Assembly);
 });
 builder.Services.AddCap(x =>
 {
@@ -104,12 +122,47 @@ builder.Services.AddCors(options =>
     });
 });
 //  --------------------------------------------------------------------------------
+
+// JWT Settings -------------------------------------------------------------------
+builder.Services.Configure<JWTService.AuthSettings>(
+    builder.Configuration.GetSection("jwt")
+);
+builder.Services.AddScoped<JWTService>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(i =>
+    {
+        i.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:SecretKey"]))
+        };
+        i.Events= new JwtBearerEvents { 
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["auth_token"];
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build();
+});
+
+
+//-----------------------------------------------------------------------------
 builder.Services.Configure<MailSettings>(
     builder.Configuration.GetSection("MailSettings")
 );
 
 var app = builder.Build();
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapHub<Shared.SignalR.SagaProcessHub>("/saga-process-hub");
 app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
@@ -120,6 +173,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapSagaEndpont();
 app.MapBookingEndpoint();
+app.MapAuthEndpoint();
 
 
 app.Run();

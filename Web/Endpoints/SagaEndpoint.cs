@@ -3,6 +3,7 @@ using BookingModule.Commands;
 using BookingNya.Validators;
 using MediatR;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Shared.Enums;
 
 namespace BookingNya.Endpoints;
@@ -15,7 +16,7 @@ public static class SagaEndpoint
         group.MapPost("/booking", BookSaga);
         group.MapPost("/booking/{sagaId}/confirm", ConfirmCode);
     }
-
+    [Authorize]
     public async static Task<IResult> BookSaga(BookingRequestCommand data, IMediator mediator,
         IValidator<BookingRequestCommand> validator)
     {
@@ -58,7 +59,7 @@ public static class SagaEndpoint
         
     }
 
-
+[Authorize]
 public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMediator mediator)
     {
         try

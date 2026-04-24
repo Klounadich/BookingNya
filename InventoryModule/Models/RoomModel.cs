@@ -17,6 +17,7 @@ public class RoomModel
     public int? floor  { get; set; }
     public string? description { get; set; }
     public Dictionary<string,object>? amenities { get; set; }
+    public List<byte[]>? pictures { get; set; }
     [Required ]
     public RoomStatus status { get; set; } =  RoomStatus.Available;
     [Required ]

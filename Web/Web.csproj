@@ -16,6 +16,7 @@
         <ProjectReference Include="..\InventoryModule\InventoryModule.csproj" />
         <ProjectReference Include="..\NotificationModule\NotificationModule.csproj" />
         <ProjectReference Include="..\PaymentModule\PaymentModule.csproj" />
+        <ProjectReference Include="..\AuthModule\AuthModule.csproj" />
     </ItemGroup>
 
 
@@ -25,16 +26,16 @@
         <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.2-preview-287480508" />
         <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="10.0.2-preview-287480508" />
         <PackageReference Include="FluentValidation" Version="12.1.1" />
-        <PackageReference Include="MediatR" Version="14.0.0" />
-        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3"/>
+        <PackageReference Include="MediatR" Version="14.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="10.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Npgsql" Version="10.0.1" />
+        <PackageReference Include="Npgsql" Version="10.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
         <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="10.0.0" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.12.47" />
