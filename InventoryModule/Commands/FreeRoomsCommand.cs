@@ -7,4 +7,5 @@ public record FreeRoomsCommand(
     decimal price_per_night,
     int? floor,
     string? description,
-    Dictionary<string,object>? amenities);
+    Dictionary<string,object>? amenities,
+    List<string> photos);

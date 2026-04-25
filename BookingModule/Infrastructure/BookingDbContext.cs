@@ -11,9 +11,6 @@ public class BookingDbContext : DbContext
     }
     public DbSet<BookingModel> Bookings { get; set; }
     public DbSet<SagaStatesModel>  SagaStates { get; set; }
-    public DbSet<SagaStepsModel>   SagaSteps { get; set; }
-    public DbSet<SagaEventLogsModel>  SagaEventLogs { get; set; }
-    public DbSet<ProcessedCommandsModel>  ProcessedCommands { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,29 +21,6 @@ public class BookingDbContext : DbContext
             
             
         });
-        
-        modelBuilder.Entity<SagaStepsModel>(entity =>
-        {
-            entity.Property(e => e.request_payload)
-                .HasColumnType("jsonb"); 
-            entity.Property(e => e.responce_payload)
-                .HasColumnType("jsonb"); 
-            
-        });
-        modelBuilder.Entity<SagaEventLogsModel>(entity =>
-        {
-            entity.Property(e => e.payload)
-                .HasColumnType("jsonb"); 
-            
-        });
-        
-        modelBuilder.Entity<ProcessedCommandsModel>(entity =>
-        {
-            entity.Property(e => e.result_payload)
-                .HasColumnType("jsonb"); 
-            
-        });
-        
         modelBuilder.Entity<SagaStatesModel>()
             .Property(e => e.status)
             .HasConversion<string>()  
@@ -57,9 +31,6 @@ public class BookingDbContext : DbContext
             .HasConversion<string>()  
             .HasColumnType("varchar(50)");
         
-        modelBuilder.Entity<ProcessedCommandsModel>()
-            .Property(e => e.status)
-            .HasConversion<string>()  
-            .HasColumnType("varchar(50)");
+        
     }
 }

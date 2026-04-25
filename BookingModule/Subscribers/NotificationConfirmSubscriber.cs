@@ -32,16 +32,13 @@ public class NotificationConfirmSubscriber : ICapSubscribe
             sagaState.current_step = "NotificationConfirm";
             sagaState.last_updated_at = DateTime.UtcNow;
 
-            if (await _bookingRepository.UpdateSagaStateAsync(sagaState) == true)
-            {
-
                 var booking = await _bookingRepository.GetBookingBySagaIdAsync(data.SagaId);
                 if (booking != null)
                 {
                     booking.status = BookingStatus.Completed;
                     booking.updated_at = DateTime.UtcNow;
 
-                    if (await _bookingRepository.UpdateBookingAsync(booking) != false)
+                    if (await _bookingRepository.UpdateSagaAsync(sagaState, booking) != false)
                     {
                         await _hubContext.Clients.Group(data.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
                             data.SagaId,
@@ -51,7 +48,7 @@ public class NotificationConfirmSubscriber : ICapSubscribe
                         );
                     }
                 }
-            }
+            
         }
     }
 
@@ -70,11 +67,6 @@ public class NotificationConfirmSubscriber : ICapSubscribe
                     "Failed",
                     "Confirm Notification failed."
                 );
-
-
-
-                await _bookingRepository.UpdateSagaStateAsync(sagaState) ;
-
 
             }
         }
@@ -107,8 +99,7 @@ public class NotificationConfirmSubscriber : ICapSubscribe
                     sagaState.current_step = "ConfirmationFailed";
                     sagaState.last_updated_at = DateTime.UtcNow;
                     await _service.RollBack(data.SagaId);
-                    await _bookingRepository.UpdateBookingAsync(booking);
-                    await _bookingRepository.UpdateSagaStateAsync(sagaState);
+                    await _bookingRepository.UpdateSagaAsync(sagaState , booking);
                 }
 
             }

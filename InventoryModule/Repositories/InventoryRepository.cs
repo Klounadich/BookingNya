@@ -31,12 +31,18 @@ public class InventoryRepository : IInventoryRepository
        var utcNow = DateTime.UtcNow;
        if (data.check_in == utcNow.Date)
        {
-           var room = await _context.Rooms.FirstAsync(x => x.id == data.room_id);
-           room.status = RoomStatus.Occupied;
-           _context.Rooms.Update(room);
+           var room = await _context.Rooms.FirstOrDefaultAsync(x => x.id == data.room_id);
+           if (room != null)
+           {
+               room.status = RoomStatus.Occupied;
+               _context.Rooms.Update(room);
+               return await _context.SaveChangesAsync() > 0;
+           }
+            
        }
 
-       return await _context.SaveChangesAsync() > 0;
+       return false;
+
     }
 
        public async Task<FreeRoomsResponse> FreeRoomsAsync(RequestRoomFIltresCommand command)
@@ -118,27 +124,43 @@ public class InventoryRepository : IInventoryRepository
             }
         }
 
-        var availableRooms = await query
-            .Select(room => new FreeRoomsCommand(
+        var roomsFromDb = await query
+            .Select(room => new {
                 room.id,
                 room.type,
                 room.capacity,
                 room.price_per_night,
                 room.floor,
                 room.description,
-                room.amenities
-            ))
+                room.amenities,
+                Pictures = room.pictures 
+            })
             .AsNoTracking()
             .ToListAsync();
 
+        var responseRooms = roomsFromDb.Select(r => new FreeRoomsCommand(
+            r.id,
+            r.type,
+            r.capacity,
+            r.price_per_night,
+            r.floor,
+            r.description,
+            r.amenities,
+            photos: r.Pictures?.Select((bytes, index) => 
+                $"http://localhost:5255/api/rooms/{r.id}/photos/{index}"
+            ).ToList() ?? new List<string>()
+        )).ToList();
+        
         return new FreeRoomsResponse(
-            availableRooms,
-            availableRooms.Count,
-            DateTime.UtcNow,
-            command.requestId
+            Rooms: responseRooms,
+            TotalCount: responseRooms.Count,
+            Timestamp: DateTime.UtcNow,
+            RequestId: command.requestId
         );
     }
 
+
+    
     public async Task<bool> CallbackReserve(Guid sagaId)
     {
        var room_reservation = await _context.RoomReservations.Where(X => X.saga_id == sagaId).FirstOrDefaultAsync();

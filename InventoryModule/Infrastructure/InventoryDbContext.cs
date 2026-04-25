@@ -11,7 +11,6 @@ public class InventoryDbContext: DbContext
     }
     public DbSet<RoomModel>  Rooms { get; set; }
     public DbSet<RoomReservationModel>   RoomReservations { get; set; }
-    public DbSet<RoomAvailability>   RoomAvailabilities { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<RoomModel>(entity =>

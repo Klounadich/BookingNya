@@ -3,6 +3,7 @@ using MediatR;
 namespace BookingModule.Commands;
 
 public record BookingRequestCommand(
+    Guid UserId,
 string room_id ,
 string guest_name,
 string guest_email,

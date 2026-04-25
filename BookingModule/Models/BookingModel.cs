@@ -12,6 +12,10 @@ public class BookingModel
     public Guid saga_id { get; set; } 
     [Required, MaxLength(50)]
     public string room_id { get; set; }
+    
+    
+    [Required]
+    public Guid user_id { get; set; }
     [Required, MaxLength(200)]
     public string guest_name { get; set; }
     [Required, MaxLength(255)]

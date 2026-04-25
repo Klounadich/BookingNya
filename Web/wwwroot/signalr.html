@@ -15,18 +15,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #818cf8;
-            --accent-gold: #fbbf24;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #263449;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --border-light: #475569;
-            --danger: #f87171;
-            --success: #4ade80;
-            --glass: rgba(15, 23, 42, 0.8);
+            --accent-gold: #fbbf24; --bg-dark: #0f172a; --bg-card: #1e293b;
+            --bg-card-hover: #263449; --text-primary: #f8fafc; --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8; --border: #334155; --border-light: #475569;
+            --danger: #f87171; --success: #4ade80; --warning: #fbbf24; --glass: rgba(15, 23, 42, 0.8);
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
@@ -53,7 +45,16 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.5rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo i { color: var(--primary); font-size: 1.3rem; }
-        .connection-badge { font-size: 0.7rem; padding: 6px 14px; border-radius: 40px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.15); color: var(--primary-light); border: 1px solid rgba(99,102,241,0.3); }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .connection-dot { width: 10px; height: 10px; border-radius: 50%; background: #f87171; transition: background 0.4s; flex-shrink: 0; cursor: default; box-shadow: 0 0 8px rgba(248,113,113,0.6); }
+        .connection-dot.connected { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.6); }
+        .btn-auth { padding: 9px 22px; border-radius: 40px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.25s; display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--primary); background: rgba(99,102,241,0.12); color: var(--primary-light); letter-spacing: 0.3px; white-space: nowrap; }
+        .btn-auth:hover { background: var(--primary); color: white; box-shadow: 0 4px 18px rgba(99,102,241,0.35); transform: translateY(-1px); }
+        .btn-profile { padding: 9px 18px; border-radius: 40px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.25s; display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--border-light); background: rgba(255,255,255,0.05); color: var(--text-primary); letter-spacing: 0.3px; white-space: nowrap; }
+        .btn-profile:hover { border-color: var(--primary-light); background: rgba(99,102,241,0.1); box-shadow: 0 4px 18px rgba(99,102,241,0.2); }
+        .btn-profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: white; flex-shrink: 0; }
+        .btn-logout { padding: 8px 16px; border-radius: 40px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); color: #fca5a5; }
+        .btn-logout:hover { background: rgba(248,113,113,0.2); border-color: #f87171; }
 
         .main-content { padding-top: 40px; }
         .section-header { margin-bottom: 36px; }
@@ -84,13 +85,14 @@
 
         .rooms-section { margin-bottom: 60px; }
         .section-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
-        .refresh-btn { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 40px; padding: 10px 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 8px; }
+        .refresh-btn { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 40px; padding: 10px 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
         .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 32px; }
         .room-card { background: var(--bg-card); border-radius: 24px; overflow: hidden; border: 1px solid var(--border); transition: all 0.35s ease; cursor: pointer; box-shadow: 0 10px 20px -8px rgba(0,0,0,0.3); animation: cardAppear 0.6s ease backwards; display: flex; flex-direction: column; }
         .room-card:hover { transform: translateY(-8px) scale(1.01); border-color: var(--primary-light); box-shadow: 0 24px 40px -8px rgba(99,102,241,0.3); }
         @keyframes cardAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .room-img-placeholder { background: linear-gradient(145deg, #25344d, #16202e); height: 230px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .room-img-placeholder i { font-size: 4.5rem; color: rgba(99,102,241,0.4); }
+        .room-img-placeholder { background: linear-gradient(145deg, #25344d, #16202e); height: 230px; display: flex; align-items: center; justify-content: center; position: relative; background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .room-img-placeholder i { font-size: 4.5rem; color: rgba(99,102,241,0.4); display: none; }
+        .room-img-placeholder.no-photo i { display: block; }
         .room-badge { position: absolute; top: 18px; left: 18px; background: rgba(99,102,241,0.4); backdrop-filter: blur(12px); color: white; padding: 6px 18px; border-radius: 40px; font-size: 0.8rem; font-weight: 700; }
         .room-info { padding: 26px; flex: 1; display: flex; flex-direction: column; }
         .room-title-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: baseline; flex-wrap: wrap; gap: 10px; }
@@ -107,42 +109,77 @@
         .btn-details { background: rgba(255,255,255,0.05); color: var(--text-primary); border: 1px solid var(--border); margin-top: 10px; }
         .btn-details:hover { background: rgba(255,255,255,0.1); }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .carousel-container { position: relative; width: 100%; height: 280px; border-radius: 20px; overflow: hidden; margin-bottom: 20px; background: #0f172a; }
+        .carousel-slide { width: 100%; height: 100%; object-fit: cover; display: none; animation: fadeIn 0.4s ease; }
+        .carousel-slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.55); border: none; color: white; font-size: 1.8rem; padding: 8px 16px; cursor: pointer; border-radius: 12px; transition: background 0.2s; z-index: 5; }
+        .carousel-btn:hover { background: rgba(0,0,0,0.8); }
+        .carousel-btn.prev { left: 10px; } .carousel-btn.next { right: 10px; }
+        .carousel-counter { position: absolute; bottom: 12px; right: 16px; background: rgba(0,0,0,0.6); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 2000; animation: fadeInOverlay 0.2s ease; }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
         .modal-overlay.hidden { display: none; }
-        .modal-content { background: var(--bg-card); border-radius: 32px; width: 92%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; border: 1px solid var(--border-light); box-shadow: 0 30px 40px rgba(0,0,0,0.5); }
+        .modal-content { background: var(--bg-card); border-radius: 32px; width: 92%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; border: 1px solid var(--border-light); box-shadow: 0 30px 40px rgba(0,0,0,0.5); }
+        .modal-content.modal-sm { max-width: 460px; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-header { display: flex; justify-content: space-between; padding: 24px 28px 16px; border-bottom: 1px solid var(--border); }
-        .modal-body { padding: 20px 28px; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 28px 28px; }
-        .btn-modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; }
-        .btn-modal-close:hover { color: var(--danger); }
-        .btn-outline { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); padding: 10px 22px; border-radius: 40px; cursor: pointer; }
-        .btn-submit { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 10px 28px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 28px 16px; border-bottom: 1px solid var(--border); }
+        .modal-header h3 { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
+        .modal-body { padding: 20px 28px; } .modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 28px 28px; }
+        .btn-modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; padding: 4px 8px; border-radius: 8px; }
+        .btn-modal-close:hover { color: var(--danger); background: rgba(248,113,113,0.1); }
+        .btn-outline { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); padding: 10px 22px; border-radius: 40px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+        .btn-submit { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 10px 28px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-submit:hover { box-shadow: 0 4px 20px rgba(99,102,241,0.4); } .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-success { background: var(--success); color: #0f172a; padding: 10px 28px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; }
-        .btn-receipt { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); padding: 10px 22px; border-radius: 40px; cursor: pointer; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-weight: 600; font-size: 0.82rem; margin-bottom: 7px; color: var(--text-secondary); }
-        .modal-body input, .modal-body select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 20px; background: rgba(15,23,42,0.6); color: white; }
+        .btn-receipt { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); padding: 10px 22px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .form-group { margin-bottom: 18px; } .form-group label { display: block; font-weight: 600; font-size: 0.82rem; margin-bottom: 7px; color: var(--text-secondary); }
+        .modal-body input, .modal-body select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 20px; background: rgba(15,23,42,0.6); color: white; font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.2s; }
+        .modal-body input:focus, .modal-body select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); outline: none; }
+        .modal-body input.readonly-light { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.25); color: var(--primary-light); }
         .saga-progress-bar-wrapper { background: rgba(255,255,255,0.08); border-radius: 40px; height: 12px; margin: 12px 0; overflow: hidden; }
         .saga-progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #a78bfa); border-radius: 40px; transition: width 0.5s ease; }
         .verification-code-input { text-align: center; letter-spacing: 6px; font-size: 1.8rem; font-weight: 700; border-radius: 20px; background: #0f172a; }
-        .modal-error { background: rgba(248,113,113,0.12); color: #fca5a5; padding: 12px; border-radius: 20px; margin-top: 12px; border: 1px solid rgba(248,113,113,0.4); }
+        .modal-error { background: rgba(248,113,113,0.12); color: #fca5a5; padding: 12px; border-radius: 20px; margin-top: 12px; border: 1px solid rgba(248,113,113,0.4); font-size: 0.85rem; }
         .hidden { display: none !important; }
         .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        footer { text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border); }
-        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
-        @media (max-width: 880px) { .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); } .container { padding: 0 20px; } }
-        #sagaStepsContainer { display: none; }
+
+        .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+        .auth-tab { flex: 1; text-align: center; padding: 12px 16px; font-weight: 700; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; background: transparent; }
+        .auth-tab.active { color: var(--primary-light); border-bottom-color: var(--primary); } .auth-tab:hover { color: var(--text-primary); }
+        .auth-form { display: block; } .auth-form.hidden { display: none; }
+
+        .profile-tabs { display: flex; gap: 4px; margin-bottom: 22px; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 5px; }
+        .profile-tab { flex: 1; text-align: center; padding: 10px 14px; font-weight: 600; font-size: 0.82rem; cursor: pointer; color: var(--text-muted); border-radius: 16px; transition: all 0.2s; background: transparent; border: none; }
+        .profile-tab.active { background: var(--primary); color: white; box-shadow: 0 2px 12px rgba(99,102,241,0.3); }
+        .profile-panel { display: block; animation: fadeInPanel 0.25s ease; } .profile-panel.hidden { display: none; }
+        @keyframes fadeInPanel { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+        .balance-card { background: linear-gradient(135deg, #1e293b 0%, #1a2340 100%); border: 1px solid var(--border-light); border-radius: 24px; padding: 24px; text-align: center; margin-bottom: 16px; }
+        .balance-amount { font-size:2.8rem; font-weight:800; color:var(--accent-gold); } .balance-label { font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:4px; }
+        .bookings-placeholder { background: rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:20px; padding:32px; text-align:center; color:var(--text-muted); }
+        .bookings-placeholder i { font-size:2.5rem; margin-bottom:12px; opacity:0.5; }
+        .profile-info-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.9rem; }
+        .profile-info-row span:first-child { color:var(--text-muted); } .profile-info-row span:last-child { color:var(--text-primary); font-weight:600; }
+
+        footer { text-align:center; padding:40px; color:var(--text-muted); border-top:1px solid var(--border); }
+        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:6px; }
+        @media (max-width:880px) { .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); } .container{padding:0 20px;} }
+        #sagaStepsContainer { display:none; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 </head>
 <body>
-
 <header id="mainHeader">
     <div class="container header-content">
         <a href="#" class="logo"><i class="fas fa-hotel"></i> HotelBookPro</a>
-        <div id="connectionIndicator" class="connection-badge"><i class="fas fa-circle"></i> connecting...</div>
+        <div class="header-right">
+            <span id="connectionDot" class="connection-dot" title="SignalR connection status"></span>
+            <div id="authArea"></div>
+        </div>
     </div>
 </header>
 
@@ -210,7 +247,63 @@
 
 <footer><div class="container">© 2026 HotelBookPro — Real‑time booking with Saga pattern</div></footer>
 
-<!-- BOOKING FORM MODAL -->
+<div id="authModal" class="modal-overlay hidden">
+    <div class="modal-content modal-sm">
+        <div class="modal-header"><h3><i class="fas fa-lock"></i> <span id="authModalTitle">Sign In</span></h3><button class="btn-modal-close" id="closeAuthModalBtn">✕</button></div>
+        <div class="modal-body">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-auth-tab="login">Sign In</button>
+                <button class="auth-tab" data-auth-tab="register">Sign Up</button>
+            </div>
+            <form id="loginForm" class="auth-form" autocomplete="off">
+                <div class="form-group"><label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com"></div>
+                <div class="form-group"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••"></div>
+                <div id="loginError" class="modal-error hidden"></div>
+                <button type="submit" class="btn-submit" style="width:100%; margin-top:8px;" id="loginSubmitBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            </form>
+            <form id="registerForm" class="auth-form hidden" autocomplete="off">
+                <div class="form-group"><label>Display Name</label><input id="regDisplayName" placeholder="John Doe"></div>
+                <div class="form-group"><label>Email</label><input id="regEmail" type="email" placeholder="you@example.com"></div>
+                <div class="form-group"><label>Password</label><input id="regPassword" type="password" placeholder="••••••••"></div>
+                <div id="registerError" class="modal-error hidden"></div>
+                <button type="submit" class="btn-submit" style="width:100%; margin-top:8px;" id="registerSubmitBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+            </form>
+        </div>
+        <div class="modal-footer"><button id="cancelAuthModalBtn" class="btn-outline">Cancel</button></div>
+    </div>
+</div>
+
+<div id="profileModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:560px;">
+        <div class="modal-header"><h3><i class="fas fa-user-circle"></i> My Profile</h3><button class="btn-modal-close" id="closeProfileModalBtn">✕</button></div>
+        <div class="modal-body">
+            <div class="profile-tabs">
+                <button class="profile-tab active" data-profile-tab="info">👤 Info</button>
+                <button class="profile-tab" data-profile-tab="balance">💰 Balance</button>
+                <button class="profile-tab" data-profile-tab="bookings">📋 My Bookings</button>
+            </div>
+            <div id="profilePanelInfo" class="profile-panel">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div class="btn-profile-avatar" style="width:64px; height:64px; font-size:1.5rem; margin:0 auto 10px;" id="profileAvatarLarge">?</div>
+                    <h4 id="profileDisplayNameLarge" style="color:var(--text-primary);">—</h4>
+                    <p id="profileEmailLarge" style="color:var(--text-muted); font-size:0.85rem;">—</p>
+                </div>
+                <div class="profile-info-row"><span>User ID</span><span id="profileSub">—</span></div>
+                <div class="profile-info-row"><span>Member since</span><span id="profileMemberSince">Today</span></div>
+                <button class="btn-logout" id="profileLogoutBtn" style="width:100%; margin-top:20px; justify-content:center; padding:12px;"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+            <div id="profilePanelBalance" class="profile-panel hidden">
+                <div class="balance-card"><div class="balance-label">Available Balance</div><div class="balance-amount">$1,250.00</div><div style="color:var(--text-muted); font-size:0.8rem; margin-top:8px;">Loyalty points: <strong style="color:var(--primary-light);">4,820 pts</strong></div></div>
+                <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid var(--border);"><h5 style="color:var(--text-secondary); margin-bottom:10px; font-size:0.85rem;">Recent Transactions</h5><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:16px;"><i class="fas fa-receipt" style="font-size:1.5rem; opacity:0.4; display:block; margin-bottom:8px;"></i>Transaction history will appear here</div></div>
+            </div>
+            <div id="profilePanelBookings" class="profile-panel hidden">
+                <div class="bookings-placeholder"><i class="fas fa-calendar-alt"></i><p style="margin-bottom:4px; font-weight:600;">No active bookings yet</p><p style="font-size:0.8rem;">Your confirmed reservations will appear here</p></div>
+            </div>
+        </div>
+        <div class="modal-footer"><button id="closeProfileFooterBtn" class="btn-outline">Close</button></div>
+    </div>
+</div>
+
 <div id="bookingFormModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-calendar-check"></i> Complete Reservation</h3><button class="btn-modal-close" id="closeBookingFormBtn">✕</button></div>
@@ -231,7 +324,6 @@
     </div>
 </div>
 
-<!-- ROOM DETAIL MODAL -->
 <div id="roomDetailModal" class="modal-overlay hidden">
     <div class="modal-content"><div class="modal-header"><h3><i class="fas fa-info-circle"></i> Room Details</h3><button class="btn-modal-close" id="closeDetailModalBtn">✕</button></div>
         <div class="modal-body" id="roomDetailBody"></div>
@@ -239,35 +331,14 @@
     </div>
 </div>
 
-<!-- SAGA PROGRESS MODAL -->
 <div id="sagaProgressModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-spinner fa-pulse"></i> Processing</h3><button class="btn-modal-close" id="closeSagaModalBtn">✕</button></div>
         <div class="modal-body">
-            <div class="saga-overall-progress">
-                <div style="display:flex; justify-content:space-between;"><span id="sagaProgressLabel">Initializing...</span><span id="sagaProgressPercent">0%</span></div>
-                <div class="saga-progress-bar-wrapper"><div id="sagaProgressBar" class="saga-progress-bar-fill" style="width:0%"></div></div>
-            </div>
+            <div class="saga-overall-progress"><div style="display:flex; justify-content:space-between;"><span id="sagaProgressLabel">Initializing...</span><span id="sagaProgressPercent">0%</span></div><div class="saga-progress-bar-wrapper"><div id="sagaProgressBar" class="saga-progress-bar-fill" style="width:0%"></div></div></div>
             <div id="sagaStepsContainer" style="margin-top: 20px; max-height: 300px; overflow-y: auto;"></div>
-
-            <!-- Секция ввода кода (всегда видна до успеха) -->
-            <div id="codeVerificationSection" style="margin-top:24px;">
-                <label style="color:var(--text-secondary);">Enter 4‑digit confirmation code</label>
-                <input id="sagaCodeInput" class="verification-code-input" maxlength="4" inputmode="numeric" pattern="\d*" placeholder="••••">
-                <div id="sagaCodeError" class="modal-error hidden"></div>
-                <button id="submitSagaCodeBtn" class="btn-submit" style="width:100%; margin-top:16px;">Verify Code</button>
-            </div>
-
-            <!-- Секция успеха (изначально скрыта) -->
-            <div id="successSection" class="hidden" style="margin-top:24px; text-align:center;">
-                <div style="color:var(--success); font-size:3rem; margin-bottom:16px;"><i class="fas fa-check-circle"></i></div>
-                <h4 style="margin-bottom:8px; color:var(--text-primary);">Booking Confirmed!</h4>
-                <p id="successMessage" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;"></p>
-                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                    <button id="btnOk" class="btn-success"><i class="fas fa-check"></i> OK</button>
-                    <button id="btnReceipt" class="btn-receipt"><i class="fas fa-receipt"></i> Get Receipt</button>
-                </div>
-            </div>
+            <div id="codeVerificationSection" style="margin-top:24px;"><label style="color:var(--text-secondary);">Enter 4‑digit confirmation code</label><input id="sagaCodeInput" class="verification-code-input" maxlength="4" inputmode="numeric" pattern="\d*" placeholder="••••"><div id="sagaCodeError" class="modal-error hidden"></div><button id="submitSagaCodeBtn" class="btn-submit" style="width:100%; margin-top:16px;">Verify Code</button></div>
+            <div id="successSection" class="hidden" style="margin-top:24px; text-align:center;"><div style="color:var(--success); font-size:3rem; margin-bottom:16px;"><i class="fas fa-check-circle"></i></div><h4 style="margin-bottom:8px; color:var(--text-primary);">Booking Confirmed!</h4><p id="successMessage" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;"></p><div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;"><button id="btnOk" class="btn-success"><i class="fas fa-check"></i> OK</button><button id="btnReceipt" class="btn-receipt"><i class="fas fa-receipt"></i> Get Receipt</button></div></div>
         </div>
         <div class="modal-footer"><button id="closeSagaProgressFooterBtn" class="btn-outline">Close</button></div>
     </div>
@@ -287,7 +358,11 @@
         let currentBookingData = null;
         let isBookingSuccess = false;
 
-        const connectionIndicator = document.getElementById('connectionIndicator');
+        let currentUser = null;
+        let pendingBookingRoom = null;
+
+        const connectionDot = document.getElementById('connectionDot');
+        const authArea = document.getElementById('authArea');
         const roomsGrid = document.getElementById('roomsGrid');
         const applyBtn = document.getElementById('applyFiltersBtn');
         const resetBtn = document.getElementById('resetFiltersBtn');
@@ -295,365 +370,422 @@
         const sortAscBtn = document.getElementById('sortAscBtn');
         const sortDescBtn = document.getElementById('sortDescBtn');
 
-        window.addEventListener('scroll', () => document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 80));
-
-        function collectFilters() {
-            const from = document.getElementById('filterFrom').value;
-            const to = document.getElementById('filterTo').value;
-            const roomClass = document.getElementById('filterRoomClass').value;
-            const capacity = document.getElementById('filterCapacity').value;
-            const minPrice = document.getElementById('filterMinPrice').value;
-            const maxPrice = document.getElementById('filterMaxPrice').value;
-            const floor = document.getElementById('filterFloor').value;
-            const viewSelect = document.getElementById('filterView').value;
-            const amenities = {};
-            document.querySelectorAll('#amenitiesGroup input[type="checkbox"][data-amenity]').forEach(cb => { if (cb.checked) amenities[cb.dataset.amenity] = true; });
-            if (viewSelect) amenities.view = viewSelect;
-            const payload = {};
-            if (from) payload.from = from;
-            if (to) payload.to = to;
-            if (roomClass) payload.room_class = roomClass;
-            if (capacity && !isNaN(parseInt(capacity))) payload.capacity = parseInt(capacity);
-            if (minPrice && !isNaN(parseFloat(minPrice))) payload.minimal_price = parseFloat(minPrice);
-            if (maxPrice && !isNaN(parseFloat(maxPrice))) payload.maximal_price = parseFloat(maxPrice);
-            if (floor && !isNaN(parseInt(floor))) payload.floor = parseInt(floor);
-            if (Object.keys(amenities).length > 0) payload.amenities = amenities;
-            return payload;
-        }
-
-        function resetFilters() {
-            document.querySelectorAll('#filtersPanel input, #filtersPanel select').forEach(el => { if(el.type !== 'checkbox') el.value = ''; else el.checked = false; });
-            document.getElementById('filterView').value = '';
-        }
-
-        async function fetchFreeRooms(filters = {}) {
-            roomsGrid.innerHTML = `<div class="room-card" style="padding:60px; text-align:center; grid-column:1/-1"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>`;
+        function decodeJWT(token) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/hotel`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(filters)
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                let rooms = [];
-                if (Array.isArray(data)) rooms = data;
-                else if (data.rooms && Array.isArray(data.rooms)) rooms = data.rooms;
-                else if (data.data && Array.isArray(data.data)) rooms = data.data;
-                else rooms = [];
-                currentRooms = rooms;
-                renderRooms(sortRooms(rooms, currentSort));
-                document.getElementById('roomsCountBadge').innerHTML = `<i class="fas fa-check-circle" style="color:var(--primary)"></i> ${rooms.length} room${rooms.length !== 1 ? 's' : ''}`;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        })
+                        .join('')
+                );
+                return JSON.parse(jsonPayload);
             } catch(e) {
-                roomsGrid.innerHTML = `<div class="room-card" style="padding:40px; grid-column:1/-1"><i class="fas fa-exclamation-triangle"></i> ${e.message}</div>`;
+                console.error('JWT decode error:', e);
+                return null;
             }
         }
 
-        function sortRooms(rooms, order) {
-            if(order === 'asc') return [...rooms].sort((a,b) => (a.price_per_night||0) - (b.price_per_night||0));
-            if(order === 'desc') return [...rooms].sort((a,b) => (b.price_per_night||0) - (a.price_per_night||0));
-            return rooms;
+        function extractUserFromJWT(decoded) {
+            if(!decoded) return null;
+            const email = decoded.email ||
+                decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
+                decoded['emailaddress'] || '';
+            const displayName = decoded.display_name ||
+                decoded.dislay_name ||
+                decoded.name ||
+                decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+                decoded['unique_name'] ||
+                (email ? email.split('@')[0] : 'User');
+            const sub = decoded.sub ||
+                decoded.nameid ||
+                decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
+                decoded['nameidentifier'] || '';
+            return { email, displayName, sub };
         }
 
+        function getJwtFromCookie() {
+            const match = document.cookie.match(/(?:^|;\s*)auth_token=([^;]*)/);
+            return match ? match[1] : null;
+        }
+
+        function saveAuth(jwt) {
+            const decoded = decodeJWT(jwt); const user = extractUserFromJWT(decoded);
+            if(!user) return false;
+            user.jwt = jwt; currentUser = user;
+            localStorage.setItem('hotelbookpro_jwt', jwt);
+            updateAuthUI(); return true;
+        }
+
+        function loadAuth() {
+            // 1. Попытка из куки (если HttpOnly = false)
+            const cookieToken = getJwtFromCookie();
+            if (cookieToken) {
+                if (saveAuth(cookieToken)) return;
+            }
+            // 2. Попытка из localStorage
+            const jwt = localStorage.getItem('hotelbookpro_jwt');
+            if (jwt) {
+                const decoded = decodeJWT(jwt);
+                if (decoded && (!decoded.exp || Date.now() < decoded.exp * 1000)) {
+                    const user = extractUserFromJWT(decoded);
+                    if (user) { user.jwt = jwt; currentUser = user; updateAuthUI(); return; }
+                }
+                localStorage.removeItem('hotelbookpro_jwt');
+            }
+            // 3. Не авторизован
+            currentUser = null;
+            updateAuthUI();
+        }
+
+        function clearAuth() {
+            currentUser = null;
+            localStorage.removeItem('hotelbookpro_jwt');
+            // Очистка куки (если не HttpOnly) — фронтенд не может удалить HttpOnly куку
+            document.cookie = 'auth_token=; Max-Age=0; path=/';
+            updateAuthUI();
+        }
+
+        function isAuthenticated() { return !!currentUser && !!currentUser.jwt; }
+
+        function getInitials(name) { if(!name) return '?'; const parts = name.trim().split(/\s+/); if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase(); return name.substring(0,2).toUpperCase(); }
+
+        function updateAuthUI() {
+            if(isAuthenticated()){
+                const shortName = currentUser.displayName.length > 15 ? currentUser.displayName.substring(0,13)+'…' : currentUser.displayName;
+                authArea.innerHTML = `<button class="btn-profile" id="openProfileBtn"><span class="btn-profile-avatar">${getInitials(currentUser.displayName)}</span><span>${escapeHtml(shortName)}</span><i class="fas fa-chevron-down" style="font-size:0.7rem; opacity:0.6;"></i></button>`;
+                document.getElementById('openProfileBtn')?.addEventListener('click', openProfileModal);
+            } else {
+                authArea.innerHTML = `<button class="btn-auth" id="openAuthBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>`;
+                document.getElementById('openAuthBtn')?.addEventListener('click', ()=> openAuthModal('login'));
+            }
+        }
+
+        function updateConnectionUI(connected) { connectionDot.classList.toggle('connected', connected); }
+
+        function openAuthModal(tab='login') {
+            document.getElementById('authModal').classList.remove('hidden'); switchAuthTab(tab);
+            document.getElementById('loginError').classList.add('hidden'); document.getElementById('registerError').classList.add('hidden');
+            document.getElementById('loginEmail').value=''; document.getElementById('loginPassword').value='';
+            document.getElementById('regDisplayName').value=''; document.getElementById('regEmail').value=''; document.getElementById('regPassword').value='';
+        }
+        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+        function switchAuthTab(tab) {
+            document.querySelectorAll('[data-auth-tab]').forEach(t=> t.classList.toggle('active', t.dataset.authTab===tab));
+            document.getElementById('loginForm').classList.toggle('hidden', tab!=='login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab!=='register');
+            document.getElementById('authModalTitle').textContent = tab==='login'?'Sign In':'Create Account';
+        }
+        document.querySelectorAll('[data-auth-tab]').forEach(b=> b.addEventListener('click', ()=> switchAuthTab(b.dataset.authTab)));
+        document.getElementById('closeAuthModalBtn')?.addEventListener('click', closeAuthModal);
+        document.getElementById('cancelAuthModalBtn')?.addEventListener('click', closeAuthModal);
+
+        async function handleAuthResponse(res, errDiv) {
+            const text = await res.text();
+            let data = null;
+            try { data = JSON.parse(text); } catch(e) { data = null; }
+            if (!res.ok || !data || !data.success) {
+                const msg = (data && (data.message||data.error)) || text || 'Request failed';
+                throw new Error(msg);
+            }
+            return data;
+        }
+
+        async function performAuth(url, body, errDiv, btn) {
+            try {
+                const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify(body) });
+                const data = await handleAuthResponse(res, errDiv);
+                // Получаем JWT из ответа или из куки
+                let jwt = data.jwt || getJwtFromCookie();
+                if (!jwt) throw new Error('Authentication succeeded but no token received');
+                saveAuth(jwt);
+                closeAuthModal();
+                if (pendingBookingRoom) {
+                    const room = pendingBookingRoom;
+                    pendingBookingRoom = null;
+                    openBookingFormModal(room);
+                }
+            } catch (err) {
+                errDiv.innerText = err.message;
+                errDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.originalHtml;
+            }
+        }
+
+        document.getElementById('loginForm')?.addEventListener('submit', function(e){
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errDiv = document.getElementById('loginError');
+            const btn = document.getElementById('loginSubmitBtn');
+            if(!email||!password) { errDiv.innerText='Please fill all fields'; errDiv.classList.remove('hidden'); return; }
+            errDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+            performAuth(`${API_BASE_URL}/api/auth/login`, {email, password_plain: password}, errDiv, btn);
+        });
+
+        document.getElementById('registerForm')?.addEventListener('submit', function(e){
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const displayName = document.getElementById('regDisplayName').value.trim();
+            const errDiv = document.getElementById('registerError');
+            const btn = document.getElementById('registerSubmitBtn');
+            if(!email||!password||!displayName) { errDiv.innerText='Please fill all fields'; errDiv.classList.remove('hidden'); return; }
+            errDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+            performAuth(`${API_BASE_URL}/api/auth/reg`, {email, password, dislay_name: displayName}, errDiv, btn);
+        });
+
+        function openProfileModal() {
+            if(!isAuthenticated()) return;
+            document.getElementById('profileModal').classList.remove('hidden');
+            switchProfileTab('info');
+            document.getElementById('profileAvatarLarge').textContent = getInitials(currentUser.displayName);
+            document.getElementById('profileDisplayNameLarge').textContent = currentUser.displayName;
+            document.getElementById('profileEmailLarge').textContent = currentUser.email;
+            document.getElementById('profileSub').textContent = currentUser.sub || '—';
+            document.getElementById('profileMemberSince').textContent = new Date().toLocaleDateString();
+        }
+        function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+        function switchProfileTab(tab) {
+            document.querySelectorAll('[data-profile-tab]').forEach(t=> t.classList.toggle('active', t.dataset.profileTab===tab));
+            document.getElementById('profilePanelInfo').classList.toggle('hidden', tab!=='info');
+            document.getElementById('profilePanelBalance').classList.toggle('hidden', tab!=='balance');
+            document.getElementById('profilePanelBookings').classList.toggle('hidden', tab!=='bookings');
+        }
+        document.querySelectorAll('[data-profile-tab]').forEach(b=> b.addEventListener('click', ()=> switchProfileTab(b.dataset.profileTab)));
+        document.getElementById('closeProfileModalBtn')?.addEventListener('click', closeProfileModal);
+        document.getElementById('closeProfileFooterBtn')?.addEventListener('click', closeProfileModal);
+        document.getElementById('profileLogoutBtn')?.addEventListener('click', ()=>{ clearAuth(); closeProfileModal(); });
+
+        window.addEventListener('scroll', ()=> document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY>80));
+
+        function collectFilters() {
+            const from = document.getElementById('filterFrom').value; const to = document.getElementById('filterTo').value;
+            const roomClass = document.getElementById('filterRoomClass').value; const capacity = document.getElementById('filterCapacity').value;
+            const minPrice = document.getElementById('filterMinPrice').value; const maxPrice = document.getElementById('filterMaxPrice').value;
+            const floor = document.getElementById('filterFloor').value; const viewSelect = document.getElementById('filterView').value;
+            const amenities = {};
+            document.querySelectorAll('#amenitiesGroup input[type="checkbox"][data-amenity]').forEach(cb=> { if(cb.checked) amenities[cb.dataset.amenity]=true; });
+            if(viewSelect) amenities.view = viewSelect;
+            const payload = {};
+            if(from) payload.from = from; if(to) payload.to = to;
+            if(roomClass) payload.room_class = roomClass;
+            if(capacity && !isNaN(parseInt(capacity))) payload.capacity = parseInt(capacity);
+            if(minPrice && !isNaN(parseFloat(minPrice))) payload.minimal_price = parseFloat(minPrice);
+            if(maxPrice && !isNaN(parseFloat(maxPrice))) payload.maximal_price = parseFloat(maxPrice);
+            if(floor && !isNaN(parseInt(floor))) payload.floor = parseInt(floor);
+            if(Object.keys(amenities).length>0) payload.amenities = amenities;
+            return payload;
+        }
+        function resetFilters() {
+            document.querySelectorAll('#filtersPanel input, #filtersPanel select').forEach(el=> { if(el.type!=='checkbox') el.value=''; else el.checked=false; });
+            document.getElementById('filterView').value='';
+        }
+        async function fetchFreeRooms(filters={}) {
+            roomsGrid.innerHTML = `<div class="room-card" style="padding:60px; text-align:center; grid-column:1/-1"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>`;
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/hotel`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(filters) });
+                if(!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                let rooms = []; if(Array.isArray(data)) rooms=data; else if(data.rooms) rooms=data.rooms; else if(data.data) rooms=data.data;
+                currentRooms = rooms; renderRooms(sortRooms(rooms, currentSort));
+                document.getElementById('roomsCountBadge').innerHTML = `<i class="fas fa-check-circle" style="color:var(--primary)"></i> ${rooms.length} room${rooms.length!==1?'s':''}`;
+            } catch(e) { roomsGrid.innerHTML = `<div class="room-card" style="padding:40px; grid-column:1/-1"><i class="fas fa-exclamation-triangle"></i> ${e.message}</div>`; }
+        }
+        function sortRooms(rooms, order) {
+            if(order==='asc') return [...rooms].sort((a,b)=>(a.price_per_night||0)-(b.price_per_night||0));
+            if(order==='desc') return [...rooms].sort((a,b)=>(b.price_per_night||0)-(a.price_per_night||0));
+            return rooms;
+        }
         function applySortAndRender() { renderRooms(sortRooms(currentRooms, currentSort)); updateSortButtonState(); }
-        function updateSortButtonState() { sortAscBtn.classList.toggle('active', currentSort === 'asc'); sortDescBtn.classList.toggle('active', currentSort === 'desc'); }
+        function updateSortButtonState() { sortAscBtn.classList.toggle('active', currentSort==='asc'); sortDescBtn.classList.toggle('active', currentSort==='desc'); }
 
         function renderRooms(rooms) {
             roomsGrid.innerHTML = '';
             if(!rooms.length) { roomsGrid.innerHTML = `<div class="room-card" style="padding:40px; grid-column:1/-1"><i class="fas fa-bed"></i> No rooms match</div>`; return; }
             rooms.forEach((room, idx) => {
                 const roomId = room.roomId || room.room_id || room.id || 'N/A';
-                const type = room.type || 'Standard';
-                const capacity = room.capacity || 2;
-                const floor = room.floor ?? '—';
-                const price = room.price_per_night || room.pricePerNight || 0;
-                const desc = room.description || 'Elegant room';
-                const amenities = room.amenities || {};
+                const type = room.type || 'Standard'; const capacity = room.capacity || 2;
+                const floor = room.floor ?? '—'; const price = room.price_per_night || room.pricePerNight || 0;
+                const desc = room.description || 'Elegant room'; const amenities = room.amenities || {};
                 const amenityList = Object.entries(amenities).filter(([,v])=>v).map(([k])=>k).slice(0,4);
+                const photos = room.photos || [];
+                const firstPhoto = photos.length>0 ? photos[0] : null;
                 const card = document.createElement('div'); card.className = 'room-card'; card.style.animationDelay = `${idx*0.04}s`;
-                card.innerHTML = `
-                    <div class="room-img-placeholder"><div class="room-badge">${escapeHtml(type)}</div><i class="fas fa-building"></i></div>
-                    <div class="room-info">
-                        <div class="room-title-row"><span class="room-title">${escapeHtml(roomId)}</span><span class="room-price-badge">$${price}<small>/night</small></span></div>
-                        <div class="room-type">${capacity} guests · Floor ${floor}</div>
-                        <div class="room-details"><span><i class="fas fa-layer-group"></i> Floor ${floor}</span><span><i class="fas fa-tag"></i> $${price}/night</span></div>
-                        <div class="amenities">${amenityList.map(a=>`<span class="amenity-tag">${escapeHtml(a)}</span>`).join('')}</div>
-                        <div class="room-description">${escapeHtml(desc)}</div>
-                        <button class="btn-book" data-room-id="${escapeHtml(roomId)}" data-price="${price}" data-type="${escapeHtml(type)}" data-desc="${escapeHtml(desc)}"><i class="fas fa-calendar-check"></i> Book Now</button>
-                        <button class="btn-details" data-room-id="${escapeHtml(roomId)}" data-price="${price}" data-type="${escapeHtml(type)}" data-desc="${escapeHtml(desc)}" data-amenities='${JSON.stringify(amenities)}'><i class="fas fa-info-circle"></i> View Details</button>
-                    </div>
+                const imgDiv = document.createElement('div'); imgDiv.className = 'room-img-placeholder';
+                if(firstPhoto) {
+                    imgDiv.style.backgroundImage = `url(${firstPhoto})`;
+                    imgDiv.innerHTML = `<div class="room-badge">${escapeHtml(type)}</div>`;
+                } else {
+                    imgDiv.classList.add('no-photo');
+                    imgDiv.innerHTML = `<i class="fas fa-building"></i><div class="room-badge">${escapeHtml(type)}</div>`;
+                }
+                card.appendChild(imgDiv);
+                const info = document.createElement('div'); info.className = 'room-info';
+                info.innerHTML = `
+                    <div class="room-title-row"><span class="room-title">${escapeHtml(roomId)}</span><span class="room-price-badge">$${price}<small>/night</small></span></div>
+                    <div class="room-type">${capacity} guests · Floor ${floor}</div>
+                    <div class="room-details"><span><i class="fas fa-layer-group"></i> Floor ${floor}</span><span><i class="fas fa-tag"></i> $${price}/night</span></div>
+                    <div class="amenities">${amenityList.map(a=>`<span class="amenity-tag">${escapeHtml(a)}</span>`).join('')}</div>
+                    <div class="room-description">${escapeHtml(desc)}</div>
+                    <button class="btn-book" data-room-id="${escapeHtml(roomId)}" data-price="${price}" data-type="${escapeHtml(type)}" data-desc="${escapeHtml(desc)}"><i class="fas fa-calendar-check"></i> Book Now</button>
+                    <button class="btn-details" data-room-id="${escapeHtml(roomId)}" data-price="${price}" data-type="${escapeHtml(type)}" data-desc="${escapeHtml(desc)}" data-amenities='${JSON.stringify(amenities)}' data-photos='${JSON.stringify(photos)}'><i class="fas fa-info-circle"></i> View Details</button>
                 `;
-                roomsGrid.appendChild(card);
+                card.appendChild(info); roomsGrid.appendChild(card);
             });
-            document.querySelectorAll('.btn-book').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); const btn = e.currentTarget; openBookingFormModal({ roomId: btn.dataset.roomId, pricePerNight: parseFloat(btn.dataset.price), type: btn.dataset.type, description: btn.dataset.desc }); }));
-            document.querySelectorAll('.btn-details').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); const btn = e.currentTarget; openRoomDetailModal({ roomId: btn.dataset.roomId, pricePerNight: parseFloat(btn.dataset.price), type: btn.dataset.type, description: btn.dataset.desc, amenities: JSON.parse(btn.dataset.amenities || '{}') }); }));
+            document.querySelectorAll('.btn-book').forEach(b=> b.addEventListener('click', (e)=> { e.stopPropagation(); const btn=e.currentTarget; handleBookNowClick({ roomId:btn.dataset.roomId, pricePerNight:parseFloat(btn.dataset.price), type:btn.dataset.type, description:btn.dataset.desc }); }));
+            document.querySelectorAll('.btn-details').forEach(b=> b.addEventListener('click', (e)=> { e.stopPropagation(); const btn=e.currentTarget; openRoomDetailModal({ roomId:btn.dataset.roomId, pricePerNight:parseFloat(btn.dataset.price), type:btn.dataset.type, description:btn.dataset.desc, amenities:JSON.parse(btn.dataset.amenities||'{}'), photos:JSON.parse(btn.dataset.photos||'[]') }); }));
         }
 
-        function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+        function escapeHtml(s) { return String(s).replace(/[&<>]/g, m=> m==='&'?'&amp;':m==='<'?'&lt;':'>'); }
+
+        function handleBookNowClick(room) {
+            if(!isAuthenticated()) { pendingBookingRoom = room; openAuthModal('login'); document.getElementById('loginError').innerText='Please sign in or create an account to book.'; document.getElementById('loginError').classList.remove('hidden'); }
+            else { openBookingFormModal(room); }
+        }
 
         function openRoomDetailModal(room) {
-            const modal = document.getElementById('roomDetailModal');
-            const body = document.getElementById('roomDetailBody');
-            const amenities = room.amenities || {};
-            const amenityStr = Object.entries(amenities).filter(([,v])=>v).map(([k])=>k.replace(/_/g,' ')).join(', ') || 'Standard';
+            const modal = document.getElementById('roomDetailModal'); const body = document.getElementById('roomDetailBody');
+            const amenities = room.amenities || {}; const amenityStr = Object.entries(amenities).filter(([,v])=>v).map(([k])=>k.replace(/_/g,' ')).join(', ') || 'Standard';
+            const photos = room.photos || [];
+            let carouselHtml = '';
+            if(photos.length>0) {
+                carouselHtml = `<div class="carousel-container" id="detailCarousel">`;
+                photos.forEach((photo, i)=> { carouselHtml += `<img src="${photo}" class="carousel-slide ${i===0?'active':''}" alt="Photo ${i+1}">`; });
+                carouselHtml += `<button class="carousel-btn prev" id="carouselPrevBtn"><i class="fas fa-chevron-left"></i></button><button class="carousel-btn next" id="carouselNextBtn"><i class="fas fa-chevron-right"></i></button><span class="carousel-counter" id="carouselCounter">1/${photos.length}</span></div>`;
+            }
             body.innerHTML = `<h3 style="margin-bottom:12px;">${escapeHtml(room.roomId)} · ${escapeHtml(room.type)}</h3>
                 <p style="color:var(--text-secondary);"><i class="fas fa-dollar-sign"></i> $${room.pricePerNight} / night</p>
+                ${carouselHtml}
                 <p>${escapeHtml(room.description)}</p>
                 <div style="background:rgba(255,255,255,0.03); padding:16px; border-radius:20px;"><strong style="color:var(--primary-light)">Amenities:</strong> ${escapeHtml(amenityStr)}</div>`;
-            document.getElementById('detailBookBtn').onclick = () => { modal.classList.add('hidden'); openBookingFormModal(room); };
+            document.getElementById('detailBookBtn').onclick = ()=>{ modal.classList.add('hidden'); handleBookNowClick(room); };
             modal.classList.remove('hidden');
+            if(photos.length>1) {
+                let currentSlide = 0;
+                const slides = document.querySelectorAll('#detailCarousel .carousel-slide');
+                const counter = document.getElementById('carouselCounter');
+                function updateSlide(index) {
+                    slides.forEach(s=> s.classList.remove('active')); slides[index].classList.add('active');
+                    if(counter) counter.textContent = `${index+1}/${slides.length}`;
+                }
+                document.getElementById('carouselPrevBtn')?.addEventListener('click', ()=> { currentSlide = (currentSlide-1+slides.length)%slides.length; updateSlide(currentSlide); });
+                document.getElementById('carouselNextBtn')?.addEventListener('click', ()=> { currentSlide = (currentSlide+1)%slides.length; updateSlide(currentSlide); });
+            }
         }
 
         function openBookingFormModal(room) {
-            document.getElementById('selectedRoomId').value = room.roomId;
-            document.getElementById('selectedPricePerNight').value = room.pricePerNight;
+            document.getElementById('selectedRoomId').value = room.roomId; document.getElementById('selectedPricePerNight').value = room.pricePerNight;
             document.getElementById('bookingRoomInfo').innerHTML = `<strong>${room.roomId}</strong> (${room.type}) · $${room.pricePerNight}/night`;
             const today = new Date().toISOString().split('T')[0];
             const checkIn = document.getElementById('checkInDate'), checkOut = document.getElementById('checkOutDate');
-            checkIn.min = today; checkOut.min = today;
-            checkIn.value = ''; checkOut.value = '';
-            document.getElementById('totalPriceDisplay').value = '— select dates';
-            document.getElementById('formModalError').classList.add('hidden');
-            const updateTotal = () => {
-                const start = checkIn.value, end = checkOut.value;
-                const currency = document.getElementById('currencySelect').value;
-                if(start && end && new Date(end) > new Date(start)) {
-                    const nights = Math.ceil((new Date(end) - new Date(start)) / (1000*60*60*24));
-                    const totalUSD = room.pricePerNight * nights;
-                    const converted = totalUSD * EXCHANGE_RATES[currency];
-                    const symbol = { USD: '$', EUR: '€', GBP: '£', RUB: '₽' }[currency];
-                    document.getElementById('totalPriceDisplay').value = `${converted.toFixed(2)} ${symbol}`;
-                } else document.getElementById('totalPriceDisplay').value = '— select dates';
+            checkIn.min = today; checkOut.min = today; checkIn.value=''; checkOut.value='';
+            document.getElementById('totalPriceDisplay').value = '— select dates'; document.getElementById('formModalError').classList.add('hidden');
+            if(isAuthenticated()) {
+                document.getElementById('guestName').value = currentUser.displayName || '';
+                document.getElementById('guestEmail').value = currentUser.email || '';
+            } else {
+                document.getElementById('guestName').value = ''; document.getElementById('guestEmail').value = '';
+            }
+            document.getElementById('guestPhone').value='';
+            const updateTotal = ()=>{
+                const start=checkIn.value, end=checkOut.value; const currency=document.getElementById('currencySelect').value;
+                if(start&&end&&new Date(end)>new Date(start)) {
+                    const nights = Math.ceil((new Date(end)-new Date(start))/86400000);
+                    const totalUSD = room.pricePerNight*nights;
+                    const converted = totalUSD*EXCHANGE_RATES[currency];
+                    document.getElementById('totalPriceDisplay').value = `${converted.toFixed(2)} ${ {USD:'$',EUR:'€',GBP:'£',RUB:'₽'}[currency] }`;
+                } else document.getElementById('totalPriceDisplay').value='— select dates';
             };
-            checkIn.onchange = updateTotal; checkOut.onchange = updateTotal;
-            document.getElementById('currencySelect').onchange = updateTotal;
+            checkIn.onchange=updateTotal; checkOut.onchange=updateTotal; document.getElementById('currencySelect').onchange=updateTotal;
             document.getElementById('bookingFormModal').classList.remove('hidden');
         }
 
-        function updateConnectionUI(connected) {
-            connectionIndicator.innerHTML = connected ? '<i class="fas fa-circle" style="color:#4ade80"></i> live' : '<i class="fas fa-circle" style="color:#f87171"></i> offline';
+        async function submitBooking() {
+            const roomId = document.getElementById('selectedRoomId').value; const name = document.getElementById('guestName').value.trim();
+            const email = document.getElementById('guestEmail').value.trim(); const phone = document.getElementById('guestPhone').value.trim();
+            const checkIn = document.getElementById('checkInDate').value; const checkOut = document.getElementById('checkOutDate').value;
+            const currency = document.getElementById('currencySelect').value;
+            if(!name||!email||!phone||!checkIn||!checkOut) { document.getElementById('formModalError').innerText='Please fill all fields'; document.getElementById('formModalError').classList.remove('hidden'); return; }
+            const nights = Math.ceil((new Date(checkOut)-new Date(checkIn))/86400000);
+            if(nights<=0) { document.getElementById('formModalError').innerText='Invalid dates'; document.getElementById('formModalError').classList.remove('hidden'); return; }
+            const pricePerNight = parseFloat(document.getElementById('selectedPricePerNight').value);
+            const totalUSD = pricePerNight*nights;
+            const userId = isAuthenticated() ? (currentUser.sub || '') : '';
+            const payload = {
+                userId: userId,
+                room_id: roomId,
+                guest_name: name,
+                guest_email: email,
+                guest_phone: phone,
+                check_in: new Date(checkIn).toISOString(),
+                check_out: new Date(checkOut).toISOString(),
+                total_price: totalUSD,
+                currency: currency,
+                payment_method: document.getElementById('paymentMethodSelect').value,
+                payment_reservation_id: `RES_${Date.now()}`
+            };
+            currentBookingData = { roomId, guestName: name, checkIn, checkOut, totalPrice: totalUSD, currency };
+            const btn = document.getElementById('submitBookingBtn'); btn.disabled=true; document.getElementById('formModalError').classList.add('hidden');
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/booking`, { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify(payload) });
+                if(!res.ok) throw new Error(await res.text()||'Booking failed');
+                const data = await res.json();
+                document.getElementById('bookingFormModal').classList.add('hidden'); openSagaProgressModal(data.sagaId);
+                await connectSignalR(); await connection.invoke("JoinSagaGroup", data.sagaId);
+                currentTrackingSagaId = data.sagaId; pendingCodeSagaId = data.sagaId;
+            } catch(e) { document.getElementById('formModalError').innerText = e.message; document.getElementById('formModalError').classList.remove('hidden'); }
+            finally { btn.disabled=false; }
         }
 
         async function initSignalR() {
-            if(connection) return;
-            connection = new signalR.HubConnectionBuilder().withUrl(SIGNALR_HUB_URL).withAutomaticReconnect().build();
-
-            // === ОБРАБОТКА ReceiveSagaProgress ===
-            connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => {
-                if(sagaId === currentTrackingSagaId && activeSagaModalOpen && !isBookingSuccess) {
-                    // === УСПЕШНОЕ ЗАВЕРШЕНИЕ БРОНИРОВАНИЯ ===
-                    if (step === "Booking" && status === "Completed") {
-                        showSuccessUI(message || `Room booking completed successfully.`);
-                        return;
-                    }
-                    // Обычное обновление прогресса
-                    updateSagaStatusFromStep(step, status, message);
-                }
-            });
-
-            // === ОБРАБОТКА ReceiveSagaError ===
-            connection.on("ReceiveSagaError", (sagaId, step, status, message) => {
-                if(sagaId === currentTrackingSagaId && activeSagaModalOpen && !isBookingSuccess) {
-                    // === ОШИБКА ПРОВЕРКИ КОДА ===
-                    if (step === "Notification" && status === "Cancelled" && message && message.includes("Confirm Notification cancelled")) {
-                        handleWrongCode();
-                        return;
-                    }
-                    // Другие ошибки Saga
-                    const errDiv = document.getElementById('sagaCodeError');
-                    errDiv.innerText = `Error: ${message || 'Unknown error occurred'}`;
-                    errDiv.classList.remove('hidden');
-                    enableCodeInput();
-                }
-            });
-
-            connection.onclose(() => { isConnected=false; updateConnectionUI(false); });
-            connection.onreconnected(() => { isConnected=true; updateConnectionUI(true); });
+            if(connection) return; connection = new signalR.HubConnectionBuilder().withUrl(SIGNALR_HUB_URL).withAutomaticReconnect().build();
+            connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => { if(sagaId===currentTrackingSagaId&&activeSagaModalOpen&&!isBookingSuccess){ if(step==="Booking"&&status==="Completed"){ showSuccessUI(message); return; } updateSagaStatusFromStep(step,status,message); } });
+            connection.on("ReceiveSagaError", (sagaId, step, status, message) => { if(sagaId===currentTrackingSagaId&&activeSagaModalOpen&&!isBookingSuccess){ if(step==="Notification"&&status==="Cancelled"&&message&&message.includes("Confirm Notification cancelled")){ handleWrongCode(); return; } document.getElementById('sagaCodeError').innerText = `Error: ${message||'Unknown error'}`; document.getElementById('sagaCodeError').classList.remove('hidden'); enableCodeInput(); } });
+            connection.onclose(()=>{ isConnected=false; updateConnectionUI(false); }); connection.onreconnected(()=>{ isConnected=true; updateConnectionUI(true); });
         }
+        async function connectSignalR() { if(isConnected) return; await initSignalR(); await connection.start(); isConnected=true; updateConnectionUI(true); }
 
-        async function connectSignalR() { if(isConnected) return; await initSignalR(); await connection.start(); isConnected = true; updateConnectionUI(true); }
-
-        function updateSagaStatusFromStep(step, status, message, isError = false) {
-            let inc = (status?.toLowerCase().includes('completed')||status?.toLowerCase().includes('success')) ? 1 : (status?.toLowerCase().includes('error') ? 1 : 0.5);
-            currentSagaPercent = Math.min(100, currentSagaPercent + inc * (100/TOTAL_SAGA_STEPS));
-            if(currentSagaPercent < 5) currentSagaPercent = 5;
-            document.getElementById('sagaProgressBar').style.width = `${currentSagaPercent}%`;
-            document.getElementById('sagaProgressPercent').innerText = `${Math.round(currentSagaPercent)}%`;
-            let statusText = message || `${step}: ${status}`;
-            if(isError) statusText = `⚠️ ${statusText}`;
-            document.getElementById('sagaProgressLabel').innerText = statusText;
-        }
-
-        // === ОБРАБОТКА НЕВЕРНОГО КОДА ===
-        function handleWrongCode() {
-            const errDiv = document.getElementById('sagaCodeError');
-            errDiv.innerText = '❌ Incorrect confirmation code. Please try again.';
-            errDiv.classList.remove('hidden');
-            enableCodeInput();
-        }
-
-        // === РАЗБЛОКИРОВКА ПОЛЯ ВВОДА (вызывается всегда, когда можно вводить код) ===
-        function enableCodeInput() {
-            const codeInput = document.getElementById('sagaCodeInput');
-            const verifyBtn = document.getElementById('submitSagaCodeBtn');
-            if (codeInput) codeInput.disabled = false;
-            if (verifyBtn) {
-                verifyBtn.disabled = false;
-                verifyBtn.innerHTML = 'Verify Code';
-            }
-            if (codeInput) {
-                codeInput.value = '';
-                codeInput.focus();
-            }
-        }
-
-        // === БЛОКИРОВКА ПОЛЯ ВВОДА (во время отправки/ожидания) ===
-        function disableCodeInput() {
-            const codeInput = document.getElementById('sagaCodeInput');
-            const verifyBtn = document.getElementById('submitSagaCodeBtn');
-            if (codeInput) codeInput.disabled = true;
-            if (verifyBtn) {
-                verifyBtn.disabled = true;
-                verifyBtn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
-            }
-        }
-
-        function resetVerificationUI() {
-            const errDiv = document.getElementById('sagaCodeError');
-            errDiv.classList.add('hidden');
-            errDiv.innerText = '';
-            document.getElementById('codeVerificationSection').style.display = 'block';
-            document.getElementById('successSection').classList.add('hidden');
-            isBookingSuccess = false;
-            enableCodeInput();
-        }
-
-        function showSuccessUI(message) {
-            isBookingSuccess = true;
-            document.getElementById('codeVerificationSection').style.display = 'none';
-            const successSection = document.getElementById('successSection');
-            const successMessage = document.getElementById('successMessage');
-            if (currentBookingData) {
-                const checkIn = new Date(currentBookingData.checkIn).toLocaleDateString();
-                const checkOut = new Date(currentBookingData.checkOut).toLocaleDateString();
-                successMessage.innerText = `${currentBookingData.roomId} has been received on period from ${checkIn} to ${checkOut}.`;
-            } else {
-                successMessage.innerText = message || 'Booking confirmed successfully!';
-            }
-            successSection.classList.remove('hidden');
-            document.getElementById('sagaProgressBar').style.width = '100%';
-            document.getElementById('sagaProgressPercent').innerText = '100%';
-            document.getElementById('sagaProgressLabel').innerText = '✅ Booking confirmed!';
-        }
-
-        async function submitBooking() {
-            const roomId = document.getElementById('selectedRoomId').value;
-            const name = document.getElementById('guestName').value.trim();
-            const email = document.getElementById('guestEmail').value.trim();
-            const phone = document.getElementById('guestPhone').value.trim();
-            const checkIn = document.getElementById('checkInDate').value;
-            const checkOut = document.getElementById('checkOutDate').value;
-            const currency = document.getElementById('currencySelect').value;
-            if(!name||!email||!phone||!checkIn||!checkOut) { document.getElementById('formModalError').innerText = 'Please fill all fields'; document.getElementById('formModalError').classList.remove('hidden'); return; }
-            const nights = Math.ceil((new Date(checkOut)-new Date(checkIn))/86400000);
-            if(nights<=0) { document.getElementById('formModalError').innerText = 'Invalid dates'; document.getElementById('formModalError').classList.remove('hidden'); return; }
-            const pricePerNight = parseFloat(document.getElementById('selectedPricePerNight').value);
-            const totalUSD = pricePerNight * nights;
-            const payload = { room_id: roomId, guest_name: name, guest_email: email, guest_phone: phone, check_in: new Date(checkIn).toISOString(), check_out: new Date(checkOut).toISOString(), total_price: totalUSD, currency: currency, payment_method: document.getElementById('paymentMethodSelect').value, payment_reservation_id: `RES_${Date.now()}` };
-
-            currentBookingData = { roomId, guestName: name, checkIn, checkOut, totalPrice: totalUSD, currency };
-
-            const btn = document.getElementById('submitBookingBtn'); btn.disabled = true;
-            document.getElementById('formModalError').classList.add('hidden');
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/booking`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-                if(!res.ok) throw new Error(await res.text() || `Booking failed`);
-                const data = await res.json();
-                document.getElementById('bookingFormModal').classList.add('hidden');
-                openSagaProgressModal(data.sagaId);
-                await connectSignalR();
-                await connection.invoke("JoinSagaGroup", data.sagaId);
-                currentTrackingSagaId = data.sagaId;
-                pendingCodeSagaId = data.sagaId;
-            } catch(e) { document.getElementById('formModalError').innerText = e.message; document.getElementById('formModalError').classList.remove('hidden'); } finally { btn.disabled = false; }
-        }
+        function updateSagaStatusFromStep(step,status,message) { let inc = (status?.toLowerCase().includes('completed')||status?.toLowerCase().includes('success'))?1:0.5; currentSagaPercent = Math.min(100, currentSagaPercent+inc*(100/TOTAL_SAGA_STEPS)); document.getElementById('sagaProgressBar').style.width=`${currentSagaPercent}%`; document.getElementById('sagaProgressPercent').innerText=`${Math.round(currentSagaPercent)}%`; document.getElementById('sagaProgressLabel').innerText = message||`${step}: ${status}`; }
+        function handleWrongCode() { document.getElementById('sagaCodeError').innerText='❌ Incorrect code.'; document.getElementById('sagaCodeError').classList.remove('hidden'); enableCodeInput(); }
+        function enableCodeInput() { const ci=document.getElementById('sagaCodeInput'), vb=document.getElementById('submitSagaCodeBtn'); if(ci) ci.disabled=false; if(vb){ vb.disabled=false; vb.innerHTML='Verify Code'; } if(ci){ ci.value=''; ci.focus(); } }
+        function disableCodeInput() { const ci=document.getElementById('sagaCodeInput'), vb=document.getElementById('submitSagaCodeBtn'); if(ci) ci.disabled=true; if(vb){ vb.disabled=true; vb.innerHTML='<span class="loading-spinner"></span> Verifying...'; } }
+        function resetVerificationUI() { document.getElementById('sagaCodeError').classList.add('hidden'); document.getElementById('codeVerificationSection').style.display='block'; document.getElementById('successSection').classList.add('hidden'); isBookingSuccess=false; enableCodeInput(); }
+        function showSuccessUI(message) { isBookingSuccess=true; document.getElementById('codeVerificationSection').style.display='none'; document.getElementById('successSection').classList.remove('hidden'); document.getElementById('sagaProgressBar').style.width='100%'; document.getElementById('sagaProgressPercent').innerText='100%'; document.getElementById('sagaProgressLabel').innerText='✅ Booking confirmed!'; }
 
         function openSagaProgressModal(sagaId) {
-            currentSagaPercent = 0;
-            isBookingSuccess = false;
-            document.getElementById('sagaProgressBar').style.width = '0%';
-            document.getElementById('sagaProgressLabel').innerText = 'Initializing saga...';
-            document.getElementById('sagaProgressPercent').innerText = '0%';
-            document.getElementById('sagaStepsContainer').innerHTML = '';
-            resetVerificationUI();
-            activeSagaModalOpen = true;
-            currentTrackingSagaId = sagaId;
-            pendingCodeSagaId = sagaId;
+            currentSagaPercent=0; isBookingSuccess=false; document.getElementById('sagaProgressBar').style.width='0%'; document.getElementById('sagaProgressLabel').innerText='Initializing...';
+            document.getElementById('sagaProgressPercent').innerText='0%'; resetVerificationUI(); activeSagaModalOpen=true; currentTrackingSagaId=sagaId; pendingCodeSagaId=sagaId;
             document.getElementById('sagaProgressModal').classList.remove('hidden');
         }
 
-        // === ОБРАБОТКА ОТПРАВКИ КОДА ПОДТВЕРЖДЕНИЯ ===
-        const submitCodeBtn = document.getElementById('submitSagaCodeBtn');
-        if (submitCodeBtn) {
-            submitCodeBtn.onclick = async function() {
-                // Если уже успешно забронировано — игнорируем
-                if (isBookingSuccess) return;
-
-                const codeInput = document.getElementById('sagaCodeInput');
-                const verifyBtn = document.getElementById('submitSagaCodeBtn');
-                const code = codeInput?.value.trim();
-
-                if (!code || code.length !== 4) {
-                    const errDiv = document.getElementById('sagaCodeError');
-                    errDiv.innerText = 'Please enter the 4-digit confirmation code';
-                    errDiv.classList.remove('hidden');
-                    return;
-                }
-
-                const sagaId = pendingCodeSagaId || currentTrackingSagaId;
-                if (!sagaId) return;
-
-                // Блокируем ввод и показываем загрузку
-                const errDiv = document.getElementById('sagaCodeError');
-                errDiv.classList.add('hidden');
-                disableCodeInput();
-
-                try {
-                    // Отправляем код на бэкенд
-                    await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sagaId: sagaId, code: code })
-                    });
-                    // НЕ ждём здесь ответа — результат придёт через SignalR:
-                    // - ReceiveSagaError с "Cancelled" = неверный код → handleWrongCode()
-                    // - ReceiveSagaProgress с "Booking"/"Completed" = успех → showSuccessUI()
-
-                } catch (netErr) {
-                    // Сетевая ошибка при отправке запроса
-                    errDiv.innerText = `Network error: ${netErr.message}. Please try again.`;
-                    errDiv.classList.remove('hidden');
-                    enableCodeInput();
-                }
-            };
-        }
-
-        document.getElementById('btnOk')?.addEventListener('click', () => {
-            document.getElementById('sagaProgressModal').classList.add('hidden');
-            fetchFreeRooms(collectFilters());
+        document.getElementById('submitSagaCodeBtn')?.addEventListener('click', async function(){
+            if(isBookingSuccess) return; const code = document.getElementById('sagaCodeInput')?.value.trim();
+            if(!code||code.length!==4) { document.getElementById('sagaCodeError').innerText='Enter 4-digit code'; document.getElementById('sagaCodeError').classList.remove('hidden'); return; }
+            const sagaId = pendingCodeSagaId||currentTrackingSagaId; if(!sagaId) return;
+            document.getElementById('sagaCodeError').classList.add('hidden'); disableCodeInput();
+            try { await fetch(`${API_BASE_URL}/api/booking/${sagaId}/confirm`, { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify({sagaId, code}) }); }
+            catch(netErr) { document.getElementById('sagaCodeError').innerText=`Network error: ${netErr.message}`; document.getElementById('sagaCodeError').classList.remove('hidden'); enableCodeInput(); }
         });
 
-        document.getElementById('btnReceipt')?.addEventListener('click', () => {
-            if (!currentBookingData) return;
-            const checkIn = new Date(currentBookingData.checkIn).toLocaleDateString();
-            const checkOut = new Date(currentBookingData.checkOut).toLocaleDateString();
-            const symbol = { USD: '$', EUR: '€', GBP: '£', RUB: '₽' }[currentBookingData.currency] || '$';
-            const receipt = `🏨 HOTELBOOKPRO RECEIPT\n━━━━━━━━━━━━━━━━━━━━\nBooking ID: ${currentBookingData.roomId}\nGuest: ${currentBookingData.guestName}\n━━━━━━━━━━━━━━━━━━━━\nCheck-in:  ${checkIn}\nCheck-out: ${checkOut}\n━━━━━━━━━━━━━━━━━━━━\nTotal: ${symbol}${currentBookingData.totalPrice.toFixed(2)} ${currentBookingData.currency}\n━━━━━━━━━━━━━━━━━━━━\nThank you for choosing us!`;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(receipt).then(() => alert('✓ Receipt copied to clipboard!'));
-            } else {
-                alert(receipt);
-            }
+        document.getElementById('btnOk')?.addEventListener('click', ()=>{ document.getElementById('sagaProgressModal').classList.add('hidden'); fetchFreeRooms(collectFilters()); });
+        document.getElementById('btnReceipt')?.addEventListener('click', ()=>{
+            if(!currentBookingData) return; const ci=new Date(currentBookingData.checkIn).toLocaleDateString(), co=new Date(currentBookingData.checkOut).toLocaleDateString();
+            const sym={USD:'$',EUR:'€',GBP:'£',RUB:'₽'}[currentBookingData.currency]||'$';
+            const receipt=`🏨 HOTELBOOKPRO RECEIPT\n━━━━━━━━━━━━━━━━━━━━\nBooking: ${currentBookingData.roomId}\nGuest: ${currentBookingData.guestName}\nCheck-in: ${ci}\nCheck-out: ${co}\nTotal: ${sym}${currentBookingData.totalPrice.toFixed(2)} ${currentBookingData.currency}\n━━━━━━━━━━━━━━━━━━━━\nThank you!`;
+            if(navigator.clipboard) navigator.clipboard.writeText(receipt).then(()=>alert('✓ Receipt copied!'));
+            else alert(receipt);
         });
 
         document.getElementById('closeDetailModalBtn')?.addEventListener('click', ()=>document.getElementById('roomDetailModal').classList.add('hidden'));
@@ -669,6 +801,12 @@
         document.getElementById('closeSagaModalBtn')?.addEventListener('click', ()=>document.getElementById('sagaProgressModal').classList.add('hidden'));
         document.getElementById('closeSagaProgressFooterBtn')?.addEventListener('click', ()=>document.getElementById('sagaProgressModal').classList.add('hidden'));
 
+        document.querySelectorAll('.modal-overlay').forEach(ov=> ov.addEventListener('click', function(e){ if(e.target===this) this.classList.add('hidden'); }));
+
+        // Инициализация
+        loadAuth();               // сначала пробуем куку, потом localStorage
+        updateAuthUI();
+        updateConnectionUI(false);
         connectSignalR();
         fetchFreeRooms({});
     })();

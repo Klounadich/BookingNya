@@ -66,11 +66,7 @@
             },
             "MediatR": {
               "target": "Package",
-              "version": "[14.0.0, )"
-            },
-            "MediatR.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[11.1.0, )"
+              "version": "[14.1.0, )"
             },
             "Microsoft.AspNetCore.SignalR.Common": {
               "target": "Package",
@@ -88,7 +84,7 @@
             },
             "Npgsql": {
               "target": "Package",
-              "version": "[10.0.1, )"
+              "version": "[10.0.2, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
@@ -473,11 +469,7 @@
             },
             "MediatR": {
               "target": "Package",
-              "version": "[14.0.0, )"
-            },
-            "MediatR.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[11.1.0, )"
+              "version": "[14.1.0, )"
             },
             "Microsoft.AspNetCore.SignalR.Common": {
               "target": "Package",
@@ -495,7 +487,7 @@
             },
             "Npgsql": {
               "target": "Package",
-              "version": "[10.0.1, )"
+              "version": "[10.0.2, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",

@@ -91,109 +91,15 @@ namespace BookingModule.Migrations
                     b.Property<DateTime>("updated_at")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("user_id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("id");
 
                     b.HasIndex("saga_id")
                         .IsUnique();
 
                     b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("BookingModule.Models.ProcessedCommandsModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("command_id")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("command_type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("error_message")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("processed_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Dictionary<string, object>>("result_payload")
-                        .HasColumnType("jsonb");
-
-                    b.Property<Guid>("saga_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("saga_id")
-                        .IsUnique();
-
-                    b.ToTable("ProcessedCommands");
-                });
-
-            modelBuilder.Entity("BookingModule.Models.SagaEventLogsModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("correlation_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("event_name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("event_type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("level")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("occurred_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Dictionary<string, object>>("payload")
-                        .HasColumnType("jsonb");
-
-                    b.Property<DateTime>("processed_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("saga_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("source_module")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("saga_id")
-                        .IsUnique();
-
-                    b.ToTable("SagaEventLogs");
                 });
 
             modelBuilder.Entity("BookingModule.Models.SagaStatesModel", b =>
@@ -248,63 +154,6 @@ namespace BookingModule.Migrations
                         .IsUnique();
 
                     b.ToTable("SagaStates");
-                });
-
-            modelBuilder.Entity("BookingModule.Models.SagaStepsModel", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("compensated_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("completed_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("error_code")
-                        .HasColumnType("text");
-
-                    b.Property<string>("error_message")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("is_compensated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Dictionary<string, object>>("request_payload")
-                        .HasColumnType("jsonb");
-
-                    b.Property<Dictionary<string, object>>("responce_payload")
-                        .HasColumnType("jsonb");
-
-                    b.Property<Guid>("saga_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("started_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("step_name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("step_order")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("saga_id")
-                        .IsUnique();
-
-                    b.ToTable("SagaSteps");
                 });
 #pragma warning restore 612, 618
         }

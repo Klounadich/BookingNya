@@ -28,6 +28,7 @@ public class BookingService : IBookingService
        
         var booking = new BookingModel
         {
+            user_id = data.UserId,
             id = bookingId,             
             saga_id = sagaId,            
             room_id = data.room_id,
