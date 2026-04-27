@@ -162,6 +162,14 @@
         .balance-amount { font-size:2.8rem; font-weight:800; color:var(--accent-gold); } .balance-label { font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:4px; }
         .bookings-placeholder { background: rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:20px; padding:32px; text-align:center; color:var(--text-muted); }
         .bookings-placeholder i { font-size:2.5rem; margin-bottom:12px; opacity:0.5; }
+        .booking-item { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; margin-bottom: 14px; border-left: 4px solid var(--primary); transition: 0.2s; }
+        .booking-item:hover { background: rgba(255,255,255,0.06); }
+        .booking-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .booking-room { font-weight: 800; font-size: 1.1rem; color: var(--primary-light); }
+        .booking-price { font-weight: 700; color: var(--accent-gold); }
+        .booking-dates { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .booking-method { font-size: 0.7rem; background: rgba(255,255,255,0.05); display: inline-block; padding: 4px 12px; border-radius: 40px; color: var(--text-secondary); }
+
         .profile-info-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.9rem; }
         .profile-info-row span:first-child { color:var(--text-muted); } .profile-info-row span:last-child { color:var(--text-primary); font-weight:600; }
 
@@ -247,6 +255,7 @@
 
 <footer><div class="container">© 2026 HotelBookPro — Real‑time booking with Saga pattern</div></footer>
 
+<!-- Auth Modal -->
 <div id="authModal" class="modal-overlay hidden">
     <div class="modal-content modal-sm">
         <div class="modal-header"><h3><i class="fas fa-lock"></i> <span id="authModalTitle">Sign In</span></h3><button class="btn-modal-close" id="closeAuthModalBtn">✕</button></div>
@@ -273,6 +282,7 @@
     </div>
 </div>
 
+<!-- Profile Modal -->
 <div id="profileModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:560px;">
         <div class="modal-header"><h3><i class="fas fa-user-circle"></i> My Profile</h3><button class="btn-modal-close" id="closeProfileModalBtn">✕</button></div>
@@ -297,13 +307,16 @@
                 <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid var(--border);"><h5 style="color:var(--text-secondary); margin-bottom:10px; font-size:0.85rem;">Recent Transactions</h5><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:16px;"><i class="fas fa-receipt" style="font-size:1.5rem; opacity:0.4; display:block; margin-bottom:8px;"></i>Transaction history will appear here</div></div>
             </div>
             <div id="profilePanelBookings" class="profile-panel hidden">
-                <div class="bookings-placeholder"><i class="fas fa-calendar-alt"></i><p style="margin-bottom:4px; font-weight:600;">No active bookings yet</p><p style="font-size:0.8rem;">Your confirmed reservations will appear here</p></div>
+                <div id="bookingsListContainer">
+                    <div class="bookings-placeholder"><i class="fas fa-calendar-alt"></i><p>Loading your bookings...</p></div>
+                </div>
             </div>
         </div>
         <div class="modal-footer"><button id="closeProfileFooterBtn" class="btn-outline">Close</button></div>
     </div>
 </div>
 
+<!-- Booking Form Modal -->
 <div id="bookingFormModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-calendar-check"></i> Complete Reservation</h3><button class="btn-modal-close" id="closeBookingFormBtn">✕</button></div>
@@ -324,6 +337,7 @@
     </div>
 </div>
 
+<!-- Room Detail Modal -->
 <div id="roomDetailModal" class="modal-overlay hidden">
     <div class="modal-content"><div class="modal-header"><h3><i class="fas fa-info-circle"></i> Room Details</h3><button class="btn-modal-close" id="closeDetailModalBtn">✕</button></div>
         <div class="modal-body" id="roomDetailBody"></div>
@@ -331,6 +345,7 @@
     </div>
 </div>
 
+<!-- Saga Progress Modal -->
 <div id="sagaProgressModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-spinner fa-pulse"></i> Processing</h3><button class="btn-modal-close" id="closeSagaModalBtn">✕</button></div>
@@ -421,12 +436,10 @@
         }
 
         function loadAuth() {
-            // 1. Попытка из куки (если HttpOnly = false)
             const cookieToken = getJwtFromCookie();
             if (cookieToken) {
                 if (saveAuth(cookieToken)) return;
             }
-            // 2. Попытка из localStorage
             const jwt = localStorage.getItem('hotelbookpro_jwt');
             if (jwt) {
                 const decoded = decodeJWT(jwt);
@@ -436,7 +449,6 @@
                 }
                 localStorage.removeItem('hotelbookpro_jwt');
             }
-            // 3. Не авторизован
             currentUser = null;
             updateAuthUI();
         }
@@ -444,7 +456,6 @@
         function clearAuth() {
             currentUser = null;
             localStorage.removeItem('hotelbookpro_jwt');
-            // Очистка куки (если не HttpOnly) — фронтенд не может удалить HttpOnly куку
             document.cookie = 'auth_token=; Max-Age=0; path=/';
             updateAuthUI();
         }
@@ -498,7 +509,6 @@
             try {
                 const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify(body) });
                 const data = await handleAuthResponse(res, errDiv);
-                // Получаем JWT из ответа или из куки
                 let jwt = data.jwt || getJwtFromCookie();
                 if (!jwt) throw new Error('Authentication succeeded but no token received');
                 saveAuth(jwt);
@@ -557,12 +567,74 @@
             document.getElementById('profileMemberSince').textContent = new Date().toLocaleDateString();
         }
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+
+        // NEW: Load user's active bookings from backend
+        async function loadUserBookings() {
+            const container = document.getElementById('bookingsListContainer');
+            if(!container) return;
+            if(!isAuthenticated()) {
+                container.innerHTML = `<div class="bookings-placeholder"><i class="fas fa-exclamation-triangle"></i><p>Please sign in to view bookings.</p></div>`;
+                return;
+            }
+            container.innerHTML = `<div class="bookings-placeholder"><i class="fas fa-spinner fa-pulse"></i><p>Loading your reservations...</p></div>`;
+            try {
+                const userId = currentUser.sub;
+                if(!userId) throw new Error("User ID missing");
+                const response = await fetch(`${API_BASE_URL}/api/hotel/mybookings/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ user_id: userId })
+                });
+                if(!response.ok) {
+                    if(response.status === 404) throw new Error("No bookings found");
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                const data = await response.json();
+                const cards = data?.cards || [];
+                if(!cards.length) {
+                    container.innerHTML = `<div class="bookings-placeholder"><i class="fas fa-bed"></i><p>No active bookings yet.</p><p style="font-size:0.8rem;">Book a room to see it here.</p></div>`;
+                    return;
+                }
+                let html = `<div style="display:flex; flex-direction:column; gap:12px;">`;
+                cards.forEach(booking => {
+                    const checkInDate = new Date(booking.check_in).toLocaleDateString();
+                    const checkOutDate = new Date(booking.check_out).toLocaleDateString();
+                    const price = booking.total_price ? booking.total_price.toFixed(2) : '0';
+                    const method = booking.payment_method || 'card';
+                    html += `
+                        <div class="booking-item">
+                            <div class="booking-header">
+                                <span class="booking-room"><i class="fas fa-door-open"></i> Room ${escapeHtml(booking.room_id)}</span>
+                                <span class="booking-price">$${price}</span>
+                            </div>
+                            <div class="booking-dates">
+                                <span><i class="fas fa-calendar-check"></i> In: ${checkInDate}</span>
+                                <span><i class="fas fa-calendar-times"></i> Out: ${checkOutDate}</span>
+                            </div>
+                            <div><span class="booking-method"><i class="fas fa-credit-card"></i> ${escapeHtml(method)}</span></div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;"><i class="fas fa-envelope"></i> ${escapeHtml(booking.guest_email)}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            } catch(err) {
+                console.error("Bookings fetch error:", err);
+                container.innerHTML = `<div class="bookings-placeholder"><i class="fas fa-exclamation-circle"></i><p>Could not load bookings: ${escapeHtml(err.message)}</p></div>`;
+            }
+        }
+
         function switchProfileTab(tab) {
             document.querySelectorAll('[data-profile-tab]').forEach(t=> t.classList.toggle('active', t.dataset.profileTab===tab));
             document.getElementById('profilePanelInfo').classList.toggle('hidden', tab!=='info');
             document.getElementById('profilePanelBalance').classList.toggle('hidden', tab!=='balance');
             document.getElementById('profilePanelBookings').classList.toggle('hidden', tab!=='bookings');
+            if(tab === 'bookings' && isAuthenticated()) {
+                loadUserBookings();
+            }
         }
+
         document.querySelectorAll('[data-profile-tab]').forEach(b=> b.addEventListener('click', ()=> switchProfileTab(b.dataset.profileTab)));
         document.getElementById('closeProfileModalBtn')?.addEventListener('click', closeProfileModal);
         document.getElementById('closeProfileFooterBtn')?.addEventListener('click', closeProfileModal);
@@ -803,8 +875,8 @@
 
         document.querySelectorAll('.modal-overlay').forEach(ov=> ov.addEventListener('click', function(e){ if(e.target===this) this.classList.add('hidden'); }));
 
-        // Инициализация
-        loadAuth();               // сначала пробуем куку, потом localStorage
+        // Initialization
+        loadAuth();
         updateAuthUI();
         updateConnectionUI(false);
         connectSignalR();

@@ -2,6 +2,7 @@ using BookingModule.Commands;
 using BookingModule.Infrastructure;
 using BookingModule.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace BookingModule.Repositories;
 
@@ -87,6 +88,21 @@ public class BookingRepository : IBookingRepository
         {
             return false;
         }
+    }
+
+    public async Task<GetBookingResponce> GetBookings(GetBookingsRequest request)
+    {
+        var responce = await _context.Bookings.Where(X => X.user_id.ToString() == request.user_id && X.status != BookingStatus.Cancelled 
+                                                          && X.status != BookingStatus.Pending ).Select(x => new GetBookingCard(
+                x.room_id.ToString(),
+                x.guest_email,
+                 x.check_in, 
+                x.check_out,
+                 x.total_price,
+                 x.payment_method
+            ))
+            .ToListAsync();
+        return new GetBookingResponce  ( responce );
     }
 
     public async Task<bool> UpdateSagaAsync(SagaStatesModel saga_data ,  BookingModel booking_data)

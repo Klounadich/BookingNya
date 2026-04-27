@@ -4,6 +4,7 @@ using DotNetCore.CAP;
 using InventoryModule.Infrastructure;
 using InventoryModule.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -16,6 +17,7 @@ public static class BookingEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Hotel");
         group.MapPost("/hotel" ,FreeRooms);
         group.MapGet("/rooms/{roomId}/photos/{index}", DownloadImage);
+        group.MapPost("/hotel/mybookings/", GetActiveBooking);
 
     }
 
@@ -30,6 +32,17 @@ public static class BookingEndpoint
         {
             return Results.Problem("Request timed out", statusCode: 408);
         }
+    }
+
+    [Authorize]
+    public async static Task<IResult> GetActiveBooking(GetBookingsRequest request , IMediator mediator)
+    {
+        var responce = await mediator.Send(request);
+        if (responce.cards != null)
+        {
+            return Results.Ok(responce);
+        }
+        return Results.NotFound();
     }
 
     public static async Task<IResult> DownloadImage (string roomId, int index , InventoryDbContext context) 

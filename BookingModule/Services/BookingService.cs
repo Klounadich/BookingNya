@@ -20,7 +20,7 @@ public class BookingService : IBookingService
         _bookingRepository = bookingRepository;
         _capPublisher = capPublisher;
     }
-    public async Task<StartSagaResult> StartBooking(BookingRequestCommand data)
+    public async Task<SagaResult> StartBooking(BookingRequestCommand data)
     {
         var sagaId = Guid.NewGuid();    
         var bookingId = Guid.NewGuid(); 
@@ -69,9 +69,9 @@ public class BookingService : IBookingService
                 data.check_out,
                 data.guest_name
             ));
-            return new StartSagaResult(sagaId, SagaTypes.Started , "Saga Started");
+            return new SagaResult(sagaId, SagaTypes.Started , "Saga Started");
         }
-        return new StartSagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
+        return new SagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
     }
 
     public async Task ConfirmCode(ConfirmationCodeCommand data)
@@ -95,6 +95,13 @@ public class BookingService : IBookingService
             data.floor,
             data.amenities
             ));
+    }
+
+
+    public async Task<GetBookingResponce> GetUserBookings(GetBookingsRequest request)
+    {
+       return await _bookingRepository.GetBookings(request);
+        
     }
 
     public async Task RollBack(Guid sagaId)

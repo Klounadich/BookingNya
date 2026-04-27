@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookingModule.Handlers;
 
-public class BookingRequestHandler : IRequestHandler<BookingRequestCommand , StartSagaResult>
+public class BookingRequestHandler : IRequestHandler<BookingRequestCommand , SagaResult>
 {
     private readonly IBookingService _bookingService;
     
@@ -15,7 +15,7 @@ public class BookingRequestHandler : IRequestHandler<BookingRequestCommand , Sta
        
     }
 
-    public async Task<StartSagaResult> Handle(BookingRequestCommand request, CancellationToken cancellationToken)
+    public async Task<SagaResult> Handle(BookingRequestCommand request, CancellationToken cancellationToken)
     {
         var saga = _bookingService.StartBooking(request);
         return saga.Result;
