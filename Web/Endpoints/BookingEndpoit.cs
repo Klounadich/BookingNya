@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BookingModule.Commands;
 using BookingModule.Services;
 using DotNetCore.CAP;
@@ -35,8 +36,10 @@ public static class BookingEndpoint
     }
 
     [Authorize]
-    public async static Task<IResult> GetActiveBooking(GetBookingsRequest request , IMediator mediator)
+    public async static Task<IResult> GetActiveBooking(IMediator mediator , ClaimsPrincipal user)
     {
+        
+        GetBookingsRequest request = new GetBookingsRequest(user.FindFirstValue(ClaimTypes.NameIdentifier));
         var responce = await mediator.Send(request);
         if (responce.cards != null)
         {

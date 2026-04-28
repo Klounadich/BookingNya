@@ -68,7 +68,7 @@ public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMed
             await mediator.Send(data);
             return Results.Accepted();
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             
             return Results.Problem( statusCode: 500);
@@ -77,14 +77,14 @@ public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMed
 
 
     [Authorize]
-    public async static Task<IResult> SagaCallBack( CallBackSagaRequest request,IMediator mediator)
+    public async static Task<IResult> SagaCallBack( Guid sagaId,IMediator mediator)
     {
         try
         {
-            await mediator.Send(request);
+            await mediator.Send(new CallBackSagaRequest(sagaId));
             return Results.Accepted();
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             return Results.Problem( statusCode: 500);
         }

@@ -17,7 +17,6 @@ public class BookingRequestHandler : IRequestHandler<BookingRequestCommand , Sag
 
     public async Task<SagaResult> Handle(BookingRequestCommand request, CancellationToken cancellationToken)
     {
-        var saga = _bookingService.StartBooking(request);
-        return saga.Result;
+        return await _bookingService.StartBooking(request);
     }
 }
