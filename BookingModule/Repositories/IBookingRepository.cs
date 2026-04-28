@@ -14,6 +14,8 @@ public interface IBookingRepository
     
     Task<GetBookingResponce> GetBookings(GetBookingsRequest request);
     
+    Task<bool> CancelTransaction(Guid saga_id);
+    
     
     
     

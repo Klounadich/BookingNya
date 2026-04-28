@@ -147,6 +147,24 @@
         .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .btn-callback {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 8px;
+            transition: transform 0.1s, color 0.2s;
+            margin-left: auto;
+        }
+        .btn-callback:hover {
+            transform: scale(1.1);
+            color: #ff9f9f;
+        }
+        .btn-callback:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
         .auth-tab { flex: 1; text-align: center; padding: 12px 16px; font-weight: 700; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; background: transparent; }
         .auth-tab.active { color: var(--primary-light); border-bottom-color: var(--primary); } .auth-tab:hover { color: var(--text-primary); }
@@ -602,20 +620,22 @@
                     const checkOutDate = new Date(booking.check_out).toLocaleDateString();
                     const price = booking.total_price ? booking.total_price.toFixed(2) : '0';
                     const method = booking.payment_method || 'card';
+                    const sagaId = booking.saga_id || booking.sagaId || '';
                     html += `
-                        <div class="booking-item">
-                            <div class="booking-header">
-                                <span class="booking-room"><i class="fas fa-door-open"></i> Room ${escapeHtml(booking.room_id)}</span>
-                                <span class="booking-price">$${price}</span>
-                            </div>
-                            <div class="booking-dates">
-                                <span><i class="fas fa-calendar-check"></i> In: ${checkInDate}</span>
-                                <span><i class="fas fa-calendar-times"></i> Out: ${checkOutDate}</span>
-                            </div>
-                            <div><span class="booking-method"><i class="fas fa-credit-card"></i> ${escapeHtml(method)}</span></div>
-                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;"><i class="fas fa-envelope"></i> ${escapeHtml(booking.guest_email)}</div>
-                        </div>
-                    `;
+                <div class="booking-item">
+                    <div class="booking-header">
+                        <span class="booking-room"><i class="fas fa-door-open"></i> Room ${escapeHtml(booking.room_id)}</span>
+                        <span class="booking-price">$${price}</span>
+                        ${sagaId ? `<button class="btn-callback" data-saga-id="${escapeHtml(sagaId)}" title="Cancel booking (callback)"><i class="fas fa-ban"></i></button>` : ''}
+                    </div>
+                    <div class="booking-dates">
+                        <span><i class="fas fa-calendar-check"></i> In: ${checkInDate}</span>
+                        <span><i class="fas fa-calendar-times"></i> Out: ${checkOutDate}</span>
+                    </div>
+                    <div><span class="booking-method"><i class="fas fa-credit-card"></i> ${escapeHtml(method)}</span></div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;"><i class="fas fa-envelope"></i> ${escapeHtml(booking.guest_email)}</div>
+                </div>
+            `;
                 });
                 html += `</div>`;
                 container.innerHTML = html;
@@ -859,7 +879,36 @@
             if(navigator.clipboard) navigator.clipboard.writeText(receipt).then(()=>alert('✓ Receipt copied!'));
             else alert(receipt);
         });
-
+        // Обработчик кнопки callback (перечёркнутый кружок)
+        document.getElementById('bookingsListContainer')?.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.btn-callback');
+            if (!btn) return;
+            const sagaId = btn.dataset.sagaId;
+            if (!sagaId) return;
+            if (!confirm('Send cancel callback for this booking?\nThis action may affect the booking status.')) return;
+            btn.disabled = true;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/booking/${sagaId}/callback`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text || 'Callback request failed');
+                }
+                alert('✅ Callback sent successfully!');
+                // Обновить список бронирований, чтобы отразить изменения (если нужно)
+                loadUserBookings();
+            } catch (err) {
+                alert(`❌ Error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalIcon;
+            }
+        });
         document.getElementById('closeDetailModalBtn')?.addEventListener('click', ()=>document.getElementById('roomDetailModal').classList.add('hidden'));
         document.getElementById('detailCloseBtn')?.addEventListener('click', ()=>document.getElementById('roomDetailModal').classList.add('hidden'));
         applyBtn.addEventListener('click', ()=>fetchFreeRooms(collectFilters()));

@@ -27,7 +27,8 @@ public class ReserveRoomSubscriber : ICapSubscribe
             ));
             var reservation_id = await _service.ReserveRoomAsync(command);
             if (reservation_id.reservaiton_id != Guid.Empty)
-            {
+            { 
+                
                 await _capPublisher.PublishAsync("inventory.room.reserved.event", new RoomReservedEvent(
                     command.sagaId,
                     reservation_id.reservaiton_id,

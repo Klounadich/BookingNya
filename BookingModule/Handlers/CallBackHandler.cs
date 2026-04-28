@@ -16,6 +16,6 @@ public class CallBackHandler : IRequestHandler<CallBackSagaRequest, SagaResult>
     public async Task<SagaResult> Handle(CallBackSagaRequest request, CancellationToken cancellationToken)
     {
         await _bookingService.RollBack(request.sagaId);
-        return new SagaResult(request.sagaId, SagaTypes.Compensating, "");
+        return new SagaResult(request.sagaId, SagaTypes.Compensating, "Saga Compenstated");
     }
 }

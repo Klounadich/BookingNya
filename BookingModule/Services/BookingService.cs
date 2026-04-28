@@ -107,7 +107,8 @@ public class BookingService : IBookingService
     public async Task RollBack(Guid sagaId)
     {
         await _capPublisher.PublishAsync("inventory.callback.room.reserve", sagaId);
-        
+        await _capPublisher.PublishAsync("payment.moneyback" , sagaId);
+        await _bookingRepository.CancelTransaction(sagaId);
     }
 }
     

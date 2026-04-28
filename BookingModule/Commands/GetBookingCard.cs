@@ -6,5 +6,6 @@ public record GetBookingCard(
     DateTime check_in,
     DateTime check_out,
     decimal total_price,
-    string payment_method
+    string payment_method,
+    Guid saga_id
     );

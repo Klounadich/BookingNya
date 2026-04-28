@@ -1,4 +1,5 @@
 using BookingModule.Repositories;
+using BookingModule.Services;
 using DotNetCore.CAP;
 using InventoryModule.Commands;
 using Microsoft.AspNetCore.SignalR;
@@ -13,32 +14,30 @@ public class RoomReservedSubscriber : ICapSubscribe
     private readonly IBookingRepository  _bookingRepository;
     private readonly ICapPublisher _capPublisher;
     private readonly IHubContext<SagaProcessHub> _hubContext;
-
-    public RoomReservedSubscriber(IBookingRepository bookingrepository , ICapPublisher capPublisher ,  IHubContext<SagaProcessHub> hubContext)
+    private readonly ISagaOrchestrator  _sagaOrchestrator;
+    public RoomReservedSubscriber(IBookingRepository bookingrepository , ICapPublisher capPublisher ,  
+        IHubContext<SagaProcessHub> hubContext , ISagaOrchestrator sagaOrchestrator)
     {
         _bookingRepository = bookingrepository;
         _capPublisher = capPublisher;
         _hubContext = hubContext;
+        _sagaOrchestrator = sagaOrchestrator;
     }
     [CapSubscribe("inventory.room.reserved.event")]
     public async Task HandleAsync(RoomReservedEvent command)
     {
+        await _sagaOrchestrator.HandleStepSuccessAsync(command.SagaId, "ReserveRoom",
+            $"Room has been successfully reserved  {command.ReservationId}.");
         
-        var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-        if (sagaState!=null)
-        {  await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
-                command.SagaId, 
-                "ReserveRoom",  
-                "Completed",    
-                $"Room has been successfully reserved  {command.ReservationId}." 
-            );
-            var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
+            var booking = await _bookingRepository.GetBookingBySagaIdAsync(command.SagaId);
             if (booking!=null)
-            {
-                sagaState.status = SagaTypes.Running;
+            { 
+                
+                var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
+                if (sagaState == null || sagaState.current_step != "ReserveRoom") return;
+
                 sagaState.current_step = "ProcessPayment";
                 sagaState.last_updated_at = DateTime.UtcNow;
-                
                 await _bookingRepository.UpdateSagaStateAsync(sagaState);
                 
                 await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
@@ -66,35 +65,18 @@ public class RoomReservedSubscriber : ICapSubscribe
 
          
         }
-    }
+    
 
     [CapSubscribe("inventory.room.reserved.event.failed")]
     public async Task HandleAsyncFailed(RoomReservedEvent command)
     {
         
-        
-        var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(command.SagaId);
-        if (sagaState!=null)
-        {
-            await _hubContext.Clients.Group(command.SagaId.ToString()).SendAsync("ReceiveSagaError",
-                command.SagaId,
-                "ReserveRoom",
-                "Failed",
-                "Reservation is Failed."
-            );
-            
-            var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaState.saga_id);
-            if (booking != null)
-            {
-                booking.status = BookingStatus.Cancelled;
-                booking.updated_at = DateTime.UtcNow;
-                booking.cancellation_reason = "Reservation is Cancelled";
-                booking.cancelled_at = DateTime.UtcNow;
-                sagaState.status = SagaTypes.Failed;
-                sagaState.current_step = "ReserveRoom";
-                sagaState.last_updated_at = DateTime.UtcNow;
-                await _bookingRepository.UpdateSagaAsync(sagaState , booking);
-            }
-        }
+        await _sagaOrchestrator.HandleStepFailureAsync(
+            command.SagaId,
+            "ReserveRoom",
+            "Reservation is Failed.",
+            "Reservation is Cancelled"
+        );
+       
     }
 }
