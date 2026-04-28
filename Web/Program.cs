@@ -77,6 +77,7 @@ builder.Services.AddScoped<IValidator<BookingRequestCommand>, BookingRequestVali
 builder.Services.AddScoped<IValidator<RegisterRequestCommand>, RegisterRequestValidator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ISagaOrchestrator, SagaOrchestrator>();
 
 
 //trasients:

@@ -15,6 +15,7 @@ public static class SagaEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Booking");
         group.MapPost("/booking", BookSaga);
         group.MapPost("/booking/{sagaId}/confirm", ConfirmCode);
+        group.MapPost("/booking/{sagaId}/callback", SagaCallBack);
     }
     [Authorize]
     public async static Task<IResult> BookSaga(BookingRequestCommand data, IMediator mediator,
@@ -64,13 +65,27 @@ public async static Task<IResult> ConfirmCode(ConfirmationCodeCommand data, IMed
     {
         try
         {
-           
             await mediator.Send(data);
             return Results.Accepted();
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             
+            return Results.Problem( statusCode: 500);
+        }
+    }
+
+
+    [Authorize]
+    public async static Task<IResult> SagaCallBack( Guid sagaId,IMediator mediator)
+    {
+        try
+        {
+            await mediator.Send(new CallBackSagaRequest(sagaId));
+            return Results.Accepted();
+        }
+        catch (Exception )
+        {
             return Results.Problem( statusCode: 500);
         }
     }

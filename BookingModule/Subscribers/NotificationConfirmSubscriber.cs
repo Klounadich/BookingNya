@@ -11,98 +11,62 @@ namespace BookingModule.Subscribers;
 public class NotificationConfirmSubscriber : ICapSubscribe
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IBookingService _service;
     private readonly IHubContext<SagaProcessHub> _hubContext;
+    private readonly ISagaOrchestrator _sagaOrchestrator;
+    private readonly ICapPublisher _capPublisher;
 
-    public NotificationConfirmSubscriber(IBookingRepository bookingRepository, IHubContext<SagaProcessHub> hubContext , IBookingService service)
+    public NotificationConfirmSubscriber(
+        IBookingRepository bookingRepository,
+        IHubContext<SagaProcessHub> hubContext,
+        ISagaOrchestrator sagaOrchestrator, ICapPublisher capPublisher)
     {
         _bookingRepository = bookingRepository;
         _hubContext = hubContext;
-        _service = service;
+        _sagaOrchestrator = sagaOrchestrator;
+        _capPublisher = capPublisher;
     }
 
     [CapSubscribe("notification.confirm.success")]
     public async Task ConfirmSuccess(ConfirmCodeCommand data)
     {
+        
 
         var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(data.SagaId);
-        if (sagaState != null)
+        if (sagaState == null || sagaState.current_step != "WaitingConfirm") return;
+
+        sagaState.status = SagaTypes.Completed;
+        sagaState.current_step = "ProcessPayment";
+        sagaState.last_updated_at = DateTime.UtcNow;
+
+       
+        if (await _bookingRepository.UpdateSagaStateAsync(sagaState))
         {
-            sagaState.status = SagaTypes.Completed;
-            sagaState.current_step = "NotificationConfirm";
-            sagaState.last_updated_at = DateTime.UtcNow;
-
-                var booking = await _bookingRepository.GetBookingBySagaIdAsync(data.SagaId);
-                if (booking != null)
-                {
-                    booking.status = BookingStatus.Completed;
-                    booking.updated_at = DateTime.UtcNow;
-
-                    if (await _bookingRepository.UpdateSagaAsync(sagaState, booking) != false)
-                    {
-                        await _hubContext.Clients.Group(data.SagaId.ToString()).SendAsync("ReceiveSagaProgress",
-                            data.SagaId,
-                            "Booking",
-                            "Completed",
-                            $"Room {booking.room_id} has been received on period from {booking.check_in} to {booking.check_out} ."
-                        );
-                    }
-                }
-            
+            await _sagaOrchestrator.HandleStepSuccessAsync(data.SagaId, "ProcessPayment" ," WritingMoney");
+            await _capPublisher.PublishAsync("Payment.write.money",
+                sagaState.saga_id);
         }
     }
 
     [CapSubscribe("notification.confirm.failure")]
     public async Task ConfirmFailure(ConfirmCodeCommand data)
     {
-        {
-        
-            var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(data.SagaId);
-            if (sagaState != null)
-            {
-                
-                await _hubContext.Clients.Group(data.SagaId.ToString()).SendAsync("ReceiveSagaError",
-                    data.SagaId,
-                    "Notification",
-                    "Failed",
-                    "Confirm Notification failed."
-                );
-
-            }
-        }
+        await _hubContext.Clients.Group(data.SagaId.ToString())
+            .SendAsync("ReceiveSagaError",
+                data.SagaId,
+                "Notification",
+                "Failed",
+                "Confirm Notification failed."
+            );
     }
-
 
     [CapSubscribe("notification.confirm.cancel")]
     public async Task ConfirmCancel(ConfirmCodeCommand data)
     {
-        {
-        
-            var sagaState = await _bookingRepository.GetSagaStateBySagaIdAsync(data.SagaId);
-            if (sagaState != null)
-            {
-                var booking = await _bookingRepository.GetBookingBySagaIdAsync(data.SagaId);
-                if (booking != null)
-                {
-                    await _hubContext.Clients.Group(data.SagaId.ToString()).SendAsync("ReceiveSagaError",
-                        data.SagaId,
-                        "Notification",
-                        "Cancelled",
-                        "Confirm Notification cancelled ."
-                    );
-                    
-                    booking.status = BookingStatus.Cancelled;
-                    booking.updated_at = DateTime.UtcNow;
-                    booking.cancellation_reason = "More than 3 incorrect attempts";
-                    booking.cancelled_at = DateTime.UtcNow;
-                    sagaState.status = SagaTypes.Failed;
-                    sagaState.current_step = "ConfirmationFailed";
-                    sagaState.last_updated_at = DateTime.UtcNow;
-                    await _service.RollBack(data.SagaId);
-                    await _bookingRepository.UpdateSagaAsync(sagaState , booking);
-                }
-
-            }
-        }
+        await _sagaOrchestrator.HandleStepFailureAsync(
+            data.SagaId,
+            "ConfirmationFailed",
+            "Confirm Notification cancelled.",
+            "More than 3 incorrect attempts"
+        );
     }
 }

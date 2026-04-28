@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using PaymentModule.Infrastructure;
 using PaymentModule.Models;
 
@@ -22,5 +23,16 @@ public class PaymentRepository : IPaymentRepository
             return true;
         }
         return false;
+    }
+
+    public async Task<PaymentsModel?> GetTransaction(Guid sagaId)
+    {
+       return await _context.Payments.Where(x => x.saga_id == sagaId).AsNoTracking().SingleAsync();
+    }
+
+    public async Task<bool> UpdateTransaction(PaymentsModel model)
+    {
+        _context.Payments.Update(model);
+        return await _context.SaveChangesAsync() > 0;
     }
 }

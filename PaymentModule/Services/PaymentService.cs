@@ -1,3 +1,4 @@
+using Npgsql.Replication.PgOutput.Messages;
 using PaymentModule.Commands;
 using PaymentModule.Models;
 using PaymentModule.Repositories;
@@ -56,5 +57,32 @@ public class PaymentService : IPaymentService
             }
         }
         return new PaymentResult(false, checkvalue.Status);
+    }
+
+    public async Task<bool> WriteMoney(Guid sagaId)
+    {
+        var transaction = await _paymentRepository.GetTransaction(sagaId);
+        if (transaction !=null)
+        {
+            transaction.status = PaymentStatus.Captured;
+            transaction.updated_at = DateTime.UtcNow;
+           return await _paymentRepository.UpdateTransaction(transaction);
+            
+        }
+        return false;
+        
+    }
+
+    public async Task<bool> MoneyBack(Guid sagaId)
+    {
+        var transaction = await _paymentRepository.GetTransaction(sagaId);
+        if (transaction != null)
+        {
+            transaction.status = PaymentStatus.Refunded;
+            transaction.updated_at = DateTime.UtcNow;
+            transaction.refunded_at = DateTime.UtcNow;
+            return await _paymentRepository.UpdateTransaction(transaction);
+        }
+        return false;
     }
 }

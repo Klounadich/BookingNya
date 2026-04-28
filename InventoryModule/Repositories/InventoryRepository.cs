@@ -41,6 +41,11 @@ public class InventoryRepository : IInventoryRepository
             
        }
 
+       if (await _context.SaveChangesAsync() > 0)
+       {
+           return true;
+       }
+
        return false;
 
     }

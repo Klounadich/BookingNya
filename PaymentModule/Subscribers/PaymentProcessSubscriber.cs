@@ -41,5 +41,21 @@ public class PaymentProcessSubscriber : ICapSubscribe
         }
     }
 
+    [CapSubscribe("Payment.write.money")]
+    public async Task WriteMoney(Guid sagaId)
+    {
+        if (await _paymentService.WriteMoney(sagaId))
+        {
+            await _capPublisher.PublishAsync("payment.writed.sucessfully",
+                sagaId);
+        }
+        
+    }
+    
+    [CapSubscribe("payment.moneyback")]
+    public async Task PaymentMoneyBack(Guid SagaId)
+    {
+        await _paymentService.MoneyBack(SagaId);
+    }
     
 }
