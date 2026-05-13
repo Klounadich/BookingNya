@@ -35,7 +35,7 @@ public class PaymentProcessSubscriber : ICapSubscribe
         }
         catch (Exception ex)
         {
-            await _capPublisher.PublishAsync("payment.failed", 
+            await _capPublisher.PublishAsync("payment.failed.event", 
                 new PaymentProcessed(command.SagaId, command.CustomerEmail, 
                     command.BookingId, ex.Message));
         }

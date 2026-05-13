@@ -26,6 +26,7 @@ public class AuthService: IAuthService
             password_Hashed = password_hashed,
 
         };
+        
         if (await _authRepository.RegisterAsync(model))
         {
             var jwt = await _jwtService.GenerateToken(new JWTRequestCommand(model.Id,model.DisplayName,model.email));
@@ -71,5 +72,20 @@ public class AuthService: IAuthService
             "auth failed"
         );
         
+    }
+    
+    public async Task<decimal> GetBalanceAsync(GetBalanceQuery request)
+    {
+        return await _authRepository.GetBalanceAsync(request.userId);
+    }
+
+    public async Task<bool> WriteMoneyFromBalance(string userId , decimal amount)
+    {
+        return await _authRepository.WriteFromBalance(userId , amount);
+    }
+
+    public async Task<bool> RefundMoneyToBalance(string userId, decimal amount)
+    {
+        return await _authRepository.RefundToBalance(userId , amount);
     }
 }

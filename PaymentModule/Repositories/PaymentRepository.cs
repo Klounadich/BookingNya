@@ -27,7 +27,7 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<PaymentsModel?> GetTransaction(Guid sagaId)
     {
-       return await _context.Payments.Where(x => x.saga_id == sagaId).AsNoTracking().SingleAsync();
+       return await _context.Payments.Where(x => x.saga_id == sagaId).AsNoTracking().SingleOrDefaultAsync();
     }
 
     public async Task<bool> UpdateTransaction(PaymentsModel model)

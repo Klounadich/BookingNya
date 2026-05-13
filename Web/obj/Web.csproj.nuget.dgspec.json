@@ -1635,6 +1635,9 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
+              "/home/klounadich/dev/BookingNya/AuthModule/AuthModule.csproj": {
+                "projectPath": "/home/klounadich/dev/BookingNya/AuthModule/AuthModule.csproj"
+              },
               "/home/klounadich/dev/BookingNya/Shared/Shared.csproj": {
                 "projectPath": "/home/klounadich/dev/BookingNya/Shared/Shared.csproj"
               }

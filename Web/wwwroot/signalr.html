@@ -321,8 +321,20 @@
                 <button class="btn-logout" id="profileLogoutBtn" style="width:100%; margin-top:20px; justify-content:center; padding:12px;"><i class="fas fa-sign-out-alt"></i> Log Out</button>
             </div>
             <div id="profilePanelBalance" class="profile-panel hidden">
-                <div class="balance-card"><div class="balance-label">Available Balance</div><div class="balance-amount">$1,250.00</div><div style="color:var(--text-muted); font-size:0.8rem; margin-top:8px;">Loyalty points: <strong style="color:var(--primary-light);">4,820 pts</strong></div></div>
-                <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid var(--border);"><h5 style="color:var(--text-secondary); margin-bottom:10px; font-size:0.85rem;">Recent Transactions</h5><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:16px;"><i class="fas fa-receipt" style="font-size:1.5rem; opacity:0.4; display:block; margin-bottom:8px;"></i>Transaction history will appear here</div></div>
+                <div class="balance-card">
+                    <div class="balance-label">Available Balance</div>
+                    <div class="balance-amount" id="balanceAmount">$0.00</div>
+                    <div style="color:var(--text-muted); font-size:0.8rem; margin-top:8px;">
+                        Loyalty points: <strong id="loyaltyPoints" style="color:var(--primary-light);">0 pts</strong>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid var(--border);">
+                    <h5 style="color:var(--text-secondary); margin-bottom:10px; font-size:0.85rem;">Recent Transactions</h5>
+                    <div id="transactionsPlaceholder" style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:16px;">
+                        <i class="fas fa-receipt" style="font-size:1.5rem; opacity:0.4; display:block; margin-bottom:8px;"></i>
+                        Transaction history will appear here
+                    </div>
+                </div>
             </div>
             <div id="profilePanelBookings" class="profile-panel hidden">
                 <div id="bookingsListContainer">
@@ -347,7 +359,7 @@
             <div class="form-group"><label>Check-in *</label><input type="date" id="checkInDate"></div>
             <div class="form-group"><label>Check-out *</label><input type="date" id="checkOutDate"></div>
             <div class="form-group"><label>Currency</label><select id="currencySelect"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option><option value="RUB">RUB (₽)</option></select></div>
-            <div class="form-group"><label>Payment</label><select id="paymentMethodSelect"><option>credit_card</option><option>paypal</option></select></div>
+            <div class="form-group"><label>Payment</label><select id="paymentMethodSelect"><option>credit_card</option><option>BookingPay</option></select></div>
             <div class="form-group"><label>Total price</label><input id="totalPriceDisplay" readonly style="font-weight:700; color:var(--primary-light);"></div>
             <div id="formModalError" class="modal-error hidden"></div>
         </div>
@@ -653,6 +665,9 @@
             if(tab === 'bookings' && isAuthenticated()) {
                 loadUserBookings();
             }
+            if(tab === 'balance' && isAuthenticated()) {
+                loadUserBalance();
+            }
         }
 
         document.querySelectorAll('[data-profile-tab]').forEach(b=> b.addEventListener('click', ()=> switchProfileTab(b.dataset.profileTab)));
@@ -909,6 +924,61 @@
                 btn.innerHTML = originalIcon;
             }
         });
+
+
+        // === Функция загрузки баланса пользователя ===
+        async function loadUserBalance() {
+            if (!isAuthenticated()) {
+                console.warn('loadUserBalance: not authenticated');
+                return;
+            }
+            const balanceAmountSpan = document.getElementById('balanceAmount');
+            const loyaltyPointsSpan = document.getElementById('loyaltyPoints');
+            if (!balanceAmountSpan) return;
+
+            // Показываем индикатор загрузки
+            balanceAmountSpan.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
+            loyaltyPointsSpan.textContent = 'loading...';
+
+            try {
+                // Используем фиктивный ID 'me' — бэкенд всё равно берёт пользователя из Claims
+                const url = `${API_BASE_URL}/api/user/me/mybalance/`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',          // отправляем куку auth_token
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${currentUser.jwt}` // явный токен на случай проблем с кукой
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`Balance fetch error ${response.status}:`, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+                }
+
+                const data = await response.json();
+                console.log('Balance response:', data);  // для отладки
+
+                let balance = 0, loyalty = 0;
+                if (typeof data === 'number') {
+                    balance = data;
+                } else if (typeof data === 'object') {
+                    balance = data.balance ?? data.amount ?? data.total ?? 0;
+                    loyalty = data.loyaltyPoints ?? data.loyalty_points ?? data.points ?? 0;
+                } else if (typeof data === 'string') {
+                    balance = parseFloat(data) || 0;
+                }
+
+                balanceAmountSpan.innerHTML = `$${balance.toFixed(2)}`;
+                loyaltyPointsSpan.textContent = `${Math.round(loyalty)} pts`;
+            } catch (err) {
+                console.error('Balance fetch error:', err);
+                balanceAmountSpan.innerHTML = '<span style="color:#f87171;">Error</span>';
+                loyaltyPointsSpan.textContent = '—';
+            }
+        }
         document.getElementById('closeDetailModalBtn')?.addEventListener('click', ()=>document.getElementById('roomDetailModal').classList.add('hidden'));
         document.getElementById('detailCloseBtn')?.addEventListener('click', ()=>document.getElementById('roomDetailModal').classList.add('hidden'));
         applyBtn.addEventListener('click', ()=>fetchFreeRooms(collectFilters()));

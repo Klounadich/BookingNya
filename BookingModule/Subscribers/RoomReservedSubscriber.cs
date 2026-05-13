@@ -53,7 +53,7 @@ public class RoomReservedSubscriber : ICapSubscribe
                     booking.currency,
                     booking.payment_method,
                     " ", 
-                    " ",
+                    booking.user_id.ToString(),
                     booking.guest_email,
                     booking.guest_phone,
                     "",

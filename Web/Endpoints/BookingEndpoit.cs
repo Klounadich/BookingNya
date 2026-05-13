@@ -19,6 +19,7 @@ public static class BookingEndpoint
         group.MapPost("/hotel" ,FreeRooms);
         group.MapGet("/rooms/{roomId}/photos/{index}", DownloadImage);
         group.MapPost("/hotel/mybookings/", GetActiveBooking);
+        
 
     }
 
@@ -62,4 +63,6 @@ public static class BookingEndpoint
         
         return Results.File(photoBytes, mimeType); 
     }
+
+    
 }
