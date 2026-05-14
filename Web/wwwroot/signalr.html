@@ -970,6 +970,7 @@
                 document.getElementById('bookingFormModal').classList.add('hidden'); openSagaProgressModal(data.sagaId);
                 await connectSignalR(); await connection.invoke("JoinSagaGroup", data.sagaId);
                 currentTrackingSagaId = data.sagaId; pendingCodeSagaId = data.sagaId;
+                currentBookingData.sagaId = data.sagaId;
             } catch(e) { document.getElementById('formModalError').innerText = e.message; document.getElementById('formModalError').classList.remove('hidden'); }
             finally { btn.disabled=false; }
         }
@@ -1005,12 +1006,59 @@
         });
 
         document.getElementById('btnOk')?.addEventListener('click', ()=>{ document.getElementById('sagaProgressModal').classList.add('hidden'); fetchFreeRooms(collectFilters()); });
-        document.getElementById('btnReceipt')?.addEventListener('click', ()=>{
-            if(!currentBookingData) return; const ci=new Date(currentBookingData.checkIn).toLocaleDateString(), co=new Date(currentBookingData.checkOut).toLocaleDateString();
-            const sym={USD:'$',EUR:'€',GBP:'£',RUB:'₽'}[currentBookingData.currency]||'$';
-            const receipt=`🏨 HOTELBOOKPRO RECEIPT\n━━━━━━━━━━━━━━━━━━━━\nBooking: ${currentBookingData.roomId}\nGuest: ${currentBookingData.guestName}\nCheck-in: ${ci}\nCheck-out: ${co}\nTotal: ${sym}${currentBookingData.totalPrice.toFixed(2)} ${currentBookingData.currency}\n━━━━━━━━━━━━━━━━━━━━\nThank you!`;
-            if(navigator.clipboard) navigator.clipboard.writeText(receipt).then(()=>alert('✓ Receipt copied!'));
-            else alert(receipt);
+        document.getElementById('btnReceipt')?.addEventListener('click', async () => {
+            if(!currentBookingData || !currentTrackingSagaId) {
+                alert('No booking information available. Please refresh and try again.');
+                return;
+            }
+
+            const sagaId = currentTrackingSagaId;
+            const receiptUrl = `${API_BASE_URL}/api/booking/${sagaId}/getreceipt/`;
+
+            // Показываем индикатор загрузки
+            const btn = document.getElementById('btnReceipt');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span> Downloading...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(receiptUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser?.jwt || ''}`
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+
+                // Получаем blob (PDF файл)
+                const blob = await response.blob();
+
+                // Создаем ссылку для скачивания
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `receipt_${sagaId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+
+                // Очищаем
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                alert('✓ Receipt downloaded successfully!');
+
+            } catch (err) {
+                console.error('Receipt download error:', err);
+                alert(`❌ Failed to download receipt: ${err.message}`);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         });
         // Обработчик кнопки callback (перечёркнутый кружок)
         document.getElementById('bookingsListContainer')?.addEventListener('click', async (e) => {

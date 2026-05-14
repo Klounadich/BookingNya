@@ -12,6 +12,7 @@ public interface IBookingService
     public Task GetFreeRooms(RoomFiltresCommand data , Guid requestId);
     
     public Task<GetBookingResponce> GetUserBookings(GetBookingsRequest request);
+    public Task<byte[]> GetReceiptAsync(Guid sagaId);
     
     public Task RollBack(Guid sagaId);
     

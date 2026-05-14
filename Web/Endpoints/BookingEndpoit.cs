@@ -18,6 +18,7 @@ public static class BookingEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Hotel");
         group.MapPost("/hotel" ,FreeRooms);
         group.MapGet("/rooms/{roomId}/photos/{index}", DownloadImage);
+        group.MapGet("/booking/{sagaId}/getreceipt/", GetReceipt);
         group.MapPost("/hotel/mybookings/", GetActiveBooking);
         
 
@@ -62,6 +63,37 @@ public static class BookingEndpoint
         var photoBytes = room.pictures[index];
         
         return Results.File(photoBytes, mimeType); 
+    }
+
+    [Authorize]
+    public static async Task<IResult> GetReceipt(Guid sagaId, IBookingService bookingService)
+    {
+        try
+        {
+            var receiptBytes = await bookingService.GetReceiptAsync(sagaId);
+        
+            if (receiptBytes != null && receiptBytes.Length > 0)
+            {
+                
+                return Results.File(
+                    receiptBytes, 
+                    "application/pdf", 
+                    $"receipt_{sagaId}.pdf"
+                );
+            }
+            else
+            {
+                return Results.NotFound(new { message = $"Чек для бронирования {sagaId} не найден" });
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ошибка при генерации чека: {ex.Message}");
+        }
     }
 
     

@@ -1,10 +1,12 @@
 using BookingModule.Commands;
 using BookingModule.Models;
+using BookingModule.PDF;
 using BookingModule.Repositories;
 using InventoryModule.Commands;
 using Shared.Enums;
 using DotNetCore.CAP;
 using NotificationModule.Commands;
+using QuestPDF.Fluent;
 
 namespace BookingModule.Services;
 
@@ -111,6 +113,16 @@ public class BookingService : IBookingService
         await _bookingRepository.CancelTransaction(sagaId);
     }
 
+
+    public async Task<byte[]> GetReceiptAsync(Guid sagaId)
+    {
+        var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaId);
     
+        if (booking == null)
+            throw new ArgumentException($"Бронирование с Saga ID {sagaId} не найдено");
+    
+        var document = new BookingReceiptDocument(booking);
+        return document.GeneratePdf();
+    }
 }
     
