@@ -92,14 +92,21 @@ public class BookingRepository : IBookingRepository
 
     public async Task<GetBookingResponce> GetBookings(GetBookingsRequest request)
     {
-        var responce = await _context.Bookings.AsNoTracking().Where(X => X.user_id.ToString() == request.user_id && X.status != BookingStatus.Cancelled 
-                                                          && X.status != BookingStatus.Pending && X.check_in >= DateTime.UtcNow ).Select(x => new GetBookingCard(
+        var startOfDay = DateTime.UtcNow.Date; 
+
+        var responce = await _context.Bookings
+            .AsNoTracking()
+            .Where(x => x.user_id.ToString() == request.user_id 
+                        && x.status != BookingStatus.Cancelled 
+                        && x.status != BookingStatus.Pending 
+                        && x.check_in >= startOfDay)  
+            .Select(x => new GetBookingCard(
                 x.room_id.ToString(),
                 x.guest_email,
-                 x.check_in, 
+                x.check_in, 
                 x.check_out,
-                 x.total_price,
-                 x.payment_method,
+                x.total_price,
+                x.payment_method,
                 x.saga_id
             ))
             .ToListAsync();

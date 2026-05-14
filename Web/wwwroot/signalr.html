@@ -177,6 +177,29 @@
         @keyframes fadeInPanel { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
         .balance-card { background: linear-gradient(135deg, #1e293b 0%, #1a2340 100%); border: 1px solid var(--border-light); border-radius: 24px; padding: 24px; text-align: center; margin-bottom: 16px; }
+        .currency-select-compact {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .currency-select-compact:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: var(--primary-light);
+        }
+        .balance-card {
+            position: relative; /* важно для позиционирования кнопки */
+        }
         .balance-amount { font-size:2.8rem; font-weight:800; color:var(--accent-gold); } .balance-label { font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:4px; }
         .bookings-placeholder { background: rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:20px; padding:32px; text-align:center; color:var(--text-muted); }
         .bookings-placeholder i { font-size:2.5rem; margin-bottom:12px; opacity:0.5; }
@@ -195,6 +218,61 @@
         ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:6px; }
         @media (max-width:880px) { .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); } .container{padding:0 20px;} }
         #sagaStepsContainer { display:none; }
+
+        /* Компактная кнопка выбора валюты */
+        .currency-trigger-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .currency-trigger-btn:hover {
+            background: rgba(0,0,0,0.6);
+            border-color: var(--primary-light);
+        }
+        .currency-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            z-index: 100;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .currency-dropdown.show {
+            display: block;
+        }
+        .currency-option {
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .currency-option:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .balance-card {
+            position: relative;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 </head>
@@ -203,7 +281,7 @@
     <div class="container header-content">
         <a href="#" class="logo"><i class="fas fa-hotel"></i> HotelBookPro</a>
         <div class="header-right">
-            <span id="connectionDot" class="connection-dot" title="SignalR connection status"></span>
+            
             <div id="authArea"></div>
         </div>
     </div>
@@ -322,6 +400,13 @@
             </div>
             <div id="profilePanelBalance" class="profile-panel hidden">
                 <div class="balance-card">
+                    <button id="currencyTriggerBtn" class="currency-trigger-btn"><i class="fas fa-dollar-sign"></i> USD <i class="fas fa-chevron-down" style="font-size:0.65rem;"></i></button>
+                    <div id="currencyDropdown" class="currency-dropdown">
+                        <div class="currency-option" data-currency="USD">💰 USD</div>
+                        <div class="currency-option" data-currency="EUR">💶 EUR</div>
+                        <div class="currency-option" data-currency="GBP">💷 GBP</div>
+                        <div class="currency-option" data-currency="RUB">💴 RUB</div>
+                    </div>
                     <div class="balance-label">Available Balance</div>
                     <div class="balance-amount" id="balanceAmount">$0.00</div>
                     <div style="color:var(--text-muted); font-size:0.8rem; margin-top:8px;">
@@ -394,6 +479,19 @@
         const API_BASE_URL = 'http://localhost:5255';
         const SIGNALR_HUB_URL = `${API_BASE_URL}/saga-process-hub`;
         const EXCHANGE_RATES = { USD: 1, EUR: 0.92, GBP: 0.79, RUB: 92.5 };
+        let displayCurrency = 'USD';           // текущая выбранная валюта отображения
+        const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', GBP: '£', RUB: '₽' };
+
+        function convertPrice(usdAmount, toCurrency) {
+            const rate = EXCHANGE_RATES[toCurrency] || 1;
+            return usdAmount * rate;
+        }
+
+        function formatPrice(usdAmount, currency) {
+            const converted = convertPrice(usdAmount, currency);
+            const symbol = CURRENCY_SYMBOLS[currency] || '$';
+            return `${symbol}${converted.toFixed(2)}`;
+        }
         const TOTAL_SAGA_STEPS = 7;
 
         let connection = null, isConnected = false;
@@ -504,8 +602,28 @@
                 document.getElementById('openAuthBtn')?.addEventListener('click', ()=> openAuthModal('login'));
             }
         }
+        
 
-        function updateConnectionUI(connected) { connectionDot.classList.toggle('connected', connected); }
+        function saveDisplayCurrency(currency) {
+            displayCurrency = currency;
+            localStorage.setItem('hotelbookpro_display_currency', currency);
+            // Обновить все отображаемые цены
+            refreshAllPrices();
+        }
+
+        function refreshAllPrices() {
+            // 1. Перерисовать комнаты (если есть загруженные)
+            if (currentRooms && currentRooms.length) {
+                renderRooms(sortRooms(currentRooms, currentSort));
+            }
+            // 2. Обновить баланс (если открыт профиль или просто для следующего открытия)
+            if (isAuthenticated()) {
+                loadUserBalance();        // обновит баланс в выбранной валюте
+                loadUserBookings();       // обновит список бронирований (если открыта вкладка)
+            }
+        }
+
+        
 
         function openAuthModal(tab='login') {
             document.getElementById('authModal').classList.remove('hidden'); switchAuthTab(tab);
@@ -637,7 +755,7 @@
                 <div class="booking-item">
                     <div class="booking-header">
                         <span class="booking-room"><i class="fas fa-door-open"></i> Room ${escapeHtml(booking.room_id)}</span>
-                        <span class="booking-price">$${price}</span>
+                        <span class="booking-price">${formatPrice(price, displayCurrency)}</span>
                         ${sagaId ? `<button class="btn-callback" data-saga-id="${escapeHtml(sagaId)}" title="Cancel booking (callback)"><i class="fas fa-ban"></i></button>` : ''}
                     </div>
                     <div class="booking-dates">
@@ -741,9 +859,9 @@
                 card.appendChild(imgDiv);
                 const info = document.createElement('div'); info.className = 'room-info';
                 info.innerHTML = `
-                    <div class="room-title-row"><span class="room-title">${escapeHtml(roomId)}</span><span class="room-price-badge">$${price}<small>/night</small></span></div>
+                    <div class="room-title-row"><span class="room-title">${escapeHtml(roomId)}</span><span class="room-price-badge">${formatPrice(price, displayCurrency)}<small>/night</small></span></div>
                     <div class="room-type">${capacity} guests · Floor ${floor}</div>
-                    <div class="room-details"><span><i class="fas fa-layer-group"></i> Floor ${floor}</span><span><i class="fas fa-tag"></i> $${price}/night</span></div>
+                    <div class="room-details"><span><i class="fas fa-layer-group"></i> Floor ${floor}</span><span><i class="fas fa-tag"></i> ${formatPrice(price, displayCurrency)}/night</span></div>
                     <div class="amenities">${amenityList.map(a=>`<span class="amenity-tag">${escapeHtml(a)}</span>`).join('')}</div>
                     <div class="room-description">${escapeHtml(desc)}</div>
                     <button class="btn-book" data-room-id="${escapeHtml(roomId)}" data-price="${price}" data-type="${escapeHtml(type)}" data-desc="${escapeHtml(desc)}"><i class="fas fa-calendar-check"></i> Book Now</button>
@@ -773,7 +891,7 @@
                 carouselHtml += `<button class="carousel-btn prev" id="carouselPrevBtn"><i class="fas fa-chevron-left"></i></button><button class="carousel-btn next" id="carouselNextBtn"><i class="fas fa-chevron-right"></i></button><span class="carousel-counter" id="carouselCounter">1/${photos.length}</span></div>`;
             }
             body.innerHTML = `<h3 style="margin-bottom:12px;">${escapeHtml(room.roomId)} · ${escapeHtml(room.type)}</h3>
-                <p style="color:var(--text-secondary);"><i class="fas fa-dollar-sign"></i> $${room.pricePerNight} / night</p>
+<p style="color:var(--text-secondary);"><i class="fas fa-dollar-sign"></i> ${formatPrice(room.pricePerNight, displayCurrency)} / night</p>
                 ${carouselHtml}
                 <p>${escapeHtml(room.description)}</p>
                 <div style="background:rgba(255,255,255,0.03); padding:16px; border-radius:20px;"><strong style="color:var(--primary-light)">Amenities:</strong> ${escapeHtml(amenityStr)}</div>`;
@@ -794,7 +912,7 @@
 
         function openBookingFormModal(room) {
             document.getElementById('selectedRoomId').value = room.roomId; document.getElementById('selectedPricePerNight').value = room.pricePerNight;
-            document.getElementById('bookingRoomInfo').innerHTML = `<strong>${room.roomId}</strong> (${room.type}) · $${room.pricePerNight}/night`;
+            document.getElementById('bookingRoomInfo').innerHTML = `<strong>${room.roomId}</strong> (${room.type}) · ${formatPrice(room.pricePerNight, displayCurrency)}/night`;
             const today = new Date().toISOString().split('T')[0];
             const checkIn = document.getElementById('checkInDate'), checkOut = document.getElementById('checkOutDate');
             checkIn.min = today; checkOut.min = today; checkIn.value=''; checkOut.value='';
@@ -860,9 +978,9 @@
             if(connection) return; connection = new signalR.HubConnectionBuilder().withUrl(SIGNALR_HUB_URL).withAutomaticReconnect().build();
             connection.on("ReceiveSagaProgress", (sagaId, step, status, message) => { if(sagaId===currentTrackingSagaId&&activeSagaModalOpen&&!isBookingSuccess){ if(step==="Booking"&&status==="Completed"){ showSuccessUI(message); return; } updateSagaStatusFromStep(step,status,message); } });
             connection.on("ReceiveSagaError", (sagaId, step, status, message) => { if(sagaId===currentTrackingSagaId&&activeSagaModalOpen&&!isBookingSuccess){ if(step==="Notification"&&status==="Cancelled"&&message&&message.includes("Confirm Notification cancelled")){ handleWrongCode(); return; } document.getElementById('sagaCodeError').innerText = `Error: ${message||'Unknown error'}`; document.getElementById('sagaCodeError').classList.remove('hidden'); enableCodeInput(); } });
-            connection.onclose(()=>{ isConnected=false; updateConnectionUI(false); }); connection.onreconnected(()=>{ isConnected=true; updateConnectionUI(true); });
+            connection.onclose(()=>{ isConnected=false;  }); connection.onreconnected(()=>{ isConnected=true;  });
         }
-        async function connectSignalR() { if(isConnected) return; await initSignalR(); await connection.start(); isConnected=true; updateConnectionUI(true); }
+        async function connectSignalR() { if(isConnected) return; await initSignalR(); await connection.start(); isConnected=true; }
 
         function updateSagaStatusFromStep(step,status,message) { let inc = (status?.toLowerCase().includes('completed')||status?.toLowerCase().includes('success'))?1:0.5; currentSagaPercent = Math.min(100, currentSagaPercent+inc*(100/TOTAL_SAGA_STEPS)); document.getElementById('sagaProgressBar').style.width=`${currentSagaPercent}%`; document.getElementById('sagaProgressPercent').innerText=`${Math.round(currentSagaPercent)}%`; document.getElementById('sagaProgressLabel').innerText = message||`${step}: ${status}`; }
         function handleWrongCode() { document.getElementById('sagaCodeError').innerText='❌ Incorrect code.'; document.getElementById('sagaCodeError').classList.remove('hidden'); enableCodeInput(); }
@@ -970,8 +1088,9 @@
                 } else if (typeof data === 'string') {
                     balance = parseFloat(data) || 0;
                 }
-
-                balanceAmountSpan.innerHTML = `$${balance.toFixed(2)}`;
+                const convertedBalance = convertPrice(balance, displayCurrency);
+                balanceAmountSpan.innerHTML = `${CURRENCY_SYMBOLS[displayCurrency]}${convertedBalance.toFixed(2)}`;
+                
                 loyaltyPointsSpan.textContent = `${Math.round(loyalty)} pts`;
             } catch (err) {
                 console.error('Balance fetch error:', err);
@@ -995,9 +1114,46 @@
         document.querySelectorAll('.modal-overlay').forEach(ov=> ov.addEventListener('click', function(e){ if(e.target===this) this.classList.add('hidden'); }));
 
         // Initialization
+        // === Компактный выбор валюты ===
+        function initCompactCurrency() {
+            const saved = localStorage.getItem('hotelbookpro_display_currency');
+            if (saved && EXCHANGE_RATES[saved]) displayCurrency = saved;
+            else displayCurrency = 'USD';
+
+            const updateBtnText = () => {
+                const btn = document.getElementById('currencyTriggerBtn');
+                if(btn) {
+                    const symbol = displayCurrency === 'USD' ? 'fa-dollar-sign' : displayCurrency === 'EUR' ? 'fa-euro-sign' : displayCurrency === 'GBP' ? 'fa-pound-sign' : 'fa-ruble-sign';
+                    btn.innerHTML = `<i class="fas ${symbol}"></i> ${displayCurrency} <i class="fas fa-chevron-down" style="font-size:0.65rem;"></i>`;
+                }
+            };
+            updateBtnText();
+
+            const trigger = document.getElementById('currencyTriggerBtn');
+            const dropdown = document.getElementById('currencyDropdown');
+            if(trigger && dropdown) {
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                });
+                document.querySelectorAll('.currency-option').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const currency = opt.dataset.currency;
+                        if(currency && EXCHANGE_RATES[currency]) {
+                            displayCurrency = currency;
+                            localStorage.setItem('hotelbookpro_display_currency', currency);
+                            updateBtnText();
+                            dropdown.classList.remove('show');
+                            refreshAllPrices();
+                        }
+                    });
+                });
+                document.addEventListener('click', () => dropdown.classList.remove('show'));
+            }
+        }
         loadAuth();
-        updateAuthUI();
-        updateConnectionUI(false);
+        initCompactCurrency();
+        updateAuthUI()
         connectSignalR();
         fetchFreeRooms({});
     })();

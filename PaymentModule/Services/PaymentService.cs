@@ -31,14 +31,17 @@ public class Mock
             var balance = _authService.GetBalanceAsync(new GetBalanceQuery(userId))
                 .GetAwaiter()
                 .GetResult();
-            Console.WriteLine(amount );
-            Console.WriteLine(balance );
             if (amount <= balance)
             {
                 return new CheckResult(Guid.NewGuid(), amount, currency, "Success");
             }
+            return new CheckResult(Guid.Empty, 0, currency, "Invalid amount");
         }
-        return new CheckResult(Guid.Empty, 0, currency, "Invalid amount");
+        else
+        {
+            return new CheckResult(Guid.NewGuid(), amount, currency, "Success");
+        }
+        
     }
     
     
@@ -58,7 +61,7 @@ public class PaymentService : IPaymentService
     }
     public async Task<PaymentResult> ProcessPaymentAsync(ProcessPaymentCommand data)
     {
-        Console.WriteLine($"АЙДИИИИ{data.CustomerId}");
+      
         var checkvalue =  _mock.PaymentCheck(data.Amount, data.Currency , data.PaymentMethod , data.CustomerId); //mock of external api for payment
         if (checkvalue.Status == "Success")
         {
@@ -110,7 +113,7 @@ public class PaymentService : IPaymentService
         var transaction = await _paymentRepository.GetTransaction(sagaId);
         if (transaction != null)
         {
-            if (transaction.payment_method == "BookingPay")
+            if (transaction.payment_method == "BookingPay" && transaction.status == PaymentStatus.Captured)
             {
                 await _authService.RefundMoneyToBalance(transaction.customer_id , transaction.amount);
             }
