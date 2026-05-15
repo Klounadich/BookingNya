@@ -2,6 +2,7 @@ using BookingModule.Commands;
 using BookingModule.Infrastructure;
 using BookingModule.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace BookingModule.Repositories;
 
@@ -89,6 +90,29 @@ public class BookingRepository : IBookingRepository
         }
     }
 
+    public async Task<GetBookingResponce> GetBookings(GetBookingsRequest request)
+    {
+        var startOfDay = DateTime.UtcNow.Date; 
+
+        var responce = await _context.Bookings
+            .AsNoTracking()
+            .Where(x => x.user_id.ToString() == request.user_id 
+                        && x.status != BookingStatus.Cancelled 
+                        && x.status != BookingStatus.Pending 
+                        && x.check_in >= startOfDay)  
+            .Select(x => new GetBookingCard(
+                x.room_id.ToString(),
+                x.guest_email,
+                x.check_in, 
+                x.check_out,
+                x.total_price,
+                x.payment_method,
+                x.saga_id
+            ))
+            .ToListAsync();
+        return new GetBookingResponce  ( responce );
+    }
+
     public async Task<bool> UpdateSagaAsync(SagaStatesModel saga_data ,  BookingModel booking_data)
     {
         using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -109,6 +133,16 @@ public class BookingRepository : IBookingRepository
             }
         }
         return false;
+    }
+
+    public async Task<bool> CancelTransaction(Guid saga_id)
+    {
+        var saga = await _context.Bookings.Where(x=> x.saga_id == saga_id).SingleOrDefaultAsync();
+        saga.status = BookingStatus.Cancelled;
+        saga.cancelled_at = DateTime.UtcNow;
+        saga.updated_at = DateTime.UtcNow;
+        _context.Bookings.Update(saga);
+        return await _context.SaveChangesAsync() > 0;
     }
 
     

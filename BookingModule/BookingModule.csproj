@@ -26,6 +26,7 @@
       </PackageReference>
       <PackageReference Include="Npgsql" Version="10.0.2" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+      <PackageReference Include="QuestPDF" Version="2026.5.0" />
       <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="10.0.0" />
       <PackageReference Include="Scalar.AspNetCore" Version="2.12.47" />
       <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.1.4" />

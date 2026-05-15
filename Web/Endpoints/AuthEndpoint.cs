@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using AuthModule.Commands;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingNya.Endpoints;
 
@@ -11,6 +13,8 @@ public static class AuthEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Auth");
         group.MapPost("/auth/reg" ,RegistrationAsync);
         group.MapPost("/auth/login" ,LoginAsync);
+        group.MapGet("/user/{userId}/mybalance/", GetUserBalance);
+        
         
     }
 
@@ -57,5 +61,11 @@ public static class AuthEndpoint
         {
             return Results.BadRequest(result);
         }
+    }
+    [Authorize]
+    public static async Task<IResult> GetUserBalance(IMediator mediator, ClaimsPrincipal user)
+    {
+        var result = await mediator.Send(new GetBalanceQuery(user.FindFirstValue(ClaimTypes.NameIdentifier)));
+        return Results.Ok(result);
     }
 }

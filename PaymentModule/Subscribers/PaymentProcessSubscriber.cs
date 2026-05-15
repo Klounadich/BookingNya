@@ -35,11 +35,27 @@ public class PaymentProcessSubscriber : ICapSubscribe
         }
         catch (Exception ex)
         {
-            await _capPublisher.PublishAsync("payment.failed", 
+            await _capPublisher.PublishAsync("payment.failed.event", 
                 new PaymentProcessed(command.SagaId, command.CustomerEmail, 
                     command.BookingId, ex.Message));
         }
     }
 
+    [CapSubscribe("Payment.write.money")]
+    public async Task WriteMoney(Guid sagaId)
+    {
+        if (await _paymentService.WriteMoney(sagaId))
+        {
+            await _capPublisher.PublishAsync("payment.writed.sucessfully",
+                sagaId);
+        }
+        
+    }
+    
+    [CapSubscribe("payment.moneyback")]
+    public async Task PaymentMoneyBack(Guid SagaId)
+    {
+        await _paymentService.MoneyBack(SagaId);
+    }
     
 }

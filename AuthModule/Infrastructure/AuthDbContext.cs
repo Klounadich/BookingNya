@@ -1,5 +1,6 @@
 using AuthModule.Models;
 using Microsoft.EntityFrameworkCore;
+using PaymentModule.Models;
 
 namespace AuthModule.Infrastructure;
 
@@ -10,4 +11,5 @@ public class AuthDbContext : DbContext
         
     }
     public DbSet<UsersModel> Users { get; set; }
+    public DbSet<MockBankUserDataModel> BankUsers { get; set; }
 }

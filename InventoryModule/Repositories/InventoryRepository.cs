@@ -41,6 +41,11 @@ public class InventoryRepository : IInventoryRepository
             
        }
 
+       if (await _context.SaveChangesAsync() > 0)
+       {
+           return true;
+       }
+
        return false;
 
     }
@@ -73,7 +78,8 @@ public class InventoryRepository : IInventoryRepository
                     reservation.room_id == room.id &&
                     
                     reservation.check_in < checkOutUtc &&
-                    reservation.check_out > checkInUtc
+                    reservation.check_out > checkInUtc &&
+                    reservation.status != ReservationStatus.Cancelled 
                 )
             );
         }

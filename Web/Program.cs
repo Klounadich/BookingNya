@@ -64,6 +64,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 //SERVICES ------------------------------------------------------------------
 //scopeds:
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddScoped<IBookingService,BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IReserveRoomService,ReserveRoomService>();
@@ -77,6 +78,7 @@ builder.Services.AddScoped<IValidator<BookingRequestCommand>, BookingRequestVali
 builder.Services.AddScoped<IValidator<RegisterRequestCommand>, RegisterRequestValidator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ISagaOrchestrator, SagaOrchestrator>();
 
 
 //trasients:

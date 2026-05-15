@@ -1,10 +1,12 @@
 using BookingModule.Commands;
 using BookingModule.Models;
+using BookingModule.PDF;
 using BookingModule.Repositories;
 using InventoryModule.Commands;
 using Shared.Enums;
 using DotNetCore.CAP;
 using NotificationModule.Commands;
+using QuestPDF.Fluent;
 
 namespace BookingModule.Services;
 
@@ -20,7 +22,7 @@ public class BookingService : IBookingService
         _bookingRepository = bookingRepository;
         _capPublisher = capPublisher;
     }
-    public async Task<StartSagaResult> StartBooking(BookingRequestCommand data)
+    public async Task<SagaResult> StartBooking(BookingRequestCommand data)
     {
         var sagaId = Guid.NewGuid();    
         var bookingId = Guid.NewGuid(); 
@@ -69,9 +71,9 @@ public class BookingService : IBookingService
                 data.check_out,
                 data.guest_name
             ));
-            return new StartSagaResult(sagaId, SagaTypes.Started , "Saga Started");
+            return new SagaResult(sagaId, SagaTypes.Started , "Saga Started");
         }
-        return new StartSagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
+        return new SagaResult(sagaId, SagaTypes.Failed , "Failed Starting Saga");
     }
 
     public async Task ConfirmCode(ConfirmationCodeCommand data)
@@ -97,10 +99,30 @@ public class BookingService : IBookingService
             ));
     }
 
+
+    public async Task<GetBookingResponce> GetUserBookings(GetBookingsRequest request)
+    {
+       return await _bookingRepository.GetBookings(request);
+        
+    }
+
     public async Task RollBack(Guid sagaId)
     {
         await _capPublisher.PublishAsync("inventory.callback.room.reserve", sagaId);
-        
+        await _capPublisher.PublishAsync("payment.moneyback" , sagaId);
+        await _bookingRepository.CancelTransaction(sagaId);
+    }
+
+
+    public async Task<byte[]> GetReceiptAsync(Guid sagaId)
+    {
+        var booking = await _bookingRepository.GetBookingBySagaIdAsync(sagaId);
+    
+        if (booking == null)
+            throw new ArgumentException($"Бронирование с Saga ID {sagaId} не найдено");
+    
+        var document = new BookingReceiptDocument(booking);
+        return document.GeneratePdf();
     }
 }
     

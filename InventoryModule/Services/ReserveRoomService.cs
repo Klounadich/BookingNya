@@ -15,7 +15,7 @@ public class ReserveRoomService: IReserveRoomService
     public async Task<RoomReserveResult> ReserveRoomAsync(ReserveRoomCommand command)
     {
         if (await _inventoryRepository.IsRoomAvailableAsync(command.roomId))
-        {
+        { 
             Guid id = Guid.NewGuid();
             RoomReservationModel request = new RoomReservationModel
             {
@@ -31,6 +31,7 @@ public class ReserveRoomService: IReserveRoomService
             };
             if (await _inventoryRepository.ReserveRoomAsync(request))
             {
+                
                 return new RoomReserveResult(id , "Room reservation successful");
             }
         };

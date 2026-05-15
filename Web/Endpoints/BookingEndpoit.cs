@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using BookingModule.Commands;
 using BookingModule.Services;
 using DotNetCore.CAP;
 using InventoryModule.Infrastructure;
 using InventoryModule.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -16,6 +18,9 @@ public static class BookingEndpoint
         var group = endpoints.MapGroup("api/").WithTags("Hotel");
         group.MapPost("/hotel" ,FreeRooms);
         group.MapGet("/rooms/{roomId}/photos/{index}", DownloadImage);
+        group.MapGet("/booking/{sagaId}/getreceipt/", GetReceipt);
+        group.MapPost("/hotel/mybookings/", GetActiveBooking);
+        
 
     }
 
@@ -32,6 +37,19 @@ public static class BookingEndpoint
         }
     }
 
+    [Authorize]
+    public async static Task<IResult> GetActiveBooking(IMediator mediator , ClaimsPrincipal user)
+    {
+        
+        GetBookingsRequest request = new GetBookingsRequest(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var responce = await mediator.Send(request);
+        if (responce.cards != null)
+        {
+            return Results.Ok(responce);
+        }
+        return Results.NotFound();
+    }
+
     public static async Task<IResult> DownloadImage (string roomId, int index , InventoryDbContext context) 
     {
         var room = await context.Rooms
@@ -46,4 +64,37 @@ public static class BookingEndpoint
         
         return Results.File(photoBytes, mimeType); 
     }
+
+    [Authorize]
+    public static async Task<IResult> GetReceipt(Guid sagaId, IBookingService bookingService)
+    {
+        try
+        {
+            var receiptBytes = await bookingService.GetReceiptAsync(sagaId);
+        
+            if (receiptBytes != null && receiptBytes.Length > 0)
+            {
+                
+                return Results.File(
+                    receiptBytes, 
+                    "application/pdf", 
+                    $"receipt_{sagaId}.pdf"
+                );
+            }
+            else
+            {
+                return Results.NotFound(new { message = $"Чек для бронирования {sagaId} не найден" });
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ошибка при генерации чека: {ex.Message}");
+        }
+    }
+
+    
 }
